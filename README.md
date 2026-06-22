@@ -28,17 +28,9 @@ Dois modos de análise:
 
 ## 📦 Pré-requisitos
 
-- **macOS** + **Adobe Premiere Pro 2022 ou mais novo**
-- **[Homebrew](https://brew.sh)** (gerenciador de pacotes do Mac)
-- **Python 3** e **ffmpeg**:
-  ```bash
-  brew install python ffmpeg
-  ```
-- **Opcional (modo local / offline):** [Ollama](https://ollama.com)
-  ```bash
-  brew install ollama
-  ollama pull qwen2.5:7b
-  ```
+- **macOS** ou **Windows** + **Adobe Premiere Pro 2022 ou mais novo**
+- **Python 3** e **ffmpeg** (instruções por SO abaixo, na seção de Instalação)
+- **Opcional (modo local / offline):** [Ollama](https://ollama.com) — `ollama pull qwen2.5:7b`
 - **Opcional (modo áudio→Gemini):** uma chave grátis em [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
 
 > ⚠️ A 1ª transcrição com Whisper baixa um modelo (~145 MB) e demora um pouco num vídeo de 1h. As próximas usam cache.
@@ -47,7 +39,12 @@ Dois modos de análise:
 
 ## 🚀 Instalação
 
+### 🍎 macOS
+
 ```bash
+# pré-requisitos
+brew install python ffmpeg          # (opcional: brew install ollama)
+
 # 1. Clone o projeto
 git clone https://github.com/carabugado/highlights-cutter.git
 cd highlights-cutter
@@ -59,17 +56,36 @@ cd highlights-cutter
 ./install_highlights_mac.sh
 ```
 
-Isso também liga o **modo debug do CEP** (necessário pra extensão não-assinada carregar).
+### 🪟 Windows
 
-Depois, **reinicie o Premiere**.
+Pré-requisitos: **Python 3** (no instalador, marque **"Add python.exe to PATH"**) e **ffmpeg** no PATH:
+
+```powershell
+winget install Gyan.FFmpeg     # depois REABRA o terminal
+# (opcional) Ollama: baixe em https://ollama.com e rode: ollama pull qwen2.5:7b
+```
+
+Depois, na pasta do projeto:
+
+```powershell
+# 1. Clone o projeto
+git clone https://github.com/carabugado/highlights-cutter.git
+cd highlights-cutter
+
+# 2. Instala tudo: venv + dependências, debug do CEP (registro) e o painel
+powershell -ExecutionPolicy Bypass -File .\install_highlights_win.ps1
+```
+
+> Ambos os instaladores ligam o **modo debug do CEP** (necessário pra extensão não-assinada carregar). Depois de instalar, **reinicie o Premiere**.
 
 ---
 
 ## ▶️ Como usar
 
-1. **Ligue o backend** (deixe esta janela de Terminal aberta enquanto usa o Premiere):
+1. **Ligue o backend** (deixe esta janela aberta enquanto usa o Premiere):
    ```bash
-   ./start_server.sh
+   ./start_server.sh       # macOS
+   start_server.bat        # Windows
    ```
    Sobe em `http://127.0.0.1:7821`.
 
@@ -88,11 +104,11 @@ Pronto: uma sequência nova com o corte montado e marcadores em cada clip.
 
 ## 🛠️ Ferramenta extra: transcrição via terminal
 
-Gera um `.srt` de qualquer vídeo/áudio com o Whisper local:
+Gera um `.srt` de qualquer vídeo/áudio com o Whisper local (salva ao lado do vídeo):
 
 ```bash
-./transcribe_video.sh "/caminho/do/episodio.mp4"
-# salva o .srt ao lado do vídeo
+./transcribe_video.sh "/caminho/do/episodio.mp4"    # macOS
+transcribe_video.bat "C:\caminho\episodio.mp4"      # Windows
 ```
 
 ---
@@ -101,9 +117,10 @@ Gera um `.srt` de qualquer vídeo/áudio com o Whisper local:
 
 | Sintoma | O que fazer |
 |---|---|
-| Painel diz **"backend offline"** | Rode `./start_server.sh` e deixe aberto. |
-| **"Erro ao mapear: Not Found"** | O servidor está numa versão antiga — pare (Ctrl+C) e rode `./start_server.sh` de novo. |
-| Painel **não aparece** no menu Extensões | Rode `./install_highlights_mac.sh` e **reinicie o Premiere**. |
+| Painel diz **"backend offline"** | Rode `./start_server.sh` (macOS) ou `start_server.bat` (Windows) e deixe aberto. |
+| **"Erro ao mapear: Not Found"** | O servidor está numa versão antiga — pare (Ctrl+C) e ligue de novo. |
+| Painel **não aparece** no menu Extensões | Rode o instalador do seu SO e **reinicie o Premiere**. No Windows, confirme que o debug do CEP foi ligado (registro). |
+| **ffmpeg não encontrado** (Windows) | `winget install Gyan.FFmpeg` e **reabra o terminal**. |
 | **Sem chave Gemini** | Use o modo **📝 Local** com o Ollama rodando (`ollama serve`). |
 | Modo áudio **falha/limite (429)** | A chave bateu a cota — use outra chave, ou o modo **📝 Local**. |
 | Cortes no **tempo errado** | No modo 🎧 áudio os timestamps são estimados de ouvido; use **📝 Local** (Whisper) pra tempo cravado. |
@@ -121,10 +138,10 @@ backend/                 # servidor FastAPI (porta 7821)
   llm.py                 # IA: Ollama local → Gemini → Anthropic
   server.py              # rotas (inclui /highlights)
 cep-highlights/          # painel CEP "Highlights Cutter" do Premiere
-install_highlights_mac.sh
+install_highlights_mac.sh / install_highlights_win.ps1   # instaladores (Mac / Windows)
 install_mac.sh
-start_server.sh
-transcribe_video.sh
+start_server.sh / start_server.bat
+transcribe_video.sh / transcribe_video.bat
 ```
 
 > ℹ️ Este repositório também inclui o **VSL B-Roll Generator** (painel `cep/` + módulos `broll_*` no backend), que **compartilha o mesmo backend** do Highlights Cutter. Por isso o backend é único.
