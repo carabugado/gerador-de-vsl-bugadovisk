@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>VSL B-Roll Generator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, sans-serif;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    font-size: 13px;
+    padding: 12px;
+  }
+  h1 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 12px; }
+  .section { margin-bottom: 14px; }
+  label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; margin-top: 8px; }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    color: #e0e0e0;
+    padding: 6px 8px;
+    font-size: 12px;
+    outline: none;
+  }
+  input:focus { border-color: #5a8dee; }
+  button {
+    width: 100%;
+    padding: 9px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: opacity 0.15s;
+    margin-top: 6px;
+  }
+  button:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.4; cursor: default; }
+  .btn-primary { background: #5a8dee; color: #fff; }
+  .btn-success { background: #3cb371; color: #fff; }
+  .btn-small { width: auto; padding: 4px 10px; font-size: 11px; margin-top: 0; }
+  .btn-gen  { background: #5a8dee; color: #fff; }
+  .btn-skip { background: #333; color: #ccc; }
+  .status-bar {
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 11px;
+    color: #aaa;
+    min-height: 36px;
+    margin-bottom: 10px;
+    word-break: break-all;
+  }
+  .status-bar.error   { color: #f06060; border-color: #7a2222; }
+  .status-bar.success { color: #5fca85; border-color: #2a5a3a; }
+  .status-bar.info    { color: #8ab4f8; }
+  .progress-wrap { background: #2a2a2a; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 4px; display: none; }
+  .progress-bar  { height: 100%; background: #5a8dee; width: 0%; transition: width 0.3s; }
+  #progressLabel { font-size: 10px; color: #777; margin-bottom: 8px; min-height: 14px; }
+  .stats-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .chip { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 12px; padding: 3px 9px; font-size: 11px; }
+  .chip.ok  { border-color: #3cb371; color: #5fca85; }
+  .chip.rev { border-color: #d4a017; color: #f0c040; }
+  .chip.gen { border-color: #5a8dee; color: #8ab4f8; }
+  .chip.err { border-color: #cc4444; color: #f06060; }
+  .review-list { max-height: 220px; overflow-y: auto; }
+  .review-item {
+    background: #252525; border: 1px solid #3a3a3a;
+    border-left: 3px solid #d4a017; border-radius: 4px;
+    padding: 8px; margin-bottom: 6px;
+  }
+  .ts   { font-size: 10px; color: #888; margin-bottom: 3px; }
+  .txt  { font-size: 12px; color: #ddd; margin-bottom: 4px; }
+  .sug  { font-size: 11px; color: #a0c0ff; margin-bottom: 6px; }
+  .acts { display: flex; gap: 6px; }
+  hr { border: none; border-top: 1px solid #2a2a2a; margin: 10px 0; }
+  .fold { cursor: pointer; font-size: 11px; color: #888; margin-bottom: 6px; user-select: none; }
+  .fold:hover { color: #bbb; }
+  #configSection { display: none; }
+</style>
+</head>
+<body>
+
+<h1>🎬 VSL B-Roll Generator</h1>
+
+<div class="status-bar" id="statusBar">Pronto. Configure e clique em Processar.</div>
+
+<div class="fold" onclick="toggleConfig()">⚙️ Configurações ▾</div>
+<div id="configSection" class="section">
+  <label>Pasta de B-Rolls (Eclipse SSD)</label>
+  <input type="text" id="brollFolder" placeholder="/Volumes/portatil/ASSETS/brolls vsl">
+  <label>Runway API Key</label>
+  <input type="password" id="runwayKey" placeholder="rw_...">
+  <label>Anthropic API Key</label>
+  <input type="password" id="anthropicKey" placeholder="sk-ant-...">
+  <label>Pasta para clips gerados</label>
+  <input type="text" id="generatedDir" placeholder="/Users/rene/Downloads/GERADOR DE VSL/generated_clips">
+</div>
+<hr>
+
+<div class="section">
+  <label>Vídeo principal (V1)</label>
+  <input type="text" id="videoPath" placeholder="Clique em Detectar ou cole o caminho...">
+  <button class="btn-primary btn-small" style="margin-bottom:8px" onclick="detectVideo()">Detectar da timeline</button>
+  <label style="display:flex;align-items:center;gap:6px;margin:8px 0;cursor:pointer;color:#bbb">
+    <input type="checkbox" id="visionVerify" style="width:auto;margin:0">
+    🔍 Verificar B-roll com IA de visão (mais preciso — clip errado vira geração)
+  </label>
+  <button class="btn-primary" id="btnProcess" onclick="startProcess()">▶ Processar VSL</button>
+</div>
+
+<div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
+<div id="progressLabel"></div>
+
+<div class="stats-row" id="statsRow" style="display:none">
+  <span class="chip ok"  id="statOk">✓ 0</span>
+  <span class="chip rev" id="statRev">⚠ 0 revisão</span>
+  <span class="chip gen" id="statGen">✨ 0 gerados</span>
+  <span class="chip err" id="statErr">✗ 0 erros</span>
+</div>
+
+<div id="reviewSection" style="display:none">
+  <label style="margin-bottom:6px;display:block">⚠️ Itens para revisão:</label>
+  <div class="review-list" id="reviewList"></div>
+  <button class="btn-success" onclick="approveAll()" style="margin-top:6px">✓ Aprovar todos</button>
+</div>
+
+<div id="insertSection" style="display:none">
+  <hr>
+  <button class="btn-success" id="btnInsert" onclick="insertTimeline()">⬆ Inserir na Timeline (V2)</button>
+</div>
+
+<script src="index.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

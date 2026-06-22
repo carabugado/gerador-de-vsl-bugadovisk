@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>VSL Director</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #111114;
+    color: #d4d4d8;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── TOPO ─────────────────────────────────────── */
+  #topArea {
+    flex-shrink: 0;
+    border-bottom: 1px solid #1e1e24;
+  }
+
+  .top-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid #1e1e24;
+  }
+  .logo-mark {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: linear-gradient(135deg, #e05a2b, #f59e0b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .top-title {
+    flex: 1;
+  }
+  .top-title h1 {
+    font-size: 13px; font-weight: 700; color: #fff;
+    letter-spacing: -0.2px; line-height: 1;
+  }
+  .top-title span {
+    font-size: 10px; color: #52525b; letter-spacing: 0.3px;
+  }
+  .top-gear {
+    width: 28px; height: 28px; border-radius: 6px; background: #1c1c22;
+    border: 1px solid #27272f; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; color: #71717a; font-size: 13px;
+    flex-shrink: 0; transition: all 0.15s;
+  }
+  .top-gear:hover { background: #27272f; color: #a1a1aa; }
+
+  /* ─── STATUS ────────────────────────────────────── */
+  #statusBar {
+    margin: 8px 14px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #71717a;
+    background: #18181c;
+    border: 1px solid #27272f;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  #statusBar.info    { color: #60a5fa; border-color: #1e3a5f; background: #0c1929; }
+  #statusBar.success { color: #4ade80; border-color: #14532d; background: #0a1f12; }
+  #statusBar.error   { color: #f87171; border-color: #7f1d1d; background: #1c0a0a; }
+
+  /* ─── PROGRESS (barra no topo, sempre visível durante processamento) ── */
+  #progressWrap {
+    display: none;
+    height: 4px; background: #1e1e24; margin: 0 14px 4px; border-radius: 2px; overflow: hidden;
+  }
+  #progressWrap.active { display: block; }
+  #progressWrap .progress-bar {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #e05a2b, #f59e0b);
+    transition: width 0.4s ease; border-radius: 2px;
+  }
+  #progressLabel {
+    display: none; font-size: 10px; color: #a1a1aa;
+    padding: 0 14px 6px; text-align: center;
+  }
+  #progressLabel.active { display: block; }
+
+  /* ─── PROCESSING CARD (área de scroll) ──────────── */
+  #processingCard {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    gap: 20px;
+    min-height: 200px;
+  }
+  #processingCard.visible { display: flex; }
+  .proc-ring {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 3px solid #27272f;
+    border-top-color: #e05a2b;
+    animation: spin 0.9s linear infinite;
+  }
+  .proc-step-label {
+    font-size: 13px; font-weight: 600; color: #e4e4e7;
+    text-align: center; letter-spacing: -0.2px;
+  }
+  .proc-detail {
+    font-size: 11px; color: #71717a; text-align: center;
+    max-width: 260px; line-height: 1.5;
+  }
+  .proc-bar-wrap {
+    width: 100%; max-width: 280px;
+    height: 5px; background: #27272f; border-radius: 3px; overflow: hidden;
+  }
+  .proc-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #e05a2b, #f59e0b);
+    width: 0%; transition: width 0.4s ease;
+    border-radius: 3px;
+  }
+  .proc-steps {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .proc-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #27272f; transition: background 0.3s;
+  }
+  .proc-dot.active  { background: #e05a2b; }
+  .proc-dot.done    { background: #16a34a; }
+
+  /* ─── STATS ─────────────────────────────────────── */
+  #statsRow {
+    display: none;
+    padding: 0 14px 8px;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    font-size: 10px; font-weight: 600; border-radius: 20px;
+    padding: 2px 8px; border: 1px solid;
+    letter-spacing: 0.2px;
+  }
+  .sp-ok    { color: #4ade80; border-color: #166534; background: #052e16; }
+  .sp-rev   { color: #fbbf24; border-color: #92400e; background: #1c0e00; }
+  .sp-gen   { color: #a78bfa; border-color: #4c1d95; background: #0d0820; }
+  .sp-err   { color: #f87171; border-color: #7f1d1d; background: #1c0a0a; }
+  .sp-let   { color: #fbbf24; border-color: #78350f; background: #1c1000; }
+
+  /* ─── CONFIG ─────────────────────────────────────── */
+  #configSection {
+    display: none;
+    padding: 0 14px 10px;
+    border-bottom: 1px solid #1e1e24;
+  }
+  .cfg-group { margin-bottom: 8px; }
+  .cfg-label {
+    display: block; font-size: 10px; font-weight: 600;
+    color: #52525b; text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  input[type="text"], input[type="password"], select {
+    width: 100%;
+    background: #18181c;
+    border: 1px solid #27272f;
+    border-radius: 5px;
+    color: #d4d4d8;
+    padding: 6px 9px;
+    font-size: 11px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus { border-color: #e05a2b; }
+  select { cursor: pointer; }
+  .cfg-row { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+
+  /* ─── MAIN ACTION ────────────────────────────────── */
+  #mainAction {
+    padding: 8px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .video-detect {
+    display: flex; gap: 6px; align-items: stretch;
+  }
+  .video-detect input { flex: 1; }
+  .btn-detect {
+    flex-shrink: 0; padding: 6px 10px; border: none; border-radius: 5px;
+    background: #27272f; color: #a1a1aa; font-size: 11px; font-weight: 600;
+    cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit;
+  }
+  .btn-detect:hover { background: #3f3f47; color: #e4e4e7; }
+
+  .btn-process {
+    width: 100%; padding: 10px; border: none; border-radius: 6px;
+    background: linear-gradient(135deg, #e05a2b, #f59e0b);
+    color: #fff; font-size: 13px; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.2px;
+    transition: opacity 0.15s, background 0.3s; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-process:hover:not(:disabled) { opacity: 0.9; }
+  .btn-process:disabled { cursor: default; }
+  .btn-process.processing {
+    background: #27272f; color: #a1a1aa;
+    border: 1px solid #3f3f47;
+  }
+  .btn-process .proc-spinner {
+    display: none;
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid #71717a; border-top-color: #a1a1aa;
+    animation: spin 0.7s linear infinite; flex-shrink: 0;
+  }
+  .btn-process.processing .proc-spinner { display: block; }
+  .btn-process.processing .proc-icon { display: none; }
+
+  /* ─── SEGMENT SCROLL AREA ────────────────────────── */
+  #scrollArea {
+    flex: 1; overflow-y: auto; overflow-x: hidden;
+    padding: 10px 10px 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #27272f #111114;
+  }
+  #scrollArea::-webkit-scrollbar { width: 4px; }
+  #scrollArea::-webkit-scrollbar-track { background: transparent; }
+  #scrollArea::-webkit-scrollbar-thumb { background: #27272f; border-radius: 2px; }
+
+  #segmentList { display: flex; flex-direction: column; gap: 6px; }
+
+  /* ─── SEGMENT CARD ───────────────────────────────── */
+  .seg-card {
+    background: #18181c;
+    border: 1px solid #27272f;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .seg-card:hover { border-color: #3f3f47; }
+  .seg-card.status-ok        { border-left: 3px solid #16a34a; }
+  .seg-card.status-review    { border-left: 3px solid #d97706; }
+  .seg-card.status-generated { border-left: 3px solid #7c3aed; }
+  .seg-card.status-error     { border-left: 3px solid #dc2626; }
+  .seg-card.status-no_broll  { border-left: 3px solid #3f3f47; }
+
+  /* Header do card */
+  .seg-head {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 10px 4px;
+    background: #111114;
+    border-bottom: 1px solid #1e1e24;
+  }
+  .seg-num {
+    font-size: 9px; font-weight: 700; color: #3f3f47;
+    font-variant-numeric: tabular-nums; min-width: 20px;
+  }
+  .seg-tc {
+    font-size: 10px; color: #3f3f47; font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    letter-spacing: 0.3px;
+  }
+  .seg-arc-badge {
+    font-size: 9px; font-weight: 700; color: #a78bfa;
+    background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 10px; padding: 1px 6px; letter-spacing: 0.3px;
+  }
+  .seg-peak-badge {
+    font-size: 9px; color: #f59e0b;
+    margin-left: auto; font-weight: 600;
+  }
+  .seg-status-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot-ok       { background: #16a34a; }
+  .dot-review   { background: #d97706; }
+  .dot-generated{ background: #7c3aed; }
+  .dot-error    { background: #dc2626; }
+  .dot-default  { background: #3f3f47; }
+
+  /* Corpo do card — duas colunas */
+  .seg-body { display: flex; }
+
+  .seg-left {
+    flex: 1; padding: 8px 10px; min-width: 0;
+    border-right: 1px solid #1e1e24;
+  }
+  .seg-text {
+    font-size: 11px; color: #a1a1aa; line-height: 1.5; margin-bottom: 6px;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .broll-chip {
+    display: flex; align-items: center; gap: 4px;
+    background: #111114; border: 1px solid #27272f;
+    border-radius: 5px; padding: 3px 7px;
+  }
+  .broll-chip-icon { font-size: 10px; flex-shrink: 0; }
+  .broll-chip-name {
+    font-size: 10px; color: #60a5fa;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    flex: 1; min-width: 0;
+  }
+  .broll-chip-score {
+    font-size: 9px; font-weight: 700;
+    color: #3f3f47; flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .broll-chip-score.good { color: #16a34a; }
+  .broll-chip-score.mid  { color: #d97706; }
+
+  .seg-reason {
+    font-size: 9px; color: #3f3f47; font-style: italic;
+    margin-top: 4px; line-height: 1.4;
+  }
+
+  /* Coluna direita — Copymerda */
+  .seg-right {
+    width: 136px; flex-shrink: 0; padding: 8px 9px;
+    display: flex; flex-direction: column; gap: 6px;
+    background: #0f0d18;
+  }
+
+  .cm-label {
+    font-size: 8px; font-weight: 700; color: #6d28d9;
+    text-transform: uppercase; letter-spacing: 1px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .cm-label::before {
+    content: '';
+    display: inline-block;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #7c3aed;
+  }
+
+  .cm-prompt {
+    font-size: 10px; color: #c4b5fd; font-style: italic;
+    line-height: 1.45; flex: 1;
+    border-left: 2px solid #4c1d95;
+    padding-left: 6px;
+  }
+
+  .btn-higgs {
+    width: 100%; padding: 6px 4px; border: none; border-radius: 5px;
+    font-size: 10px; font-weight: 700; cursor: pointer; font-family: inherit;
+    background: #4c1d95; color: #ddd6fe;
+    transition: all 0.15s; letter-spacing: 0.2px;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .btn-higgs:hover { background: #5b21b6; color: #ede9fe; }
+  .btn-higgs:disabled { opacity: 0.3; cursor: default; }
+  .btn-higgs.done { background: #052e16; color: #4ade80; }
+
+  .gen-bar-wrap {
+    height: 2px; background: #1e1e2a; border-radius: 1px;
+    overflow: hidden; display: none;
+  }
+  .gen-bar {
+    height: 100%; background: linear-gradient(90deg,#7c3aed,#a78bfa);
+    width: 0%; transition: width 0.5s;
+  }
+  .gen-prog {
+    font-size: 9px; color: #6d28d9; text-align: center;
+    min-height: 11px; letter-spacing: 0.2px;
+  }
+
+  /* ─── BOTTOM BAR ─────────────────────────────────── */
+  #bottomBar {
+    flex-shrink: 0;
+    display: none;
+    padding: 10px 14px;
+    border-top: 1px solid #1e1e24;
+    gap: 8px;
+    background: #111114;
+  }
+
+  .btn-approve-all {
+    flex: 1; padding: 9px; border: none; border-radius: 6px;
+    background: #1e3a5f; color: #60a5fa;
+    font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: all 0.15s; border: 1px solid #1d4ed8;
+  }
+  .btn-gen-all {
+    flex: 1; padding: 9px; border: none; border-radius: 6px;
+    background: #3a1d5f; color: #c4a5fa;
+    font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: all 0.15s; border: 1px solid #6d28d9; white-space: nowrap;
+  }
+  .btn-gen-all:hover { background: #4c1d95; color: #fff; }
+  .btn-gen-all:disabled { opacity: 0.45; cursor: default; }
+  .btn-gen-all.hidden { display: none; }
+  .btn-approve-all:hover { background: #1d4ed8; color: #fff; }
+  .btn-approve-all:disabled { opacity: 0.35; cursor: default; }
+
+  .btn-insert {
+    flex: 1; padding: 9px; border: none; border-radius: 6px;
+    background: linear-gradient(135deg, #166534, #15803d);
+    color: #dcfce7; font-size: 12px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: opacity 0.15s;
+  }
+  .btn-insert:hover { opacity: 0.9; }
+  .btn-insert:disabled { opacity: 0.35; cursor: default; }
+
+  .btn-undo {
+    padding: 9px 12px; border: none; border-radius: 6px;
+    background: #1c1c22; color: #71717a; font-size: 11px; font-weight: 600;
+    cursor: pointer; font-family: inherit; white-space: nowrap;
+    border: 1px solid #27272f; transition: all 0.15s; display: none;
+  }
+  .btn-undo:hover { color: #a1a1aa; border-color: #3f3f47; }
+
+  /* ─── UTILS ──────────────────────────────────────── */
+  .btn-sm {
+    width: auto; padding: 4px 9px; border: none; border-radius: 4px;
+    font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit;
+    background: #1c1c22; color: #a1a1aa; border: 1px solid #27272f;
+    transition: all 0.15s;
+  }
+  .btn-sm:hover { background: #27272f; color: #e4e4e7; }
+
+  /* ─── MODALS ─────────────────────────────────────── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.85);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: #18181c; border: 1px solid #3f3f47; border-radius: 10px;
+    padding: 20px 18px; width: 92%; max-width: 340px;
+  }
+  .modal-box h2 { font-size: 13px; color: #fff; margin-bottom: 6px; font-weight: 700; }
+  .modal-box p  { font-size: 11px; color: #71717a; line-height: 1.6; margin-bottom: 12px; }
+  .modal-box input { margin-bottom: 10px; }
+  .modal-actions { display: flex; gap: 8px; }
+  .modal-actions button { flex: 1; }
+  .btn-modal-cancel {
+    padding: 8px; border: none; border-radius: 5px; cursor: pointer;
+    background: #27272f; color: #a1a1aa; font-size: 12px; font-weight: 600; font-family: inherit;
+  }
+  .btn-modal-ok {
+    padding: 8px; border: none; border-radius: 5px; cursor: pointer;
+    background: #e05a2b; color: #fff; font-size: 12px; font-weight: 700; font-family: inherit;
+  }
+
+  /* PHOENIX modal */
+  #phoenixModal {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.9); align-items: center; justify-content: center;
+  }
+  #phoenixModal.open { display: flex; }
+  .phoenix-box {
+    background: #18181c; border: 1px solid #a16207; border-radius: 10px;
+    padding: 18px; width: 94%; max-width: 460px; max-height: 86vh;
+    display: flex; flex-direction: column;
+  }
+  .phoenix-box h2 { font-size: 14px; color: #fbbf24; margin-bottom: 4px; font-weight: 700; }
+  .phoenix-score { font-size: 11px; color: #4ade80; margin-bottom: 8px; }
+  .phoenix-analysis {
+    font-size: 11px; color: #d4d4d8; line-height: 1.6; white-space: pre-wrap;
+    overflow-y: auto; background: #111114; border: 1px solid #27272f;
+    border-radius: 6px; padding: 10px; flex: 1; margin-bottom: 8px;
+  }
+  .phoenix-cause {
+    font-size: 10px; color: #d4d4d8; max-height: 200px; overflow-y: auto;
+    margin-bottom: 8px; background: #111114; border: 1px solid #27272f;
+    border-radius: 6px; padding: 8px;
+  }
+  .phoenix-cause .ph-h { color: #fbbf24; font-weight: 700; font-size: 10px; }
+  .phoenix-cause .ph-h.real { color: #f9a8d4; }
+  .phoenix-cause .ph-sym { color: #fde047; }
+  .phoenix-cause .ph-vis { color: #93c5fd; }
+  .phoenix-cause .ph-ing { padding: 2px 0; border-bottom: 1px solid #1e1e24; }
+  .phoenix-map { font-size: 10px; color: #a1a1aa; max-height: 130px; overflow-y: auto; margin-bottom: 8px; }
+  .phoenix-map .row { display: flex; gap: 6px; padding: 3px 0; border-bottom: 1px solid #1e1e24; }
+  .phoenix-map .pri-high { color: #f87171; }
+  .phoenix-map .pri-medium { color: #fbbf24; }
+  .phoenix-map .st-prohibited { color: #ff5d5d; font-weight: 700; }
+  .seg-phoenix { font-size: 9px; color: #fbbf24; background: rgba(251,191,36,0.1);
+    border-radius: 4px; padding: 1px 5px; margin-top: 2px; display: inline-block; }
+
+  /* context box */
+  .context-box {
+    font-size: 10px; color: #93c5fd;
+    background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.15);
+    border-radius: 6px; padding: 7px 9px; margin-top: 6px;
+    white-space: pre-wrap; line-height: 1.5;
+  }
+
+  /* seg-states */
+  .seg-nobroll  { font-size: 10px; color: #d97706; background: rgba(217,119,6,0.08); border-radius: 5px; padding: 5px 7px; }
+  .seg-blocked  { font-size: 10px; color: #f87171; background: rgba(248,113,113,0.08); border-radius: 5px; padding: 5px 7px; }
+  .seg-compliance { font-size: 10px; color: #ef4444; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); font-weight: 700; border-radius: 5px; padding: 5px 7px; }
+  .seg-trans { font-size: 9px; color: #7fb0e0; background: rgba(127,176,224,0.1); border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
+
+  /* ai health */
+  .ai-health {
+    font-size: 10px; color: #71717a; margin-bottom: 8px;
+    background: #111114; border: 1px solid #1e1e24; border-radius: 6px; padding: 7px 9px;
+  }
+  .ai-health .ai-row { display: flex; align-items: center; gap: 5px; padding: 1px 0; }
+  .ai-health code { background: #0c0c10; padding: 1px 4px; border-radius: 3px; color: #93c5fd; }
+
+  /* library row */
+  .library-row {
+    display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+    background: #111114; border: 1px solid #1e1e24; border-radius: 5px; padding: 5px 8px;
+  }
+  .library-path { font-size: 10px; color: #60a5fa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .library-badge { font-size: 9px; background: #052e16; color: #4ade80; border: 1px solid #14532d; border-radius: 10px; padding: 1px 6px; white-space: nowrap; }
+  .btn-change-lib { width: auto; padding: 3px 8px; font-size: 10px; background: #18181c; color: #71717a; border: 1px solid #27272f; border-radius: 4px; cursor: pointer; }
+  .btn-change-lib:hover { color: #a1a1aa; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinning { display: inline-block; animation: spin 1s linear infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .pulsing { animation: pulse 1.5s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- MODAL PHOENIX -->
+<div id="phoenixModal">
+  <div class="phoenix-box">
+    <h2>⚡ PHOENIX — Copy Chief</h2>
+    <div class="phoenix-score" id="phoenixScore"></div>
+    <div class="phoenix-analysis" id="phoenixAnalysis"></div>
+    <div class="phoenix-cause" id="phoenixCause"></div>
+    <div class="phoenix-map" id="phoenixMap"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closePhoenix()">Fechar</button>
+      <button class="btn-modal-ok" id="btnUsePhoenix" onclick="usePhoenixMap()">Usar mapa como base</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BIBLIOTECA -->
+<div id="libraryModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>📂 Biblioteca de Vídeos</h2>
+    <p>Cole o caminho da pasta com seus vídeos reutilizáveis. O sistema vai priorizar esses clips antes de gerar com IA.</p>
+    <label class="cfg-label">Caminho da pasta</label>
+    <input type="text" id="libraryFolderInput" placeholder="/Volumes/HD/meus-videos">
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeLibraryModal()">Pular</button>
+      <button class="btn-modal-ok" onclick="saveLibraryFolder()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOPO FIXO -->
+<div id="topArea">
+
+  <div class="top-header">
+    <div class="logo-mark">🎬</div>
+    <div class="top-title">
+      <h1>VSL Director</h1>
+      <span>B-ROLL · UGC · TIMELINE</span>
+    </div>
+    <div class="top-gear" onclick="toggleConfig()" title="Configurações">⚙</div>
+  </div>
+
+  <!-- Config (oculto) -->
+  <div id="configSection">
+    <div style="padding:10px 14px 0">
+
+      <div id="libraryRow" class="library-row" style="display:none">
+        <span>📂</span>
+        <span class="library-path" id="libraryPathLabel"></span>
+        <span class="library-badge">Ativa</span>
+        <button class="btn-change-lib" onclick="openLibraryModal()">Alterar</button>
+      </div>
+      <div id="libraryEmpty" style="margin-bottom:8px;display:none">
+        <button class="btn-sm" onclick="openLibraryModal()">📂 Biblioteca local…</button>
+      </div>
+
+      <div class="cfg-group">
+        <label class="cfg-label">Pasta de B-Rolls</label>
+        <input type="text" id="brollFolder" placeholder="/Volumes/portatil/ASSETS/brolls vsl">
+        <div class="cfg-row">
+          <button class="btn-sm" onclick="pickFolder('brollFolder')">📁 Pasta…</button>
+          <button class="btn-sm" id="btnReindex" onclick="reindexLibrary(false)">🔄 Reindexar</button>
+          <button class="btn-sm" id="btnRebuild" onclick="reindexLibrary(true)">♻️ Rebuild</button>
+          <button class="btn-sm" id="btnTag" onclick="tagAssets()">🏷️ Tags IA</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:5px;margin-top:6px;font-size:10px;color:#52525b">
+          <input type="checkbox" id="visionVerify" style="width:auto">
+          Verificar B-roll com IA de visão (grátis — clip errado vira geração)
+        </label>
+        <div id="tagInfo" style="font-size:9px;color:#52525b;margin-top:3px;font-style:italic"></div>
+      </div>
+
+      <div class="cfg-group">
+        <label class="cfg-label">Anthropic API Key</label>
+        <input type="password" id="anthropicKey" placeholder="sk-ant-...">
+      </div>
+      <div class="cfg-group">
+        <label class="cfg-label">Gemini API Key(s) <span style="color:#7c3aed">(+ adiciona contas → rotaciona na cota)</span></label>
+        <div id="geminiKeys"></div>
+        <div class="cfg-row" style="margin-top:4px">
+          <button type="button" class="btn-sm" onclick="addGeminiKeyRow('', true)">+ chave</button>
+          <button type="button" class="btn-sm" onclick="testGeminiKeys()">🔌 Testar chaves</button>
+        </div>
+      </div>
+      <div class="cfg-group">
+        <label class="cfg-label">Pasta para clips gerados</label>
+        <input type="text" id="generatedDir" placeholder="/Users/.../generated_clips">
+      </div>
+      <div class="cfg-group">
+        <label class="cfg-label">Modelo IA</label>
+        <select id="llmModel" onchange="saveConfig()">
+          <option value="ollama">🟢 Ollama (local, grátis)</option>
+          <option value="gemini">🔵 Gemini (reserva)</option>
+        </select>
+        <div id="llmHint" style="font-size:9px;color:#52525b;margin-top:3px;font-style:italic"></div>
+      </div>
+
+      <div id="aiHealth" class="ai-health"></div>
+    </div>
+  </div>
+
+  <!-- Vídeo + Doc -->
+  <div id="mainAction">
+    <div>
+      <label class="cfg-label" style="padding:0">Vídeo principal</label>
+      <div class="video-detect">
+        <input type="text" id="videoPath" placeholder="Cole o caminho ou detecte da timeline…">
+        <button class="btn-detect" onclick="detectVideo()">Detectar</button>
+      </div>
+    </div>
+
+    <div>
+      <label class="cfg-label" style="padding:0">Doc da VSL <span style="color:#3f3f47;font-weight:400">(opcional)</span></label>
+      <div class="cfg-row" style="margin:0">
+        <button class="btn-sm" onclick="pickVslDoc()">📄 Carregar…</button>
+        <button class="btn-sm" id="btnPhoenix" onclick="analyzeCopy()">⚡ Analisar Copy</button>
+      </div>
+      <div id="vslDocInfo" style="font-size:9px;color:#52525b;margin-top:3px;font-style:italic"></div>
+      <div id="contextBox" class="context-box" style="display:none"></div>
+    </div>
+
+    <div>
+      <label class="cfg-label" style="padding:0">Transcrição do Premiere <span style="color:#3f3f47;font-weight:400">(recomendado)</span></label>
+      <div class="cfg-row" style="margin:0">
+        <button class="btn-sm" onclick="loadTranscript()">📝 Carregar .srt…</button>
+        <button class="btn-sm" onclick="learnProject()" title="Aprende as escolhas de B-roll deste projeto finalizado">📚 Aprender deste projeto</button>
+        <button class="btn-sm" onclick="learnFolder()" title="Aprende de TODOS os .prproj de uma pasta (sem abrir cada um)">📂 Aprender de pasta…</button>
+        <button class="btn-sm" onclick="resetStyleMemory()" title="Apaga toda a memória de estilo aprendida">🗑️ Limpar memória</button>
+      </div>
+      <div id="transcriptInfo" style="font-size:9px;color:#52525b;margin-top:3px;font-style:italic"></div>
+    </div>
+
+    <button class="btn-process" id="btnProcess" onclick="startProcess()">
+      <span class="proc-spinner"></span>
+      <span class="proc-icon">▶</span>
+      <span id="btnProcessLabel">Processar VSL</span>
+    </button>
+  </div>
+
+  <!-- Status -->
+  <div id="statusBar"></div>
+
+  <!-- Progress -->
+  <div class="progress-bar-wrap" id="progressWrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div id="progressLabel"></div>
+
+  <!-- Stats -->
+  <div id="statsRow" style="display:flex;padding:0 14px 8px;gap:5px;flex-wrap:wrap;">
+    <span class="stat-pill sp-ok"  id="statOk">✓ 0</span>
+    <span class="stat-pill sp-rev" id="statReview">◐ 0 revisão</span>
+    <span class="stat-pill sp-gen" id="statGen">⚡ 0 gerados</span>
+    <span class="stat-pill sp-err" id="statErr">✕ 0 erros</span>
+    <span class="stat-pill sp-let" id="statLettering" style="display:none">🔤 0</span>
+    <span class="stat-pill" id="statCompliance" style="display:none;color:#f87171;border-color:#7f1d1d;background:#1c0a0a">⛔ 0</span>
+  </div>
+
+  <div style="height:1px;background:#1e1e24;margin:0 0 0"></div>
+</div>
+
+<!-- LISTA DE SEGMENTOS -->
+<div id="scrollArea">
+
+  <!-- Card de processamento (aparece enquanto processa) -->
+  <div id="processingCard">
+    <div class="proc-ring"></div>
+    <div class="proc-steps">
+      <div class="proc-dot" id="dot-transcribing"></div>
+      <div class="proc-dot" id="dot-analyzing"></div>
+      <div class="proc-dot" id="dot-indexing"></div>
+      <div class="proc-dot" id="dot-matching"></div>
+    </div>
+    <div class="proc-step-label" id="procStepLabel">Iniciando...</div>
+    <div class="proc-detail"    id="procDetail"></div>
+    <div class="proc-bar-wrap">
+      <div class="proc-bar" id="procBar"></div>
+    </div>
+  </div>
+
+  <div id="segmentList"></div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div id="bottomBar" style="display:flex">
+  <button class="btn-undo" id="btnUndo" onclick="segmentUndo()">↶ Desfazer</button>
+  <button class="btn-gen-all hidden" id="btnGenAll" onclick="generateAllAI()">⚡ Gerar todas IA</button>
+  <button class="btn-approve-all" id="btnApproveAll" onclick="approveAllAndInsert()">✓ Aprovar todos e inserir</button>
+  <button class="btn-insert" id="btnInsert" onclick="insertTimeline()">⬆ Inserir</button>
+</div>
+
+<script src="js/CSInterface.js"></script>
+<!-- Cache-buster: o CEF (Chromium) guarda o bytecode do JS por URL. Sem isso, editar
+     main.js não aparece até limpar o cache + reiniciar o Premiere. Com o ?v=timestamp,
+     cada abertura do painel busca uma URL nova → sempre carrega a versão atual. -->
+<script>document.write('<script src="js/main.js?v=' + Date.now() + '"><\/script>');</script>
+</body>
+</html>

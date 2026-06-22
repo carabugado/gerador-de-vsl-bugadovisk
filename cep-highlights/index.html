@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Highlights Cutter</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a1d; color: #e7e7ea;
+    font-family: -apple-system, "Segoe UI", sans-serif; font-size: 12px;
+    padding: 14px;
+  }
+  h1 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .sub { color: #8a8a96; font-size: 10px; margin-bottom: 12px; }
+  .card {
+    background: #232328; border: 1px solid #34343c; border-radius: 6px;
+    padding: 12px; margin-bottom: 10px;
+  }
+  label { display: block; font-size: 10px; color: #9a9aa6; text-transform: uppercase;
+          letter-spacing: 0.06em; margin-bottom: 6px; }
+  input[type=text] {
+    width: 100%; background: #1a1a1d; border: 1px solid #34343c; border-radius: 4px;
+    color: #e7e7ea; font-size: 12px; padding: 8px; outline: none; font-family: inherit;
+  }
+  input[type=text]:focus { border-color: #ff6a2b; }
+  .row { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  button {
+    border: 1px solid #34343c; background: #2c2c32; color: #cfcfd6;
+    border-radius: 4px; padding: 7px 10px; font-size: 11px; cursor: pointer;
+    transition: 0.15s;
+  }
+  button:hover { border-color: #ff6a2b; color: #fff; }
+  .btn-primary {
+    width: 100%; background: #ff6a2b; color: #fff; border-color: #ff6a2b;
+    font-weight: 700; padding: 11px; font-size: 13px; margin-top: 4px;
+  }
+  .btn-primary:hover { background: #ff8048; }
+  .btn-primary:disabled, button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .hint { font-size: 9px; color: #6a6a76; margin-top: 5px; font-style: italic; }
+  .pill { padding: 6px 10px; font-size: 11px; }
+  .pill.on { border-color: #ff6a2b; background: rgba(255,106,43,0.14); color: #ffb48a; }
+  .chip { padding: 5px 9px; font-size: 10px; }
+  .chip.on { border-color: #57b6ff; background: rgba(87,182,255,0.12); color: #9bd2ff; }
+  #status {
+    margin: 10px 0; font-size: 11px; padding: 8px; border-radius: 4px;
+    min-height: 18px; display: none;
+  }
+  #status.info    { display: block; background: #25303a; color: #7fc6ff; }
+  #status.success { display: block; background: #1f3326; color: #6fe39a; }
+  #status.error   { display: block; background: #3a2222; color: #ff8a8a; }
+  #summary { font-size: 11px; color: #b8b8c2; margin-bottom: 8px; }
+  #summary .badge { color: #ffbe55; font-weight: 600; }
+  .clip { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0;
+          border-bottom: 1px solid #2c2c32; }
+  .clip:last-child { border-bottom: none; }
+  .clip .tog { flex: 0 0 auto; margin-top: 2px; cursor: pointer; }
+  .clip .body { flex: 1; min-width: 0; }
+  .clip .t { font-size: 11px; font-weight: 600; color: #e7e7ea; }
+  .clip.off .t, .clip.off .meta { opacity: 0.4; text-decoration: line-through; }
+  .clip .meta { font-size: 9px; color: #8a8a96; margin-top: 2px; }
+  .clip .tipo { color: #ffb48a; }
+  .clip .score { color: #6fe39a; }
+  details { margin-bottom: 10px; }
+  summary.opt { cursor: pointer; font-size: 10px; color: #6a6a76; }
+</style>
+</head>
+<body>
+  <h1>🎬 Highlights Cutter</h1>
+  <div class="sub">Mapeia os melhores momentos e corta — tudo no Premiere</div>
+
+  <details class="card" id="cfgCard">
+    <summary class="opt" style="font-size:11px;color:#9a9aa6">⚙ Chave Gemini (opcional com Ollama local)</summary>
+    <input type="text" id="geminiKey" placeholder="AIza…" style="margin-top:8px">
+    <div class="row">
+      <button onclick="saveGeminiKey()" style="flex:1">💾 Salvar chave</button>
+    </div>
+    <div class="hint">Fica no backend (<code>~/.vsl_config.json</code>), compartilhada com o painel VSL. Com o Ollama local rodando, a IA funciona até sem chave.</div>
+  </details>
+
+  <div class="card">
+    <label>1 · Vídeo de origem</label>
+    <input type="text" id="sourcePath" placeholder="detecto da sua timeline automaticamente…">
+    <div class="row">
+      <button onclick="detectSource()" style="flex:1">🎯 Detectar da timeline</button>
+    </div>
+    <div class="hint">Pego o vídeo que está na sua timeline (V1). Só cole o caminho se ele não estiver na timeline.</div>
+  </div>
+
+  <div class="card">
+    <label>2 · Duração alvo</label>
+    <div class="row" id="durRow">
+      <button class="pill" data-dur="90">1:30</button>
+      <button class="pill on" data-dur="180">3:00</button>
+      <button class="pill" data-dur="300">5:00</button>
+      <button class="pill" data-dur="600">10:00</button>
+      <button class="pill" data-dur="0">Livre</button>
+    </div>
+    <label style="margin-top:12px">Tipos de momento</label>
+    <div class="row" id="chipRow">
+      <button class="chip on" data-val="humor">😂 Humor</button>
+      <button class="chip on" data-val="debate">🗣️ Debate</button>
+      <button class="chip on" data-val="nerdola">🤓 Nerdola</button>
+      <button class="chip" data-val="reacao">😱 Reação</button>
+      <button class="chip" data-val="momento">⭐ Momento</button>
+      <button class="chip" data-val="insight">💡 Insight</button>
+    </div>
+    <label style="margin-top:12px">Qualidade da análise</label>
+    <div class="row" id="engineRow">
+      <button class="pill on" data-eng="auto">⚡ Auto</button>
+      <button class="pill" data-eng="gemini_audio">🎧 Gemini (áudio)</button>
+      <button class="pill" data-eng="transcript">📝 Local</button>
+    </div>
+    <div class="hint">Auto: com chave Gemini, manda o <b>áudio</b> pro Gemini ouvir (seleção melhor). Sem chave, transcreve local com Whisper.</div>
+
+    <details style="margin-top:10px">
+      <summary class="opt">+ contexto do episódio (opcional)</summary>
+      <input type="text" id="epContext" placeholder="Ex: episódio sobre Star Wars, tema cinema…" style="margin-top:8px">
+    </details>
+  </div>
+
+  <button class="btn-primary" id="btnMap" onclick="mapHighlights()">
+    🔍 Mapear melhores momentos
+  </button>
+  <div class="hint" style="text-align:center;margin-top:6px">
+    Transcreve com Whisper + escolhe os highlights. A 1ª vez é mais lenta.
+  </div>
+
+  <div id="status"></div>
+
+  <div class="card" id="resultsCard" style="display:none">
+    <div id="summary"></div>
+    <div id="clipList"></div>
+  </div>
+
+  <button class="btn-primary" id="btnBuild" onclick="buildCut(true)" disabled>
+    ✂️ Cortar em nova sequência
+  </button>
+  <button id="btnAppend" onclick="buildCut(false)" disabled style="width:100%;margin-top:6px">
+    ↘ Anexar à sequência ativa
+  </button>
+  <div class="hint" style="text-align:center;margin-top:6px">
+    "Nova sequência" cria um corte limpo e <b>não mexe</b> na sua timeline original.
+  </div>
+
+  <script src="./js/CSInterface.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

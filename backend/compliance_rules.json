@@ -1,0 +1,43 @@
+{
+  "_comment": "Regras de compliance para B-roll de VSL de suplementos (mercado US). Cada termo é casado contra o NOME do arquivo do b-roll + a direção visual pretendida (não contra a narração). Edite à vontade — recarregado a cada processamento.",
+
+  "vertical_keywords": {
+    "WL": ["weight", "weight loss", "emagrec", "fat loss", "slim", "obesit", "metabol", "belly fat", "gordura"],
+    "ED": ["erectile", "erection", "libido", "testosterone", "ed ", "sexual perform", "bedroom", "intimacy", "disfun", "ereç"],
+    "NR": ["memory", "brain", "cognit", "neuro", "dementia", "alzheimer", "focus", "mental", "memória", "cérebro"],
+    "PT": ["prostate", "urin", "bladder", "pee", "frequent bathroom", "próstata", "bexiga"],
+    "VS": ["vision", "eyesight", "eye health", "macular", "retina", "blurry vision", "visão", "olhos"],
+    "JT": ["joint", "knee", "arthritis", "cartilage", "inflammation", "mobility", "articula", "joelho", "artrite", "cartilagem"],
+    "FG": ["fungus", "fungal", "toenail", "nail", "athlete foot", "fungo", "unha", "micose"]
+  },
+
+  "universal_block": [
+    {"any": ["prescription", "rx pad", "prescribing", "diagnos"], "reason": "Implica prescrição/diagnóstico médico"},
+    {"all": ["before", "after"], "reason": "Antes/depois (claim visual de resultado)"},
+    {"any": ["nude", "naked", "topless", "lingerie", "sexual", "erotic", "porn"], "reason": "Nudez/conteúdo sexual"},
+    {"any": ["pharmacy", "pharmaceutical", "medication", "antibiotic", "syringe", "injection", "iv drip", "prescription drug"], "reason": "Medicamento farmacêutico"},
+    {"any": ["surgery", "surgical", "operating room", "scalpel", "operation theatre", "incision"], "reason": "Cirurgia/procedimento médico real"},
+    {"any": ["miracle cure", "cure guaranteed", "100% cure"], "reason": "Claim visual de cura"}
+  ],
+
+  "by_vertical": {
+    "WL": [
+      {"any": ["weight scale", "bathroom scale", "weighing", "scale number", "measuring tape waist"], "reason": "WL: balança/medida com números"},
+      {"any": ["nude body", "exposed body", "shirtless overweight"], "reason": "WL: corpo exposto"}
+    ],
+    "ED": [
+      {"any": ["couple in bed", "bedroom couple", "intimate couple", "seductive", "underwear model"], "reason": "ED: conteúdo sugestivo/sexual"},
+      {"any": ["penis", "genital", "anatomy male", "size comparison"], "reason": "ED: anatomia/claim de tamanho"}
+    ],
+    "NR": [
+      {"any": ["mri scan", "ct scan", "brain scan real", "eeg", "brain xray"], "reason": "NR: exame neurológico real"}
+    ],
+    "PT": [
+      {"any": ["prostate anatomy", "catheter", "rectal", "urolog procedure"], "reason": "PT: anatomia explícita/procedimento"}
+    ],
+    "VS": [
+      {"any": ["eye surgery", "lasik", "eyeball closeup", "retina surgery", "eye disease graphic"], "reason": "VS: cirurgia/doença ocular gráfica"}
+    ],
+    "PT_FG_shared": []
+  }
+}

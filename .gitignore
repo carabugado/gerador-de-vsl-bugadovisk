@@ -1,0 +1,26 @@
+# ── Python ──────────────────────────────────────────────
+.venv/
+**/.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ── Ambientes / segredos ────────────────────────────────
+.env
+*.env
+!.env.example
+*.log
+backend/compliance_log.jsonl
+
+# ── Saídas geradas (o amigo não precisa; pesa o repo) ───
+generated_clips/
+backend/generated_clips/
+
+# ── Sub-projeto separado (tem o próprio .git + .env) ────
+opensquad-vsl-end-to-end/
+
+# ── Tooling local / SO ──────────────────────────────────
+.claude/
+.DS_Store
+**/.DS_Store
+node_modules/

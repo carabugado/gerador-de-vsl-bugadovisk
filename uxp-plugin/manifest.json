@@ -1,0 +1,32 @@
+{
+  "id": "com.vsl.brollgenerator",
+  "name": "VSL B-Roll Generator",
+  "version": "1.0.0",
+  "manifestVersion": 5,
+  "main": "index.html",
+  "host": [
+    {
+      "app": "PPRO",
+      "minVersion": "22.0"
+    }
+  ],
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "vsl-panel",
+      "label": { "default": "VSL B-Roll Generator" },
+      "minimumSize":  { "width": 320, "height": 500 },
+      "preferredSize": { "width": 380, "height": 720 },
+      "maximumSize":  { "width": 640, "height": 1200 }
+    }
+  ],
+  "requiredPermissions": {
+    "localFileSystem": "fullAccess",
+    "network": {
+      "domains": ["http://127.0.0.1:7821"]
+    },
+    "ipc": {
+      "enablePluginCommunication": true
+    }
+  }
+}
