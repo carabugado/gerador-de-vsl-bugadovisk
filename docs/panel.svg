@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="640" viewBox="0 0 390 640" font-family="-apple-system, Segoe UI, sans-serif">
+  <rect width="390" height="640" fill="#1a1a1d"/>
+  <!-- header -->
+  <text x="16" y="28" fill="#e7e7ea" font-size="15" font-weight="700">🎬 Highlights Cutter</text>
+  <text x="16" y="44" fill="#8a8a96" font-size="10">Mapeia os melhores momentos e corta — tudo no Premiere</text>
+
+  <!-- config gemini (collapsed) -->
+  <rect x="12" y="56" width="366" height="30" rx="6" fill="#232328" stroke="#34343c"/>
+  <text x="24" y="75" fill="#9a9aa6" font-size="11">⚙ Chave Gemini (opcional com Ollama local)</text>
+
+  <!-- 1 origem -->
+  <rect x="12" y="94" width="366" height="84" rx="6" fill="#232328" stroke="#34343c"/>
+  <text x="24" y="113" fill="#9a9aa6" font-size="10" letter-spacing="0.6">1 · VÍDEO DE ORIGEM</text>
+  <rect x="24" y="122" width="342" height="26" rx="4" fill="#1a1a1d" stroke="#34343c"/>
+  <text x="33" y="139" fill="#c9c9d2" font-size="11" font-family="monospace">/Volumes/portatil/JOVEM NERD/ep_312.mp4</text>
+  <rect x="24" y="153" width="342" height="22" rx="4" fill="#2c2c32" stroke="#34343c"/>
+  <text x="195" y="168" fill="#cfcfd6" font-size="11" text-anchor="middle">🎯 Detectar da timeline</text>
+
+  <!-- 2 duração / tipos / qualidade -->
+  <rect x="12" y="186" width="366" height="150" rx="6" fill="#232328" stroke="#34343c"/>
+  <text x="24" y="205" fill="#9a9aa6" font-size="10" letter-spacing="0.6">2 · DURAÇÃO ALVO</text>
+  <g font-size="11" text-anchor="middle">
+    <rect x="24"  y="213" width="48" height="24" rx="4" fill="#2c2c32" stroke="#34343c"/><text x="48"  y="229" fill="#cfcfd6">1:30</text>
+    <rect x="78"  y="213" width="48" height="24" rx="4" fill="#3a2517" stroke="#ff6a2b"/><text x="102" y="229" fill="#ffb48a">3:00</text>
+    <rect x="132" y="213" width="48" height="24" rx="4" fill="#2c2c32" stroke="#34343c"/><text x="156" y="229" fill="#cfcfd6">5:00</text>
+    <rect x="186" y="213" width="54" height="24" rx="4" fill="#2c2c32" stroke="#34343c"/><text x="213" y="229" fill="#cfcfd6">10:00</text>
+    <rect x="246" y="213" width="48" height="24" rx="4" fill="#2c2c32" stroke="#34343c"/><text x="270" y="229" fill="#cfcfd6">Livre</text>
+  </g>
+  <text x="24" y="258" fill="#9a9aa6" font-size="10" letter-spacing="0.6">QUALIDADE DA ANÁLISE</text>
+  <g font-size="11" text-anchor="middle">
+    <rect x="24"  y="266" width="58" height="24" rx="4" fill="#2c2c32" stroke="#34343c"/><text x="53"  y="282" fill="#cfcfd6">⚡ Auto</text>
+    <rect x="88"  y="266" width="128" height="24" rx="4" fill="#3a2517" stroke="#ff6a2b"/><text x="152" y="282" fill="#ffb48a">🎧 Gemini (áudio)</text>
+    <rect x="222" y="266" width="70" height="24" rx="4" fill="#2c2c32" stroke="#34343c"/><text x="257" y="282" fill="#cfcfd6">📝 Local</text>
+  </g>
+  <text x="24" y="312" fill="#6a6a76" font-size="9" font-style="italic">Com chave Gemini, manda o áudio pro Gemini ouvir (seleção melhor).</text>
+  <text x="24" y="326" fill="#6a6a76" font-size="9">+ contexto do episódio (opcional)</text>
+
+  <!-- mapear button -->
+  <rect x="12" y="344" width="366" height="34" rx="6" fill="#ff6a2b"/>
+  <text x="195" y="366" fill="#fff" font-size="13" font-weight="700" text-anchor="middle">🔍 Mapear melhores momentos</text>
+
+  <!-- status -->
+  <rect x="12" y="386" width="366" height="24" rx="4" fill="#1f3326"/>
+  <text x="20" y="402" fill="#6fe39a" font-size="11">✅ 6 momentos · 2:41 (🎧 áudio→Gemini). Revise e corte.</text>
+
+  <!-- resultados -->
+  <rect x="12" y="418" width="366" height="150" rx="6" fill="#232328" stroke="#34343c"/>
+  <text x="24" y="436" fill="#b8b8c2" font-size="11"><tspan fill="#ffbe55" font-weight="700">6 clips</tspan> · total 2:41 · alvo 3:00</text>
+  <text x="24" y="450" fill="#8a8a96" font-size="10">Príncipe Vidane, Bassoli, Tucano</text>
+
+  <g font-size="10.5">
+    <!-- clip rows -->
+    <rect x="24" y="458" width="11" height="11" rx="2" fill="#ff6a2b"/><text x="42" y="468" fill="#e7e7ea" font-weight="600">1. O que é o Dry Rub no churrasco?</text>
+    <text x="42" y="480" fill="#8a8a96" font-size="9"><tspan fill="#ffb48a">🤓 nerdola</tspan> · 2:34→3:00 (26s) · <tspan fill="#6fe39a">★ 8</tspan></text>
+
+    <rect x="24" y="488" width="11" height="11" rx="2" fill="#ff6a2b"/><text x="42" y="498" fill="#e7e7ea" font-weight="600">2. Os 5 elementos do tempero perfeito</text>
+    <text x="42" y="510" fill="#8a8a96" font-size="9"><tspan fill="#ffb48a">💡 insight</tspan> · 3:33→4:00 (27s) · <tspan fill="#6fe39a">★ 7</tspan></text>
+
+    <rect x="24" y="518" width="11" height="11" rx="2" fill="#ff6a2b"/><text x="42" y="528" fill="#e7e7ea" font-weight="600">4. A regra do tapa contra o racismo</text>
+    <text x="42" y="540" fill="#8a8a96" font-size="9"><tspan fill="#ffb48a">🗣️ debate</tspan> · 12:03→12:39 (36s) · <tspan fill="#6fe39a">★ 9</tspan></text>
+
+    <rect x="24" y="548" width="11" height="11" rx="2" fill="none" stroke="#5a5a66"/><text x="42" y="558" fill="#74747e" font-weight="600" text-decoration="line-through">6. Os maiores cabeceadores das Copas</text>
+    <text x="42" y="570" fill="#5a5a64" font-size="9">🤓 nerdola · 43:39→44:04 (25s) · ★ 8</text>
+  </g>
+
+  <!-- cortar -->
+  <rect x="12" y="578" width="366" height="32" rx="6" fill="#ff6a2b"/>
+  <text x="195" y="599" fill="#fff" font-size="13" font-weight="700" text-anchor="middle">✂️ Cortar em nova sequência</text>
+  <rect x="12" y="616" width="366" height="18" rx="4" fill="#2c2c32" stroke="#34343c"/>
+  <text x="195" y="629" fill="#cfcfd6" font-size="10.5" text-anchor="middle">↘ Anexar à sequência ativa</text>
+</svg>
