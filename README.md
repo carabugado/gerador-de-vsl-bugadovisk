@@ -1,147 +1,208 @@
-# 🎬 Highlights Cutter
+# 🎬 VSL Director — B-Roll Generator para Premiere Pro
 
-Transforma um episódio longo (1h+) num corte de highlights de ~3 minutos **direto no Premiere Pro**. Você deixa o vídeo na timeline, o painel **mapeia os melhores momentos** com IA (o Gemini *ouvindo* o áudio, ou Whisper local + LLM) e **monta o corte** numa sequência nova — sem sair do Premiere.
+> Painel CEP que transcreve sua VSL, escolhe B-rolls automaticamente com IA, gera prompts UGC e insere tudo na timeline do Premiere Pro.
 
 <p align="center">
-  <img src="docs/flow.svg" alt="Fluxo: vídeo na timeline → análise (áudio→Gemini ou Whisper local) → mapa de clips → corte de ~3min" width="100%">
+  <img src="docs/author.jpg" alt="Autor" width="160" style="border-radius:12px">
 </p>
 
 ---
 
-## ✨ O que ele faz
+## ✨ O que faz
 
-- **Detecta** o vídeo automaticamente da sua timeline (1º clip da V1).
-- **Mapeia** 6–9 momentos fortes e curtos (humor, debate, nerdola, reação, momento, insight), com **score** e na ordem narrativa ideal.
-- Respeita a **duração alvo** que você escolhe (1:30 / 3:00 / 5:00 / 10:00 / livre) — com trava de orçamento pra não estourar o tempo.
-- **Monta o corte** numa sequência nova (sem mexer na sua timeline original) e adiciona **marcadores** por clip.
-
-Dois modos de análise:
-- **🎧 Áudio → Gemini** — renderiza o áudio comprimido (<20 MB) e manda pro Gemini *ouvir* (tom, timing, risada → seleção melhor). Precisa de uma chave Gemini grátis.
-- **📝 Local (Whisper)** — transcreve offline com Whisper e escolhe via LLM local (Ollama). Timestamps mais precisos, funciona sem internet.
-- **⚡ Auto** — usa o Gemini se houver chave, senão cai pro local.
-
-<p align="center">
-  <img src="docs/panel.svg" alt="Print do painel Highlights Cutter no Premiere" width="380">
-</p>
-
----
-
-## 📦 Pré-requisitos
-
-- **macOS** ou **Windows** + **Adobe Premiere Pro 2022 ou mais novo**
-- **Python 3** e **ffmpeg** (instruções por SO abaixo, na seção de Instalação)
-- **Opcional (modo local / offline):** [Ollama](https://ollama.com) — `ollama pull qwen2.5:7b`
-- **Opcional (modo áudio→Gemini):** uma chave grátis em [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
-
-> ⚠️ A 1ª transcrição com Whisper baixa um modelo (~145 MB) e demora um pouco num vídeo de 1h. As próximas usam cache.
-
----
-
-## 🚀 Instalação
-
-### 🍎 macOS
-
-```bash
-# pré-requisitos
-brew install python ffmpeg          # (opcional: brew install ollama)
-
-# 1. Clone o projeto
-git clone https://github.com/carabugado/highlights-cutter.git
-cd highlights-cutter
-
-# 2. Cria o ambiente Python e instala as dependências do backend
-./install_mac.sh
-
-# 3. Instala o painel Highlights Cutter no Premiere
-./install_highlights_mac.sh
-```
-
-### 🪟 Windows
-
-Pré-requisitos: **Python 3** (no instalador, marque **"Add python.exe to PATH"**) e **ffmpeg** no PATH:
-
-```powershell
-winget install Gyan.FFmpeg     # depois REABRA o terminal
-# (opcional) Ollama: baixe em https://ollama.com e rode: ollama pull qwen2.5:7b
-```
-
-Depois, na pasta do projeto:
-
-```powershell
-# 1. Clone o projeto
-git clone https://github.com/carabugado/highlights-cutter.git
-cd highlights-cutter
-
-# 2. Instala tudo: venv + dependências, debug do CEP (registro) e o painel
-powershell -ExecutionPolicy Bypass -File .\install_highlights_win.ps1
-```
-
-> Ambos os instaladores ligam o **modo debug do CEP** (necessário pra extensão não-assinada carregar). Depois de instalar, **reinicie o Premiere**.
-
----
-
-## ▶️ Como usar
-
-1. **Ligue o backend** (deixe esta janela aberta enquanto usa o Premiere):
-   ```bash
-   ./start_server.sh       # macOS
-   start_server.bat        # Windows
-   ```
-   Sobe em `http://127.0.0.1:7821`.
-
-2. No Premiere, com o **vídeo de 1h na timeline**, abra o painel:
-   **Janela → Extensões → Highlights Cutter**
-
-3. (Opcional, modo áudio) clique em **⚙ Chave Gemini**, cole a chave e salve.
-
-4. Confira a **origem** (detectada da timeline) → escolha a **duração** e os **tipos** → **🔍 Mapear melhores momentos**.
-
-5. Revise os clips (pode desligar os que não quiser) → **✂️ Cortar em nova sequência**.
-
-Pronto: uma sequência nova com o corte montado e marcadores em cada clip.
-
----
-
-## 🛠️ Ferramenta extra: transcrição via terminal
-
-Gera um `.srt` de qualquer vídeo/áudio com o Whisper local (salva ao lado do vídeo):
-
-```bash
-./transcribe_video.sh "/caminho/do/episodio.mp4"    # macOS
-transcribe_video.bat "C:\caminho\episodio.mp4"      # Windows
-```
-
----
-
-## 🩺 Solução de problemas
-
-| Sintoma | O que fazer |
+| Funcionalidade | Detalhe |
 |---|---|
-| Painel diz **"backend offline"** | Rode `./start_server.sh` (macOS) ou `start_server.bat` (Windows) e deixe aberto. |
-| **"Erro ao mapear: Not Found"** | O servidor está numa versão antiga — pare (Ctrl+C) e ligue de novo. |
-| Painel **não aparece** no menu Extensões | Rode o instalador do seu SO e **reinicie o Premiere**. No Windows, confirme que o debug do CEP foi ligado (registro). |
-| **ffmpeg não encontrado** (Windows) | `winget install Gyan.FFmpeg` e **reabra o terminal**. |
-| **Sem chave Gemini** | Use o modo **📝 Local** com o Ollama rodando (`ollama serve`). |
-| Modo áudio **falha/limite (429)** | A chave bateu a cota — use outra chave, ou o modo **📝 Local**. |
-| Cortes no **tempo errado** | No modo 🎧 áudio os timestamps são estimados de ouvido; use **📝 Local** (Whisper) pra tempo cravado. |
-
-> Diagnóstico: o backend loga cada etapa no terminal do `start_server.sh` (qual engine, tamanho do áudio, resgate de resposta etc.).
+| **Transcrição automática** | Whisper local — detecta idioma, segmenta por frase |
+| **Busca semântica de B-roll** | CLIP + score de nome de arquivo — sem precisar taguear nada |
+| **Copymerda** | Alter ego IA que gera prompts UGC curtos (máx 15 palavras, inglês) para cada segmento, via Gemini |
+| **VSL Director** | Analisa o arco narrativo completo da VSL e sugere o melhor B-roll por segmento, via Claude |
+| **Geração de vídeo** | Botão por segmento para gerar clip de 7s via Higgsfield CLI |
+| **Inserção em lote** | Aprova tudo e insere na timeline V2 de uma vez, em lotes de 10 |
+| **Compliance** | Bloqueia imagens proibidas (cigarro, armas, conteúdo sensível) |
+| **Ritmo** | Ajusta cortes para bater com os picos de energia da narração |
 
 ---
 
-## 🗂️ Estrutura
+## 🖼️ Interface
+
+O painel fica dentro do Premiere Pro em **Janela → Extensões → VSL B-Roll Generator**.
+
+- Configurações: pasta de B-rolls, chaves de API, modelo de IA
+- Campo de vídeo com detecção automática da timeline
+- Botão **Processar VSL** — roda toda a pipeline
+- Cards por segmento: texto / B-roll sugerido / prompt Copymerda / botão gerar vídeo
+- Barra inferior: Desfazer / Aprovar todos e inserir / Inserir selecionados
+
+---
+
+## 📦 Requisitos
+
+### Todos os sistemas
+- **Adobe Premiere Pro** 2022+ (com suporte a CEP)
+- **Python 3.10+**
+- **ffmpeg** (para extração de áudio)
+- Opcional: **Ollama** (LLM local gratuito)
+- Opcional: chave **Gemini** (gratuita) para o Copymerda
+- Opcional: chave **Anthropic** para o VSL Director
+
+---
+
+## 🍎 Instalação — macOS
+
+### 1. Clone o repositório
+```bash
+git clone https://github.com/carabugado/gerador-de-vsl-bugadovisk.git
+cd gerador-de-vsl-bugadovisk
+```
+
+### 2. Rode o instalador
+```bash
+chmod +x install_mac.sh
+./install_mac.sh
+```
+
+O instalador:
+- Habilita extensões CEP não assinadas no Premiere (modo debug)
+- Copia o painel para `~/Library/Application Support/Adobe/CEP/extensions/`
+- Cria o ambiente Python em `backend/.venv` e instala as dependências
+
+### 3. Instale o ffmpeg (se não tiver)
+```bash
+brew install ffmpeg
+```
+
+### 4. (Opcional) Instale o Ollama para rodar IA local grátis
+```bash
+brew install ollama
+ollama pull qwen2.5:7b
+```
+
+### 5. Inicie o servidor
+```bash
+./start_server.sh
+```
+
+### 6. Abra o Premiere
+**Janela → Extensões → VSL B-Roll Generator**
+
+---
+
+## 🪟 Instalação — Windows
+
+### 1. Pré-requisitos
+- Instale o [Python 3.11](https://www.python.org/downloads/) — marque **"Add to PATH"** durante a instalação
+- Instale o [ffmpeg](https://ffmpeg.org/download.html) e adicione ao PATH
+  *(ou via winget: `winget install ffmpeg`)*
+- Instale o [Git](https://git-scm.com/download/win)
+
+### 2. Clone o repositório
+```powershell
+git clone https://github.com/carabugado/gerador-de-vsl-bugadovisk.git
+cd gerador-de-vsl-bugadovisk
+```
+
+### 3. Habilite extensões CEP no Premiere
+Abra o **Prompt de Comando como Administrador** e rode:
+
+```powershell
+reg add "HKCU\Software\Adobe\CSXS.12" /v PlayerDebugMode /t REG_SZ /d 1 /f
+reg add "HKCU\Software\Adobe\CSXS.11" /v PlayerDebugMode /t REG_SZ /d 1 /f
+```
+
+### 4. Instale a extensão CEP manualmente
+Copie a pasta `cep\` para:
+```
+C:\Users\<seu-usuario>\AppData\Roaming\Adobe\CEP\extensions\com.vsl.brollgenerator\
+```
+
+### 5. Crie o ambiente Python e instale as dependências
+```powershell
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 6. (Opcional) Instale o Ollama
+Baixe em [ollama.ai](https://ollama.ai) e depois:
+```powershell
+ollama pull qwen2.5:7b
+```
+
+### 7. Inicie o servidor
+```powershell
+cd backend
+.venv\Scripts\activate
+python server.py
+```
+
+Deixe essa janela aberta enquanto usa o Premiere.
+
+### 8. Abra o Premiere
+**Window → Extensions → VSL B-Roll Generator**
+
+> **Nota Windows:** se o Premiere não mostrar a extensão, reinicie-o após instalar.
+
+---
+
+## ⚙️ Configuração inicial
+
+No painel, clique no ⚙ (canto superior direito) para configurar:
+
+| Campo | O que colocar |
+|---|---|
+| **Pasta de B-rolls** | Caminho da sua pasta com os vídeos de apoio |
+| **Gemini API Key** | Chave grátis em [aistudio.google.com](https://aistudio.google.com) — para o Copymerda |
+| **Anthropic API Key** | Opcional — para análise de arco narrativo (VSL Director) |
+| **Pasta para clips gerados** | Onde salvar vídeos gerados pelo Higgsfield |
+| **Modelo IA** | Ollama (local/grátis), Gemini ou Anthropic |
+
+---
+
+## 🚀 Uso
+
+1. Abra sua VSL no Premiere e coloque o vídeo na timeline
+2. No painel, clique **Detectar** para pegar o caminho do vídeo automaticamente
+3. Clique **Processar VSL**
+4. Aguarde: o sistema transcreve → analisa → indexa B-rolls → gera prompts
+5. Revise os cards por segmento e ajuste se quiser
+6. Clique **✓ Aprovar todos e inserir** para inserir tudo na timeline V2
+
+---
+
+## 🏗️ Arquitetura
 
 ```
-backend/                 # servidor FastAPI (porta 7821)
-  highlights.py          # mapeamento dos melhores momentos (áudio/Gemini ou transcrição)
-  transcribe.py          # Whisper local (+ CLI de SRT)
-  llm.py                 # IA: Ollama local → Gemini → Anthropic
-  server.py              # rotas (inclui /highlights)
-cep-highlights/          # painel CEP "Highlights Cutter" do Premiere
-install_highlights_mac.sh / install_highlights_win.ps1   # instaladores (Mac / Windows)
-install_mac.sh
-start_server.sh / start_server.bat
-transcribe_video.sh / transcribe_video.bat
+gerador-de-vsl-bugadovisk/
+├── backend/            # Servidor FastAPI (porta 7821)
+│   ├── server.py       # Endpoints principais
+│   ├── transcribe.py   # Whisper — transcrição e segmentação
+│   ├── matcher.py      # CLIP semântico — match B-roll × segmento
+│   ├── broll_search.py # Busca por embeddings + tags
+│   ├── llm.py          # Roteador de LLMs (Ollama / Gemini / Claude)
+│   ├── copymerda.py    # Gerador de prompts UGC (Copymerda)
+│   ├── compliance.py   # Filtro de conteúdo proibido
+│   ├── rhythm.py       # Ajuste de ritmo de corte
+│   └── requirements.txt
+├── cep/                # Painel Premiere Pro (HTML/JS/ExtendScript)
+│   ├── index.html      # UI do painel
+│   ├── js/main.js      # Lógica do painel
+│   ├── jsx/host.jsx    # ExtendScript — controla a timeline
+│   └── CSXS/manifest.xml
+├── cep-translate/      # Painel auxiliar de tradução de SRT
+├── install_mac.sh      # Instalador macOS
+├── install_translate_mac.sh
+└── start_server.sh     # Inicia o servidor Python
 ```
 
-> ℹ️ Este repositório também inclui o **VSL B-Roll Generator** (painel `cep/` + módulos `broll_*` no backend), que **compartilha o mesmo backend** do Highlights Cutter. Por isso o backend é único.
+---
+
+## 🤝 Contribuindo
+
+Pull requests são bem-vindos. Para mudanças grandes, abra uma issue primeiro.
+
+---
+
+## 📄 Licença
+
+MIT
