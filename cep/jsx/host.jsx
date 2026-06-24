@@ -134,12 +134,26 @@ function insertBRolls(matchesJSON) {
     var dissolves = 0;
     var errors = [];
 
+    // PASSADA 1 — pré-importa TODOS os clips antes de inserir. Clip recém-importado
+    // às vezes não fica pronto a tempo do overwriteClip e só entrava no 2º/3º clique;
+    // importar tudo primeiro garante que os itens existam/conformem na hora de inserir.
+    for (var pi = 0; pi < matches.length; pi++) {
+        var pm = matches[pi];
+        if (!pm.broll_path) continue;
+        if (!findInProject(app.project.rootItem, pm.broll_path)) {
+            try {
+                app.project.importFiles([pm.broll_path], true, app.project.rootItem, false);
+            } catch (e) { /* erro real aparece na passada 2 */ }
+        }
+    }
+
+    // PASSADA 2 — insere na timeline (itens já importados).
     for (var i = 0; i < matches.length; i++) {
         var m = matches[i];
         if (!m.broll_path) continue;
 
         try {
-            // Importa o clip para o projeto
+            // Item já deve estar no projeto (passada 1); importa de novo só por segurança
             var item = findInProject(app.project.rootItem, m.broll_path);
             if (!item) {
                 var imported = app.project.importFiles(
@@ -244,6 +258,61 @@ function insertLetteringMarkers(markersJSON) {
     }
 
     return JSON.stringify({ ok: true, inserted: inserted });
+}
+
+/**
+ * Importa um .srt traduzido pro projeto e tenta colocá-lo como faixa de legenda
+ * na sequência ativa. A API de captions do Premiere varia MUITO entre versões;
+ * por isso a importação (sempre confiável) fica separada da colocação (best-effort).
+ * Se a colocação automática falhar, o item fica no projeto pronto pra arrastar.
+ */
+function importCaptionSrt(path) {
+    try {
+        var seq = getActiveSequence();
+        if (!seq) return JSON.stringify({ ok: false, error: "Nenhuma sequência ativa." });
+
+        // 1) Importa o .srt pro projeto (vira item de legenda/caption no bin).
+        var item = findInProject(app.project.rootItem, path);
+        if (!item) {
+            app.project.importFiles([path], true, app.project.rootItem, false);
+            item = findInProject(app.project.rootItem, path);
+        }
+        var imported = !!item;
+
+        // 2) Best-effort: insere na timeline como nova faixa de legenda em t=0.
+        //    createCaptionTrack existe em Premiere ~2020+; assinatura varia, então
+        //    tentamos algumas e ignoramos a falha (o item já está importado).
+        var placed = false;
+        var placeError = "";
+        if (item && typeof seq.createCaptionTrack === "function") {
+            var t0 = new Time();
+            t0.ticks = "0";
+            try {
+                seq.createCaptionTrack(item, t0);
+                placed = true;
+            } catch (e1) {
+                try {
+                    // Variante com índice de faixa de vídeo alvo (acima da V1).
+                    seq.createCaptionTrack(item, t0, seq.videoTracks.numTracks);
+                    placed = true;
+                } catch (e2) {
+                    placeError = e2.toString();
+                }
+            }
+        } else {
+            placeError = "createCaptionTrack indisponível nesta versão do Premiere";
+        }
+
+        return JSON.stringify({
+            ok: imported,
+            imported: imported,
+            placed: placed,
+            place_error: placeError,
+            path: path
+        });
+    } catch (e) {
+        return JSON.stringify({ ok: false, error: e.toString() });
+    }
 }
 
 function findInProject(item, path) {

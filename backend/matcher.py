@@ -138,7 +138,9 @@ def rank_segments(segments: List[Dict], brolls: List[Dict], context: dict = None
 
 def make_result(seg: Dict, cand: Optional[Dict], status: str, reason: str = "") -> Dict:
     return {
-        "start":          seg["start"],
+        # start do B-ROLL: ancorado na palavra-chave (broll_start) quando houver;
+        # senão o início do trecho. A janela da narração (seg) não muda.
+        "start":          seg.get("broll_start", seg["start"]),
         "end":            seg["end"],
         "text":           seg["text"],
         "broll_path":     cand["path"]      if cand else None,

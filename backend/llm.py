@@ -1,17 +1,21 @@
 """
-Camada de LLM com HIERARQUIA e escalonamento:
+Camada de LLM com roteamento POR TAREFA e escalonamento entre provedores.
 
-  ollama (trabalhador)  ->  gemini (auxiliar)  ->  anthropic (chefe)
+Provedores: groq (texto, rápido+grátis, cota própria) · gemini (texto+visão, cota
+free POR MODELO, pool multi-chave com rotação) · ollama (LOCAL, grátis/offline,
+reserva) · anthropic/Claude (PAGO — só no Modo Qualidade ou se escolhido no painel).
 
-Por padrão o Ollama LOCAL faz o trabalho (grátis, offline). Se ele falhar
-(erro/saída vazia) ou se o chamador pedir um nível acima ("precisa de mais
-contexto"), complementa com Gemini e, por fim, com o Anthropic (autoridade final).
+A ordem efetiva por tarefa está em _TASK_DEFAULTS (ver chain_for). Em geral: tarefas
+de TEXTO → Groq-first (Ollama/Gemini de reserva); VISÃO → Gemini/Ollama (Groq não tem
+visão). Cada chamada cai pro próximo da cadeia em erro/cota; tudo filtrado por
+disponibilidade (sem chave = pulado). A SELEÇÃO de B-roll não usa LLM (é legenda/tags).
 
-Config por env:
-  LLM_CHAIN      = "ollama,gemini,anthropic"   (ordem da cadeia)
+Config por env / ~/.vsl_config.json:
+  LLM_BACKEND    = força um provedor em TODAS as tarefas ('' / 'auto' = roteamento)
   OLLAMA_MODEL   = "qwen2.5:7b"
-  GEMINI_MODEL   = "gemini-2.5-flash"  (precisa GEMINI_API_KEY)
-  MODELO_CLAUDE  = "claude-sonnet-4-6" (precisa ANTHROPIC_API_KEY)
+  GEMINI_MODEL   = "gemini-flash-latest"  (thinking → thinkingBudget=0; precisa chave)
+  GROQ_MODEL     = "llama-3.3-70b-versatile"  (precisa GROQ_API_KEY, gsk_...)
+  MODELO_CLAUDE  = "claude-sonnet-4-6"  (precisa ANTHROPIC_API_KEY)
 """
 import os
 import re
@@ -22,11 +26,16 @@ import urllib.request
 from pathlib import Path
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434").rstrip("/")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1:8b")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
 OLLAMA_VISION_MODEL = os.environ.get("OLLAMA_VISION_MODEL", "llama3.2-vision:11b")
 # gemini-flash-latest: cota free separada (fresca quando 2.5/2.0 estouram) e rápido.
 # É "thinking" → exige thinkingBudget=0 (ver _gemini_gen_cfg) senão trunca/vem vazio.
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+
+# Groq: API compatível com OpenAI, MUITO rápida e free tier generoso (cota separada
+# do Google). Só texto (sem visão). Ótimo p/ classificador/diretor. Chave gsk_...
+GROQ_URL = os.environ.get("GROQ_URL", "https://api.groq.com/openai/v1/chat/completions")
+GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 ANTHROPIC_MODEL = os.environ.get("MODELO_CLAUDE", "claude-sonnet-4-6")
 
 # Opções do Ollama (Apple Silicon usa Metal/GPU automático). Ajustáveis por env.
@@ -40,29 +49,47 @@ DEFAULT_CHAIN = [b.strip() for b in
                  os.environ.get("LLM_CHAIN", "ollama,gemini,anthropic").split(",")
                  if b.strip()]
 
-# Roteamento por TAREFA (sistema híbrido grátis). Repetitivo → Ollama; PHOENIX →
-# Gemini; Claude só como último fallback. Editável em ~/.vsl_config.json:
+# Roteamento por TAREFA (sistema híbrido grátis). Editável em ~/.vsl_config.json:
 #   "provider_override": {"classifier":"ollama","phoenix":"gemini", ...}
-# Ollama LOCAL é a base confiável e grátis (sem cota). Gemini entra de reserva quando
-# a cota free dele estiver disponível (qualidade melhor em texto/visão). OpenRouter foi
-# removido (cota free de ~50/dia não aguenta o volume de uma VSL). Claude removido.
-# Gemini-first nas tarefas de TEXTO pesadas (diretor/classificador são lentíssimos no
-# Ollama local — ~muitos min). Gemini é rápido + paralelo + melhores descrições; cai no
-# Ollama local quando sem chave/cota (rotação cobre). Visão idem.
-# Rebalanceado (B, 2026-06-21): tarefas de ALTO VOLUME (classificador/UGC, ~50 calls
-# cada) → Ollama local (grátis ilimitado), pra não estourar a cota free do Gemini.
-# Tarefas de BAIXO volume e alto valor (diretor ~3, visão seletiva, phoenix) → Gemini
-# (rápido). A seleção em si é por nome/tags — não usa LLM.
+# Princípio: TEXTO → Groq-first (rápido, grátis, cota separada do Google), com Ollama
+# LOCAL e Gemini de reserva. VISÃO (vision_verify/auto_tag) → Gemini/Ollama (Groq não
+# tem visão). Claude entra só via Modo Qualidade (_QUALITY_TASKS) ou quando escolhido no
+# painel (LLM_BACKEND). Cada provedor só entra se tiver chave; senão chain_for o filtra e
+# cai no próximo. (OpenRouter foi removido — cota free de ~50/dia não aguentava uma VSL.)
 _TASK_DEFAULTS = {
-    "director":      ["gemini", "ollama"],   # baixo volume, era lento no Ollama → Gemini
-    "classifier":    ["ollama", "gemini"],   # ALTO volume → local (cota)
-    "ugc_prompt":    ["ollama", "gemini"],   # ALTO volume → local (cota)
-    "vision_verify": ["gemini", "ollama"],   # seletiva → Gemini rápido
+    "director":      ["groq", "gemini", "ollama"],
+    "classifier":    ["groq", "ollama", "gemini"],
+    "ugc_prompt":    ["groq", "ollama", "gemini"],
+    "vision_verify": ["gemini", "ollama"],   # visão: sem Groq
     "auto_tag":      ["gemini", "ollama"],
-    "phoenix":       ["gemini", "ollama"],
-    "context":       ["gemini", "ollama"],
+    "phoenix":       ["groq", "gemini", "ollama"],
+    "context":       ["groq", "gemini", "ollama"],
 }
 _CONFIG_PATH = Path.home() / ".vsl_config.json"
+
+# Cache do config por mtime — evita reler ~/.vsl_config.json do disco N× por VSL
+# (_provider_override/_preferred_backend/_groq_key/_gemini_keys rodam muitas vezes).
+_CFG_CACHE = {"mtime": None, "data": {}}
+
+
+def _config() -> dict:
+    try:
+        m = _CONFIG_PATH.stat().st_mtime
+    except Exception:
+        return {}
+    if m != _CFG_CACHE["mtime"]:
+        try:
+            _CFG_CACHE["data"] = json.loads(_CONFIG_PATH.read_text())
+        except Exception:
+            _CFG_CACHE["data"] = {}
+        _CFG_CACHE["mtime"] = m
+    return _CFG_CACHE["data"]
+
+
+# Cache TTL da lista de modelos do Ollama — _backend_available/resolve_ollama_model são
+# chamados por segmento; sem cache eram N roundtrips HTTP (cada um até 4s) por VSL.
+_OLLAMA_MODELS_CACHE = {"ts": 0.0, "val": []}
+_OLLAMA_MODELS_TTL = float(os.environ.get("OLLAMA_MODELS_TTL", "10"))
 
 # Em modelos locais, lotes grandes ficam lentos/instáveis — o diretor processa
 # os segmentos em lotes deste tamanho. (Gemini/Anthropic fazem tudo de uma vez.)
@@ -71,8 +98,7 @@ LOCAL_CHUNK = int(os.environ.get("LLM_LOCAL_CHUNK", "20"))
 
 def _provider_override() -> dict:
     try:
-        cfg = json.loads(_CONFIG_PATH.read_text())
-        ov = cfg.get("provider_override")
+        ov = _config().get("provider_override")
         return ov if isinstance(ov, dict) else {}
     except Exception:
         return {}
@@ -80,14 +106,44 @@ def _provider_override() -> dict:
 
 
 
+# Modo Qualidade Alta: usa Claude (anthropic) nas tarefas de ALTO VALOR (entendimento,
+# diretor, visão, phoenix), mantendo as de alto volume (classificador/ugc) baratas.
+_QUALITY_MODE = False
+_QUALITY_TASKS = {"director", "vision_verify", "phoenix", "context", "auto_tag"}
+
+
+def set_quality_mode(on: bool) -> None:
+    global _QUALITY_MODE
+    _QUALITY_MODE = bool(on)
+
+
+def _preferred_backend() -> str:
+    """Backend FORÇADO pelo usuário (seletor 'Modelo IA'): env LLM_BACKEND ou config
+    llm_backend. 'auto'/'' = sem forçar (usa o roteamento B inteligente)."""
+    p = (os.environ.get("LLM_BACKEND", "") or "").strip().lower()
+    if not p:
+        try:
+            p = (_config().get("llm_backend", "") or "").strip().lower()
+        except Exception:
+            p = ""
+    return p if p in ("ollama", "gemini", "anthropic", "groq") else ""
+
+
 def chain_for(task: str) -> list:
-    """Cadeia de backends para uma TAREFA: override do config → default da tarefa,
-    filtrada por disponibilidade. É como o roteamento híbrido fica grátis por padrão."""
+    """Cadeia de backends para uma TAREFA: se o usuário escolheu um backend fixo, ele
+    vem primeiro; senão usa o override do config → default da tarefa. Filtra por
+    disponibilidade. (Claude entra aqui só quando escolhido — evita custo surpresa.)"""
     ov = _provider_override().get(task)
     if ov:
         order = [b.strip() for b in str(ov).split(",") if b.strip()]
     else:
-        order = _TASK_DEFAULTS.get(task, DEFAULT_CHAIN)
+        order = list(_TASK_DEFAULTS.get(task, DEFAULT_CHAIN))
+    pref = _preferred_backend()
+    if pref:
+        order = [pref] + [b for b in order if b != pref]
+    # Modo Qualidade Alta: Claude na frente nas tarefas de alto valor (se houver chave).
+    elif _QUALITY_MODE and task in _QUALITY_TASKS and _backend_available("anthropic"):
+        order = ["anthropic"] + [b for b in order if b != "anthropic"]
     return [b for b in order if _backend_available(b)]
 
 
@@ -119,12 +175,18 @@ def safe_json(text: str):
 # ─────────────────────────── disponibilidade ────────────────────────────────
 
 def _ollama_models() -> list:
+    now = time.time()
+    if now - _OLLAMA_MODELS_CACHE["ts"] < _OLLAMA_MODELS_TTL:
+        return _OLLAMA_MODELS_CACHE["val"]
     try:
         with urllib.request.urlopen(OLLAMA_URL + "/api/tags", timeout=4) as resp:
             data = json.loads(resp.read())
-        return [m.get("name", "") for m in data.get("models", [])]
+        models = [m.get("name", "") for m in data.get("models", [])]
     except Exception:
-        return []
+        models = []
+    _OLLAMA_MODELS_CACHE["ts"] = now
+    _OLLAMA_MODELS_CACHE["val"] = models
+    return models
 
 
 def resolve_ollama_model() -> str:
@@ -141,11 +203,23 @@ def resolve_ollama_model() -> str:
     return models[0] if models else OLLAMA_MODEL
 
 
+def _groq_key() -> str:
+    k = os.environ.get("GROQ_API_KEY", "")
+    if k:
+        return k
+    try:
+        return _config().get("groq_api_key", "") or ""
+    except Exception:
+        return ""
+
+
 def _backend_available(name: str) -> bool:
     if name == "ollama":
         return len(_ollama_models()) > 0
     if name == "gemini":
         return len(_gemini_keys()) > 0
+    if name == "groq":
+        return bool(_groq_key())
     if name == "anthropic":
         return bool(os.environ.get("ANTHROPIC_API_KEY"))
     return False
@@ -173,7 +247,7 @@ def is_local() -> bool:
 
 
 def status() -> dict:
-    return {b: _backend_available(b) for b in ("ollama", "gemini", "anthropic")}
+    return {b: _backend_available(b) for b in ("ollama", "groq", "gemini", "anthropic")}
 
 
 # ─────────────────────────────── backends ───────────────────────────────────
@@ -240,7 +314,7 @@ def _gemini_keys() -> list:
     keys = _split_keys(os.environ.get("GEMINI_API_KEYS", ""))
     keys += _split_keys(os.environ.get("GEMINI_API_KEY", ""))
     try:
-        cfg = json.loads(_CONFIG_PATH.read_text())
+        cfg = _config()
         keys += _split_keys(cfg.get("gemini_api_keys"))
         keys += _split_keys(cfg.get("gemini_api_key"))
     except Exception:
@@ -417,10 +491,43 @@ def _anthropic_complete(system, user, max_tokens, temperature, force_json) -> st
         return stream.get_final_message().content[0].text.strip()
 
 
+def _groq_complete(system, user, max_tokens, temperature, force_json) -> str:
+    key = _groq_key()
+    if not key:
+        raise RuntimeError("GROQ_API_KEY ausente")
+    payload = {
+        "model": GROQ_MODEL,
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+    if force_json:
+        payload["response_format"] = {"type": "json_object"}
+    req = urllib.request.Request(
+        GROQ_URL, data=json.dumps(payload).encode(),
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
+        method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            data = json.loads(resp.read())
+        clear_alert("groq")
+        return (data["choices"][0]["message"]["content"] or "").strip()
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            record_alert("groq", "Groq atingiu o limite de uso (429) — usando reserva.")
+        elif e.code in (401, 403):
+            record_alert("groq", "Chave Groq inválida/revogada — verifique (gsk_…).")
+        raise
+
+
 _CALLERS = {
     "ollama": _ollama_complete,
     "gemini": _gemini_complete,
     "anthropic": _anthropic_complete,
+    "groq": _groq_complete,
 }
 
 
@@ -487,12 +594,13 @@ def _ollama_vision(system, user, image_b64, max_tokens, temperature, force_json)
     if model not in _ollama_models():                 # tenta o que estiver baixado
         base = model.split(":")[0]
         model = next((m for m in _ollama_models() if m.startswith(base)), model)
+    imgs = image_b64 if isinstance(image_b64, list) else [image_b64]
     payload = {
         "model": model,
         "stream": False,
         "messages": [
             {"role": "system", "content": system},
-            {"role": "user", "content": user, "images": [image_b64]},
+            {"role": "user", "content": user, "images": imgs},
         ],
         "options": {**_OLLAMA_OPTS, "temperature": temperature, "num_predict": max_tokens},
     }
@@ -515,26 +623,26 @@ def _anthropic_vision(system, user, image_b64, max_tokens, temperature, force_js
     if _anthropic_client is None or key != _anthropic_key:
         _anthropic_client = anthropic.Anthropic(api_key=key)
         _anthropic_key = key
+    imgs = image_b64 if isinstance(image_b64, list) else [image_b64]
+    content = [{"type": "image", "source": {"type": "base64",
+                "media_type": media_type, "data": im}} for im in imgs]
+    content.append({"type": "text", "text": user})
     msg = _anthropic_client.messages.create(
         model=ANTHROPIC_MODEL, max_tokens=min(max_tokens, 4000),
         system=system,
-        messages=[{"role": "user", "content": [
-            {"type": "image", "source": {"type": "base64",
-             "media_type": media_type, "data": image_b64}},
-            {"type": "text", "text": user},
-        ]}],
+        messages=[{"role": "user", "content": content}],
     )
     return msg.content[0].text.strip()
 
 
 def _gemini_vision(system, user, image_b64, max_tokens, temperature, force_json,
                    media_type="image/jpeg") -> str:
+    imgs = image_b64 if isinstance(image_b64, list) else [image_b64]
+    parts = [{"inline_data": {"mime_type": media_type, "data": im}} for im in imgs]
+    parts.append({"text": user})
     payload = {
         "system_instruction": {"parts": [{"text": system}]},
-        "contents": [{"parts": [
-            {"inline_data": {"mime_type": media_type, "data": image_b64}},
-            {"text": user},
-        ]}],
+        "contents": [{"parts": parts}],
         "generationConfig": _gemini_gen_cfg(max_tokens, temperature, force_json),
     }
     return _gemini_extract(_gemini_post(payload))

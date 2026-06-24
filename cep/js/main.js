@@ -9,11 +9,16 @@ let _timelineBrollPaths = [];   // B-rolls já na timeline (V2+) — pra não re
 
 // id do campo no painel  ->  chave salva no backend (~/.vsl_config.json)
 const _CFG_MAP = {
-    brollFolder:  "broll_folder",
-    anthropicKey: "anthropic_api_key",
-    generatedDir: "generated_dir",
-    videoPath:    "video_path",
-    llmModel:     "llm_backend",
+    brollFolder:   "broll_folder",
+    anthropicKey:  "anthropic_api_key",
+    groqKey:       "groq_api_key",
+    pexelsKey:     "pexels_api_key",
+    generatedDir:  "generated_dir",
+    videoPath:     "video_path",
+    llmModel:      "llm_backend",
+    brollDensity:  "broll_density",
+    brollVertical: "vertical",
+    edFolder:      "ed_folder",
 };
 
 // ── Chaves Gemini: uma box por chave, 6 primeiros visíveis, "+" adiciona ────────
@@ -53,6 +58,126 @@ function addGeminiKeyRow(value = "", focusIt = false) {
 function _collectGeminiKeys() {
     return Array.from(document.querySelectorAll("#geminiKeys .gkey"))
         .map(i => (i.dataset.full || "").trim()).filter(Boolean);
+}
+
+function setLlm(v) {
+    const inp = document.getElementById("llmModel");
+    if (inp) inp.value = v;
+    saveConfig();
+    updateLlmHint();
+}
+
+function updateLlmHint() {
+    const el = document.getElementById("llmHint");
+    const v = (document.getElementById("llmModel") || {}).value || "auto";
+    // destaca o botão ativo (substitui o <select>, que não abre no CEP)
+    document.querySelectorAll("#llmButtons .llmbtn").forEach(b => {
+        const on = b.dataset.v === v;
+        b.style.background = on ? "#2b6cb0" : "";
+        b.style.color = on ? "#fff" : "";
+        b.style.fontWeight = on ? "700" : "";
+    });
+    if (!el) return;
+    const hints = {
+        auto:      "Groq/Gemini nas tarefas + local de reserva (recomendado).",
+        ollama:    "Tudo no modelo local — grátis e ilimitado, porém lento.",
+        groq:      "Tudo no Groq — rápido e grátis (cota separada do Google).",
+        gemini:    "Tudo no Gemini — rápido, mas consome a cota grátis mais rápido.",
+        anthropic: "⚠️ Claude é PAGO (cobra por uso). Melhor qualidade. Cole a chave Anthropic acima.",
+    };
+    el.textContent = hints[v] || "";
+    el.style.color = v === "anthropic" ? "#f0a000" : "#52525b";
+}
+
+function setDensity(v) {
+    const inp = document.getElementById("brollDensity");
+    if (inp) inp.value = v;
+    saveConfig();
+    updateDensityHint();
+}
+
+function updateDensityHint() {
+    const v = (document.getElementById("brollDensity") || {}).value || "normal";
+    document.querySelectorAll("#densityButtons .densbtn").forEach(b => {
+        const on = b.dataset.v === v;
+        b.style.background = on ? "#2b6cb0" : "";
+        b.style.color = on ? "#fff" : "";
+        b.style.fontWeight = on ? "700" : "";
+    });
+    const el = document.getElementById("densityHint");
+    if (!el) return;
+    const hints = {
+        calm:    "Menos cortes — trechos longos recebem poucos B-rolls.",
+        normal:  "Equilíbrio entre cobertura e respiro (recomendado).",
+        intense: "Mais cortes — fatia trechos longos em vários B-rolls (mais cobertura).",
+    };
+    el.textContent = hints[v] || "";
+}
+
+function setVertical(v) {
+    const inp = document.getElementById("brollVertical");
+    if (inp) inp.value = v;
+    saveConfig();
+    updateVerticalHint();
+}
+
+function updateVerticalHint() {
+    const v = (document.getElementById("brollVertical") || {}).value || "";
+    document.querySelectorAll("#verticalButtons .vertbtn").forEach(b => {
+        const on = (b.dataset.v || "") === v;
+        b.style.background = on ? "#2b6cb0" : "";
+        b.style.color = on ? "#fff" : "";
+        b.style.fontWeight = on ? "700" : "";
+    });
+    const el = document.getElementById("verticalHint");
+    if (el) {
+        const names = {
+            "":   "Detecta sozinho pelo doc da VSL ou pelo nome da pasta de clipes.",
+            WL: "Weight Loss (emagrecimento)", ED: "Erectile/Libido",
+            NR: "Neuro/memória/foco", PT: "Próstata/bexiga",
+            VS: "Visão/olhos", JT: "Articulações/joelho/artrite", FG: "Fungo/unha",
+        };
+        el.textContent = names[v] || "";
+    }
+    // Box ED+ visível só quando vertical = ED
+    const edBox = document.getElementById("edBox");
+    if (edBox) edBox.style.display = v === "ED" ? "block" : "none";
+}
+
+async function tagEdAssets() {
+    const folder = (document.getElementById("edFolder") || {}).value || "";
+    if (!folder) { setStatus("Informe a pasta ED+ antes de taggear.", "error"); return; }
+    saveConfig();   // persiste edFolder no config ANTES de processar (essencial p/ /process usar)
+    const btn = document.getElementById("btnTagEd");
+    const info = document.getElementById("edInfo");
+    if (btn) { btn.disabled = true; btn.textContent = "🏷️ Tagueando…"; }
+    if (info) info.textContent = "⏳ Iniciando…";
+    try {
+        await xhrPost(API + "/tag_assets", { folder, enrich: true });
+    } catch (e) {
+        if (info) info.textContent = "❌ Erro ao iniciar: " + e.message;
+        setStatus("Erro ao taggear ED+: " + e.message, "error");
+        if (btn) { btn.disabled = false; btn.textContent = "🏷️ Tags IA"; }
+        return;
+    }
+    // Servidor retorna imediatamente — polling até o step virar "done"
+    if (info) info.textContent = "⏳ Rodando em background…";
+    const _edPoll = setInterval(async () => {
+        try {
+            const d = await xhrGet(API + "/progress");
+            if (d.step === "tagging") {
+                const cur = d.current || 0, tot = d.total || 0;
+                const pct = tot > 0 ? Math.round(cur / tot * 100) : 0;
+                if (info) info.textContent = `⏳ ${cur}/${tot} (${pct}%) — ${d.detail || ""}`;
+            } else if (d.step === "done") {
+                clearInterval(_edPoll);
+                const msg = d.detail || "Concluído";
+                if (info) info.textContent = "✅ " + msg;
+                setStatus("ED+: " + msg, "success");
+                if (btn) { btn.disabled = false; btn.textContent = "🏷️ Tags IA"; }
+            }
+        } catch {}
+    }, 1500);
 }
 
 async function testGeminiKeys() {
@@ -113,14 +238,18 @@ async function loadConfig() {
         gkeys.forEach(k => addGeminiKeyRow(k));
     }
 
+    updateLlmHint();
+    updateDensityHint();
+    updateVerticalHint();
+
     // 2. Defaults
     if (!document.getElementById("generatedDir").value) {
         document.getElementById("generatedDir").value =
-            "/Users/rene/Downloads/GERADOR DE VSL/generated_clips";
+            "";
     }
     if (!document.getElementById("brollFolder").value) {
         document.getElementById("brollFolder").value =
-            "/Volumes/portatil/ASSETS/brolls vsl";
+            "";
     }
 }
 
@@ -239,6 +368,63 @@ function loadTranscript() {
         setStatus("Transcrição do Premiere carregada: " + name, "success");
     } catch (e) {
         setStatus("Erro ao ler a transcrição: " + (e.message || e), "error");
+    }
+}
+
+// Traduz uma legenda .srt em inglês → português mantendo os tempos exatos e
+// importa o resultado como faixa de legenda na sequência ativa (tradução
+// simultânea encaixada embaixo). Saída gravada ao lado: ingles.srt → ingles.pt.srt
+async function translateSrt() {
+    try {
+        const fs = (typeof cep !== "undefined" && cep.fs) ? cep.fs : null;
+        if (!fs || !(fs.showOpenDialogEx || fs.showOpenDialog)) {
+            setStatus("Seletor indisponível aqui.", "error");
+            return;
+        }
+        const res = fs.showOpenDialogEx
+            ? fs.showOpenDialogEx(false, false, "Legenda em inglês (.srt)", "")
+            : fs.showOpenDialog(false, false, "Legenda em inglês (.srt)", "", ["srt", "vtt"]);
+        const paths = res && res.data ? res.data : [];
+        if (!paths.length) return;
+        let p = paths[0];
+        if (p.indexOf("file://") === 0) p = decodeURIComponent(p.slice(7));
+
+        setStatus("🌐 Traduzindo legenda (mantendo os tempos)...", "info");
+        let data;
+        try {
+            data = await xhrPost(API + "/translate_srt", { srt_path: p, target_lang: "pt" });
+        } catch (e) {
+            setStatus("Erro ao traduzir: " + (e.message || e), "error");
+            return;
+        }
+        if (!data || !data.ok) {
+            setStatus("Falha na tradução: " + ((data && data.error) || "?"), "error");
+            return;
+        }
+        const out = data.out_path || "";
+        const warn = data.warning ? "  ⚠️ " + data.warning : "";
+
+        // Sem Premiere (ou sem caminho de saída) — só informa onde salvou.
+        if (!cs || !out) {
+            setStatus("✅ Legenda traduzida (" + (data.blocks || "?") + " blocos): " + out + warn, warn ? "info" : "success");
+            return;
+        }
+
+        // Importa e tenta colocar na faixa de legenda da sequência ativa.
+        cs.evalScript(`importCaptionSrt(${JSON.stringify(out)})`, r => {
+            let info = null;
+            try { info = JSON.parse(r); } catch (e) {}
+            const kind = warn ? "info" : "success";
+            if (info && info.ok && info.placed) {
+                setStatus("✅ Legenda PT colocada na sequência (" + (data.blocks || "?") + " blocos)." + warn, kind);
+            } else if (info && info.ok) {
+                setStatus("✅ Traduzida e importada no projeto — arraste pra uma faixa de legenda: " + out + warn, kind);
+            } else {
+                setStatus("✅ Traduzida: " + out + " — importe manualmente no Premiere." + warn, kind);
+            }
+        });
+    } catch (e) {
+        setStatus("Erro: " + (e.message || e), "error");
     }
 }
 
@@ -667,11 +853,17 @@ async function startProcess() {
             generated_dir:     generatedDir || undefined,
             composition:       useComposition ? _composition : undefined,
             vsl_doc:           _vslDoc || undefined,
+            groq_api_key:      (document.getElementById("groqKey") || {}).value || undefined,
             transcript_srt:    _transcriptSrt || undefined,
             timeline_broll_paths: (useComposition && _timelineBrollPaths.length)
                                   ? _timelineBrollPaths : undefined,
             llm_backend:       (document.getElementById("llmModel") || {}).value || undefined,
             vision_verify:     (document.getElementById("visionVerify") || {}).checked || false,
+            quality_mode:      (document.getElementById("qualityMode") || {}).checked || false,
+            broll_density:     (document.getElementById("brollDensity") || {}).value || undefined,
+            vertical:          (document.getElementById("brollVertical") || {}).value || undefined,
+            pexels_api_key:    (document.getElementById("pexelsKey") || {}).value || undefined,
+            ed_folder:         (document.getElementById("edFolder") || {}).value || undefined,
         });
         stopPolling();
         _lastPct = 100;
@@ -683,6 +875,50 @@ async function startProcess() {
         setStatus("Erro: " + e.message, "error");
         setProgress(null);
         stopPolling();
+    }
+}
+
+// ── Variantes de seleção (V1/V2/V3) ──────────────────────────────────────────
+
+let _currentVariant = 1;
+
+function initVariants() {
+    _currentVariant = 1;
+    document.querySelectorAll(".varbtn").forEach(b => {
+        b.classList.toggle("var-active", parseInt(b.dataset.v) === 1);
+    });
+    const row = document.getElementById("variantRow");
+    if (row) row.style.display = "flex";
+    const hint = document.getElementById("variantHint");
+    if (hint) hint.textContent = "V1 = seleção principal";
+}
+
+async function switchVariant(n) {
+    if (n === _currentVariant) return;
+    const hint = document.getElementById("variantHint");
+    if (hint) hint.textContent = `Carregando V${n}…`;
+    document.querySelectorAll(".varbtn").forEach(b => b.disabled = true);
+    try {
+        const data = await xhrGet(API + "/variants/" + n);
+        _currentVariant = n;
+        document.querySelectorAll(".varbtn").forEach(b => {
+            b.classList.toggle("var-active", parseInt(b.dataset.v) === n);
+            b.disabled = false;
+        });
+        renderSegments(data.segments || []);
+        const s = data.stats || {};
+        document.getElementById("statOk").textContent     = `✓ ${s.ok || 0} ok`;
+        document.getElementById("statReview").textContent = `⚠ ${s.review || 0} revisão`;
+        document.getElementById("statGen").textContent    = `✨ ${s.generated || 0} gerados`;
+        document.getElementById("statErr").textContent    = `✗ ${s.error || 0} erros`;
+        const cc = document.getElementById("statCompliance");
+        if (cc) { const cb = s.compliance_blocked || 0; cc.textContent = `⛔ ${cb} compliance`; cc.style.display = cb > 0 ? "" : "none"; }
+        if (hint) hint.textContent = `V${n} ativo — inserir usará esta variante`;
+        setStatus(`Variante V${n}: ${(s.ok||0)+(s.review||0)} B-rolls selecionados.`, "info");
+    } catch (e) {
+        document.querySelectorAll(".varbtn").forEach(b => b.disabled = false);
+        if (hint) hint.textContent = "";
+        setStatus("Erro ao carregar variante: " + e.message, "error");
     }
 }
 
@@ -721,6 +957,7 @@ function showResults(data) {
         loadSegments();
     }
 
+    initVariants();
     document.getElementById("bottomBar").style.display = "flex";
     const selMap = {
         "embedding": "busca semântica por embeddings visuais",
@@ -728,7 +965,15 @@ function showResults(data) {
         "scoring": `scoring por tags (${s.tagged_assets} tagados)`,
         "clip": "fallback CLIP+LLM",
     };
-    setStatus(`${data.segments_total} segmentos · seleção por ${selMap[s.selection] || s.selection}.`, "success");
+    if (s.selection === "clip") {
+        // a busca semântica falhou e caiu no matcher fraco (CLIP texto→imagem) — não é
+        // "sucesso": avisa pra o usuário não achar que a IA escolheu bem.
+        setStatus(`⚠️ ${data.segments_total} segmentos · caiu no FALLBACK (CLIP+LLM) — `
+            + `a busca semântica falhou; a qualidade do match pode estar baixa. `
+            + `Cheque os alertas de IA / reprocesse.`, "error");
+    } else {
+        setStatus(`${data.segments_total} segmentos · seleção por ${selMap[s.selection] || s.selection}.`, "success");
+    }
 }
 
 async function loadSegments() {
@@ -782,12 +1027,14 @@ function buildCard(seg) {
     } else if (seg.broll_path) {
         const transLabel = seg.transition === "dissolve" ? `<span class="seg-trans">⤫ dissolve</span>`
                          : seg.transition === "cut"      ? `<span class="seg-trans">✂ corte</span>` : "";
+        const pexelsBadge = seg.broll_source === "pexels"
+            ? `<span class="pexels-badge">🌐 Pexels</span>` : "";
         brollBlock = `
             <div class="broll-chip">
                 <span class="broll-chip-icon">🎞</span>
                 <span class="broll-chip-name">${brollName || "clip"}</span>
                 ${conf ? `<span class="broll-chip-score ${confClass}">${conf}%</span>` : ""}
-                ${transLabel}
+                ${transLabel}${pexelsBadge}
             </div>
             ${seg.select_reason ? `<div class="seg-reason">${seg.select_reason}</div>` : ""}`;
     } else {
@@ -1203,17 +1450,34 @@ async function tagAssets() {
     }
     btn.disabled = true;
     btn.textContent = "🏷️ Tagueando...";
+    if (info) info.textContent = "⏳ Iniciando…";
     setStatus("Gerando tags semânticas dos assets (pode demorar)...", "info");
-    startPolling();
+
+    // Atualiza o tagInfo em tempo real sem depender do processCard (que fica escondido)
+    const _tagPoll = setInterval(async () => {
+        try {
+            const d = await xhrGet(API + "/progress");
+            if (d.step !== "tagging") return;
+            const cur = d.current || 0, tot = d.total || 0;
+            const pct = tot > 0 ? Math.round(cur / tot * 100) : 0;
+            if (info) info.textContent = `⏳ ${cur}/${tot} (${pct}%) — ${d.detail || ""}`;
+            setStatus(`Tagueando: ${cur}/${tot} (${pct}%) — ${d.detail || ""}`, "info");
+        } catch {}
+    }, 1500);
+
     try {
         const res = await xhrPost(API + "/tag_assets", { folder });
-        stopPolling(); setProgress(null);
-        info.textContent =
-            `${res.tagged} tagados (${res.vision} por imagem, ${res.needs_manual} p/ revisar) · ` +
-            `${res.skipped} já tinham tag · total ${res.total}.`;
-        setStatus(`✅ Tags prontas: ${res.tagged}/${res.total}. O scoring semântico já vai usar.`, "success");
+        clearInterval(_tagPoll);
+        setProgress(null);
+        const capTxt = (res.captioned != null) ? ` · 🖼️ ${res.captioned} com legenda local` : "";
+        if (info) info.textContent =
+            `✅ ${res.tagged} tagados (${res.vision} por imagem, ${res.needs_manual} p/ revisar) · ` +
+            `${res.skipped} já tinham tag${capTxt} · total ${res.total}.`;
+        setStatus(`✅ Tags prontas: ${res.tagged}/${res.total}${res.captioned != null ? ` · ${res.captioned} legendados` : ""}. A busca semântica já vai usar.`, "success");
     } catch (e) {
-        stopPolling(); setProgress(null);
+        clearInterval(_tagPoll);
+        setProgress(null);
+        if (info) info.textContent = "❌ Erro: " + (e && e.message ? e.message : e);
         setStatus("Erro no tagging: " + (e && e.message ? e.message : e), "error");
     }
     btn.disabled = false;
@@ -1337,10 +1601,12 @@ function showLibraryRow(folder) {
 
 function openLibraryModal(isFirstTime = false) {
     const modal = document.getElementById("libraryModal");
-    const skipBtn = modal.querySelector(".btn-secondary");
-    skipBtn.style.display = isFirstTime ? "block" : "none";
+    if (!modal) return;
+    const skipBtn = modal.querySelector(".btn-modal-cancel");   // botão "Pular"
+    if (skipBtn) skipBtn.style.display = isFirstTime ? "block" : "none";
     modal.classList.add("open");
-    document.getElementById("libraryFolderInput").focus();
+    const inp = document.getElementById("libraryFolderInput");
+    if (inp) inp.focus();
 }
 
 function closeLibraryModal() {
@@ -1368,7 +1634,7 @@ document.getElementById("libraryFolderInput").addEventListener("keydown", e => {
 
 // ── Auto-start do backend ───────────────────────────────────────────────────
 // Caminho do projeto (onde está start_server.sh + backend). Ajuste se mudar de lugar.
-const PROJECT_DIR = "/Users/rene/Downloads/GERADOR DE VSL";
+const PROJECT_DIR = "";
 
 function _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -1420,23 +1686,22 @@ async function refreshLlmStatus() {
     try {
         const s = await xhrGet(API + "/llm_status");
         const backends = s.backends || {};
-        // Habilita/desabilita as opções do seletor conforme disponibilidade
-        const sel = document.getElementById("llmModel");
-        if (sel) {
-            Array.from(sel.options).forEach(opt => {
-                const ok = !!backends[opt.value];
-                opt.disabled = !ok;
-                opt.textContent = opt.textContent.replace(/ — sem chave$/, "") + (ok ? "" : " — sem chave");
-            });
-            // Se a escolha salva não está disponível, cai pro ollama
-            if (sel.value && backends[sel.value] === false) sel.value = "ollama";
-            const hint = document.getElementById("llmHint");
-            if (hint) {
-                const missing = ["gemini", "anthropic"].filter(b => !backends[b]);
-                hint.textContent = missing.length
-                    ? `Para ${missing.join(" / ")}: configure a chave nas Configurações.`
-                    : "Todos os modelos disponíveis.";
-            }
+        // Marca/desabilita cada BOTÃO de modelo (.llmbtn) conforme a chave existir.
+        // (#llmModel virou <input hidden>; iterar .options era no-op silencioso.)
+        // "Auto" sempre habilitado (roteia pro que houver); "Local"/Groq/Gemini/Claude
+        // dependem do backend estar disponível.
+        document.querySelectorAll("#llmButtons .llmbtn").forEach(btn => {
+            const v = btn.dataset.v;
+            const ok = v === "auto" || backends[v] === true;
+            btn.disabled = !ok;
+            btn.title = ok ? "" : "sem chave / indisponível — configure nas Configurações";
+            btn.style.opacity = ok ? "" : "0.4";
+            btn.style.cursor = ok ? "" : "not-allowed";
+        });
+        // Se a escolha salva ficou indisponível (ex.: removeu a chave), volta pro Auto.
+        const cur = (document.getElementById("llmModel") || {}).value || "auto";
+        if (cur !== "auto" && backends[cur] === false && typeof setLlm === "function") {
+            setLlm("auto");
         }
     } catch (e) {}
 }
@@ -1457,6 +1722,7 @@ async function refreshAIHealth() {
         rows.push(`<div class="ai-row">${dot(oll.running)} Ollama ${oll.running
             ? `(${(oll.models || []).length} modelos${oll.has_vision ? ", visão ✓" : ", sem visão"})`
             : "não está rodando"}</div>`);
+        rows.push(`<div class="ai-row">${dot(h.groq)} Groq ${h.groq ? "conectado (rápido, grátis)" : "sem chave"}</div>`);
         rows.push(`<div class="ai-row">${dot(h.gemini)} Gemini ${h.gemini ? `conectado · ${h.gemini_keys || 1} chave(s)` : "sem chave"}</div>`);
         // resumo do roteamento (nomes curtos)
         const r = h.routing || {};

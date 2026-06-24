@@ -38,6 +38,12 @@
     "VS": [
       {"any": ["eye surgery", "lasik", "eyeball closeup", "retina surgery", "eye disease graphic"], "reason": "VS: cirurgia/doença ocular gráfica"}
     ],
-    "PT_FG_shared": []
+    "JT": [
+      {"any": ["knee surgery", "joint replacement", "knee replacement", "hip replacement", "bone xray", "x-ray bone", "joint injection", "arthroscopy"], "reason": "JT: cirurgia/procedimento/raio-x articular"},
+      {"any": ["wheelchair", "amputation"], "reason": "JT: incapacidade grave (claim visual implícito)"}
+    ],
+    "FG": [
+      {"any": ["nail fungus closeup", "toenail removal", "infected toenail", "nail surgery", "podiatry procedure", "oozing pus"], "reason": "FG: imagem clínica/gráfica de fungo de unha"}
+    ]
   }
 }

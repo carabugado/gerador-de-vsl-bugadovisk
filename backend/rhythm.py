@@ -20,14 +20,21 @@ import os
 import re
 from typing import List, Dict, Optional
 
-# Regras de ritmo — tunáveis por env. Defaults mais DENSOS (o editor pediu mais
-# cobertura: "para de economizar"). Suba MIN_GAP/baixe MAX_CONSEC pra mais restrição.
+# Regras de ritmo — tunáveis por env. Por PADRÃO o ritmo NÃO inventa pausas: o editor
+# pediu "coloca o máximo de b-rolls que encaixa, não fica decidindo pausa por conta
+# própria". Então MIN_GAP/HOOK_BREATH=0 e MAX_CONSEC altíssimo deixam tudo o que casou
+# entrar, colado. A camada só (1) trimma a duração e (2) protege os momentos de dinheiro
+# (preço/garantia/CTA). Pra voltar a "respirar" a VSL, suba MIN_GAP / baixe MAX_CONSEC via env.
 MIN_DUR     = float(os.environ.get("RHYTHM_MIN_DUR", "2.0"))    # duração mínima de um b-roll
 MAX_DUR     = float(os.environ.get("RHYTHM_MAX_DUR", "5.0"))    # duração máxima — trimma o excesso
-MIN_GAP     = float(os.environ.get("RHYTHM_MIN_GAP", "1.5"))    # áudio puro mínimo entre b-rolls
-HOOK_BREATH = float(os.environ.get("RHYTHM_HOOK_BREATH", "1.0"))  # respiro antes do 1º b-roll
-MAX_CONSEC  = int(os.environ.get("RHYTHM_MAX_CONSEC", "5"))     # b-rolls seguidos antes de pausa
+MIN_GAP     = float(os.environ.get("RHYTHM_MIN_GAP", "0.0"))    # 0 = sem gap forçado entre b-rolls
+HOOK_BREATH = float(os.environ.get("RHYTHM_HOOK_BREATH", "0.0"))  # 0 = 1º b-roll não espera
+MAX_CONSEC  = int(os.environ.get("RHYTHM_MAX_CONSEC", "999"))   # 999 = sem limite de consecutivos
 PAUSE_RESET = float(os.environ.get("RHYTHM_PAUSE_RESET", "6.0"))  # gap que zera os consecutivos
+
+# Proteção dos momentos de dinheiro (preço/garantia/CTA não recebem b-roll). Ligada por
+# padrão — é prática de VSL, não "pausa". Desligue tudo com RHYTHM_PROTECT_MONEY=0.
+PROTECT_MONEY = os.environ.get("RHYTHM_PROTECT_MONEY", "1") != "0"
 
 # Arcos/seções que NUNCA recebem b-roll
 _BLOCK_ARCS = {"cta"}
@@ -63,9 +70,15 @@ def _block(match: Dict, reason: str) -> None:
     match["transition"]     = "none"
 
 
-def apply_rhythm(segments: List[Dict], matches: List[Dict]) -> Dict[str, int]:
-    """Ajusta `matches` in-place. Retorna contadores para stats."""
+def apply_rhythm(segments: List[Dict], matches: List[Dict],
+                 max_dur: float = None, min_dur: float = None) -> Dict[str, int]:
+    """Ajusta `matches` in-place. Retorna contadores para stats.
+    max_dur: sobrepõe a duração máxima do b-roll (Modo Qualidade Alta usa clipes curtos).
+    min_dur: sobrepõe a duração mínima (vertical ED usa ~1s pra frase curta sexual
+             também receber clipe, em vez de virar buraco)."""
     counts = {"trimmed": 0, "pushed": 0, "blocked": 0}
+    max_d = float(max_dur) if max_dur else MAX_DUR
+    min_d = float(min_dur) if min_dur else MIN_DUR
 
     last_end: Optional[float] = None   # fim do último b-roll inserido
     prev_end: Optional[float] = None   # fim do b-roll anterior (p/ medir a pausa)
@@ -83,19 +96,20 @@ def apply_rhythm(segments: List[Dict], matches: List[Dict]) -> Dict[str, int]:
         arc = (seg.get("arc_position") or "").lower()
         text = seg.get("text", "")
 
-        # 1) blocos que nunca recebem b-roll
-        if arc in _BLOCK_ARCS:
-            _block(m, "CTA não recebe b-roll (ritmo)")
-            counts["blocked"] += 1
-            continue
-        if _PRICE_RE.search(text):
-            _block(m, "Revelação de preço — sem b-roll")
-            counts["blocked"] += 1
-            continue
-        if _GUARANTEE_RE.search(text):
-            _block(m, "Garantia/reembolso — sem b-roll")
-            counts["blocked"] += 1
-            continue
+        # 1) momentos de dinheiro nunca recebem b-roll (desligável: RHYTHM_PROTECT_MONEY=0)
+        if PROTECT_MONEY:
+            if arc in _BLOCK_ARCS:
+                _block(m, "CTA não recebe b-roll (ritmo)")
+                counts["blocked"] += 1
+                continue
+            if _PRICE_RE.search(text):
+                _block(m, "Revelação de preço — sem b-roll")
+                counts["blocked"] += 1
+                continue
+            if _GUARANTEE_RE.search(text):
+                _block(m, "Garantia/reembolso — sem b-roll")
+                counts["blocked"] += 1
+                continue
 
         s = float(m["start"])
         seg_end = float(seg.get("end", m["end"]))
@@ -125,14 +139,14 @@ def apply_rhythm(segments: List[Dict], matches: List[Dict]) -> Dict[str, int]:
                 prev_end = last_end
                 continue
 
-        # 5) duração 2-5s dentro da janela do segmento
-        if e > s + MAX_DUR:
-            e = s + MAX_DUR
+        # 5) duração dentro da janela do segmento (max_d; Qualidade Alta = mais curto)
+        if e > s + max_d:
+            e = s + max_d
             counts["trimmed"] += 1
         e = min(e, seg_end)
 
-        if e - s < MIN_DUR:
-            _block(m, "Sem espaço para 2s (gap/ritmo)")
+        if e - s < min_d:
+            _block(m, f"Sem espaço para {min_d:.0f}s (gap/ritmo)")
             counts["blocked"] += 1
             continue
 

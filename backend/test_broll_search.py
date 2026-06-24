@@ -229,6 +229,81 @@ def test_style_bonus():
           [x["path"] for x in r0] == [x["path"] for x in base], extra=str([x['path'] for x in r0]))
 
 
+def test_enum_exemption():
+    print(f"\n[10] sub-slot de enumeração isento do piso ({bs.MIN_BROLL_DURATION}s, MIN_BROLL_DURATION)")
+    bs.embed_text = lambda texts: np.array([JAR])
+    bs.load_tags = lambda p: None
+    asset = _asset("/a/jar.mp4", [JAR, JAR, JAR], JAR, dur=4.0)
+    # trecho curtíssimo (1.5s, abaixo do piso) SEM marca de enumeração → pulado
+    plain = [{"text": "x", "start": 0.0, "end": 1.5, "visual_query": "jar"}]
+    r0, m0 = bs.select(plain, ["jar"], [asset])
+    check("trecho curto comum (< piso) é pulado",
+          r0[0]["skip"] is True and m0[0]["status"] == "skip")
+    # mesmo trecho curto MAS marcado como rajada ("3 ingredientes") → NÃO pula
+    enum = [{"text": "turmeric", "start": 0.0, "end": 1.5,
+             "visual_query": "turmeric", "_enum_group": 123}]
+    r1, m1 = bs.select(enum, ["turmeric root"], [asset])
+    check("sub-slot de enumeração (< piso) NÃO é pulado",
+          r1[0]["skip"] is False, extra=str(r1[0]))
+    check("sub-slot de enumeração recebe candidato",
+          len(r1[0]["candidates"]) >= 1 and m1[0]["status"] != "skip")
+
+
+def test_ed_pool_primary():
+    print("\n[11] vertical ED: pasta +18 é o pool PRIMÁRIO em TODO segmento")
+    V = _unit([1, 0, 0])
+    bs.embed_text = lambda texts: np.array([V])
+    bs.load_tags = lambda p: None
+    ed = _asset("/ed/clip.mp4", [V], V, dur=6.0)
+    ed["_source"] = "ed"; ed["_local_only"] = True
+    lib = _asset("/lib/other.mp4", [V], V, dur=6.0)   # biblioteca com MESMO score
+    pool = [ed, lib]
+    # tanto fala íntima quanto não-íntima escolhem a pasta +18 (não a biblioteca)
+    for label, txt in [("íntimo", "fuck my wife entire night"),
+                       ("não-íntimo", "take this every single morning")]:
+        r, _ = bs.select([{"text": txt, "start": 0.0, "end": 5.0, "visual_query": txt}],
+                         [txt], pool, vertical="ED")
+        check(f"{label}: escolhe a pasta +18 (não a biblioteca)",
+              r[0]["candidates"] and r[0]["candidates"][0]["path"] == "/ed/clip.mp4",
+              extra=str([c["path"] for c in r[0]["candidates"]]))
+
+
+def test_ed_guaranteed_fill():
+    print("\n[12] vertical ED: trecho sem opção na biblioteca é PREENCHIDO com ED+ (não vazio)")
+    SEX = _unit([1, 0, 0]); PILLS = _unit([0, 1, 0])
+    ed = _asset("/ed/x.mp4", [SEX], SEX, dur=6.0)
+    ed["_source"] = "ed"; ed["_local_only"] = True
+    lib = _asset("/lib/weak.mp4", [PILLS], PILLS, dur=6.0)   # biblioteca, score fraco
+    pool = [lib, ed]
+    bs.load_tags = lambda p: None
+    real_search = bs.search
+    _gen, _ok = bs.GEN_THRESHOLD, bs.OK_THRESHOLD     # outros testes mexem nisso
+    bs.GEN_THRESHOLD, bs.OK_THRESHOLD = 0.58, 0.82    # 0.40 da biblioteca fica abaixo → fill
+
+    def fake_search(query, brolls, **kw):
+        srcs = {b["path"] for b in brolls}
+        # busca primária (pool cheio): melhor da biblioteca é FRACO (< limiar), não-local
+        if "/lib/weak.mp4" in srcs and "/ed/x.mp4" in srcs:
+            return [{"path": "/lib/weak.mp4", "filename": "weak.mp4", "duration": 6.0,
+                     "score": 0.40, "source": "project", "visual_similarity": 0.4, "tag_sim": 0.0}]
+        # _ed_fill (só pool ED+): devolve o clipe da pasta +18 pra preencher
+        if srcs == {"/ed/x.mp4"}:
+            return [{"path": "/ed/x.mp4", "filename": "x.mp4", "duration": 6.0, "score": 0.30,
+                     "source": "ed", "_local_only": True, "visual_similarity": 0.3, "tag_sim": 0.0}]
+        return []
+    bs.search = fake_search
+    try:
+        seg = [{"text": "pills full of side effects", "start": 0.0, "end": 5.0,
+                "visual_query": "pills"}]
+        _, m = bs.select(seg, ["pills"], pool, vertical="ED")
+        check("não-íntimo sem opção boa → preenchido com ED+ (status != no_broll)",
+              m[0]["status"] != "no_broll" and m[0]["broll_path"] == "/ed/x.mp4",
+              extra=f'{m[0]["status"]} {m[0].get("broll_path")}')
+    finally:
+        bs.search = real_search
+        bs.GEN_THRESHOLD, bs.OK_THRESHOLD = _gen, _ok
+
+
 if __name__ == "__main__":
     test_best_frame()
     test_bonuses()
@@ -239,5 +314,8 @@ if __name__ == "__main__":
     test_selective_vision()
     test_exclude_timeline()
     test_style_bonus()
+    test_enum_exemption()
+    test_ed_pool_primary()
+    test_ed_guaranteed_fill()
     print("\n" + ("✅ TODOS PASSARAM" if not _fails else f"❌ FALHARAM: {_fails}"))
     raise SystemExit(1 if _fails else 0)

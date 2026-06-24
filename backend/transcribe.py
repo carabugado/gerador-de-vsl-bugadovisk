@@ -108,6 +108,46 @@ def _find_sidecar(video_path: str) -> Optional[str]:
     return None
 
 
+_ANCHOR_STOP = {
+    "that", "this", "with", "your", "from", "they", "what", "when", "have", "will",
+    "about", "into", "just", "then", "than", "there", "their", "them", "because",
+    "really", "very", "going", "would", "could", "should", "been", "were", "still",
+    # PT leves (caso a VSL seja em português)
+    "como", "para", "você", "isso", "esse", "essa", "uma", "mais", "muito",
+    "porque", "sobre", "quando", "onde", "também", "então",
+}
+
+
+def word_anchor(words, query, seg_start, seg_end, min_dur: float = 3.0,
+                min_shift: float = 0.4) -> Optional[float]:
+    """Tempo da PALAVRA-CHAVE concreta do trecho, pra começar o b-roll NELA (em vez do
+    começo da frase). Casa os tokens da descrição visual (query) com as palavras faladas.
+    Retorna None (= usa o começo do trecho) quando: não há palavras, nenhuma casa, o
+    ganho é pequeno (< min_shift) ou não sobraria `min_dur` de b-roll. Conservador: só
+    ADIANTA o start, nunca encurta abaixo de min_dur. Funciona quando narração e query
+    estão no mesmo idioma (VSL em inglês = mercado-alvo); senão devolve None (sem dano)."""
+    if not words:
+        return None
+    qtokens = {t for t in re.findall(r"[a-zà-ÿ]{4,}", (query or "").lower())
+               if t not in _ANCHOR_STOP}
+    if not qtokens:
+        return None
+    limit = float(seg_end) - float(min_dur)
+    floor = float(seg_start) + float(min_shift)
+    for w in words:
+        wt = re.sub(r"[^a-zà-ÿ]", "", str(w.get("word", "")).lower())
+        if len(wt) < 4 or wt in _ANCHOR_STOP:
+            continue
+        if wt in qtokens or any((wt in t or t in wt) for t in qtokens):
+            ws = float(w.get("start", seg_start))
+            if ws <= floor:        # palavra-chave já no começo → não muda nada
+                return None
+            if ws > limit:         # palavra muito no fim → não sobra b-roll
+                return None
+            return round(ws, 3)
+    return None
+
+
 def transcribe(video_path: str, use_cache: bool = True) -> List[Dict]:
     """
     Retorna lista de segmentos da TRANSCRIÇÃO da origem (tempo do arquivo):
@@ -153,10 +193,19 @@ def transcribe(video_path: str, use_cache: bool = True) -> List[Dict]:
         result = model.transcribe(audio_path, word_timestamps=True)
         segments = []
         for seg in result["segments"]:
+            # guarda os tempos de PALAVRA (antes descartados) — usados pra ancorar o
+            # b-roll na palavra-chave concreta do trecho (#ancoragem por palavra).
+            words = [
+                {"word": (w.get("word", "") or "").strip(),
+                 "start": round(float(w.get("start", seg["start"])), 3),
+                 "end": round(float(w.get("end", seg["end"])), 3)}
+                for w in (seg.get("words") or []) if (w.get("word") or "").strip()
+            ]
             segments.append({
                 "start": round(seg["start"], 3),
                 "end": round(seg["end"], 3),
                 "text": seg["text"].strip(),
+                "words": words,
             })
         if use_cache:
             os.makedirs(CACHE_DIR, exist_ok=True)
@@ -226,16 +275,33 @@ def transcribe_composition(clips: List[Dict], use_cache: bool = True) -> List[Di
             if host is None:
                 continue  # trecho da origem que não está na timeline
             in_pt = float(host.get("in_point", 0) or 0)
+            out_pt = host.get("out_point", None)
+            out_pt = float(out_pt) if out_pt is not None else None
+            # #1 recorta o segmento na janela de ORIGEM do corte — não deixa o texto/
+            # tempo vazar pro próximo corte (desalinhava o b-roll nas bordas dos cortes).
+            cs = max(s, in_pt)
+            ce = min(e, out_pt) if out_pt is not None else e
+            if ce - cs < 0.15:
+                continue  # sobreposição mínima com este corte → o texto é do vizinho
             seq_start = float(host.get("seq_start", 0) or 0)
             offset = seq_start - in_pt  # mapeamento linear origem→sequência
-            new_start = s + offset
-            new_end = e + offset
+            new_start = cs + offset
+            new_end = ce + offset
             if new_end <= new_start:
                 continue
+            # #2 palavras dentro da janela recortada, remapeadas pro tempo de sequência
+            words = [
+                {"word": w.get("word", ""),
+                 "start": round(float(w.get("start", cs)) + offset, 3),
+                 "end": round(float(w.get("end", ce)) + offset, 3)}
+                for w in (seg.get("words") or [])
+                if cs - 0.05 <= float(w.get("start", -1)) <= ce + 0.05
+            ]
             out.append({
                 "start": round(new_start, 3),
                 "end": round(new_end, 3),
                 "text": seg["text"],
+                "words": words,
             })
 
     out.sort(key=lambda x: x["start"])

@@ -43,17 +43,16 @@ if ! command -v ffmpeg &>/dev/null; then
   echo "    (necessário para extração de áudio)"
 fi
 
-echo "[4/4] Criando atalho para iniciar o servidor..."
-cat > "$SCRIPT_DIR/start_server.sh" << 'EOF'
-#!/bin/bash
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/backend/.venv/bin/activate"
-cd "$SCRIPT_DIR/backend"
-echo "🚀 Servidor VSL iniciando em http://127.0.0.1:7821"
-echo "   Deixe esta janela aberta enquanto usa o Premiere."
-python server.py
-EOF
-chmod +x "$SCRIPT_DIR/start_server.sh"
+echo "[4/4] Preparando o atalho de inicialização..."
+# Usa o start_server.sh versionado no repo (ele sobe o Ollama de reserva e exporta os
+# modelos). NÃO regerar aqui — a versão mínima antiga apagava esse comportamento e
+# fazia o pipeline cair pra nuvem sem o usuário entender por quê.
+if [ -f "$SCRIPT_DIR/start_server.sh" ]; then
+  chmod +x "$SCRIPT_DIR/start_server.sh"
+else
+  echo "⚠️  start_server.sh não encontrado no repo — rode o servidor com:"
+  echo "    cd backend && source .venv/bin/activate && python server.py"
+fi
 
 echo ""
 echo "======================================"

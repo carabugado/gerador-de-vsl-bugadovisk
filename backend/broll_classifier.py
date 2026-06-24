@@ -12,6 +12,7 @@ ANTES de buscar na pasta. Esse perfil alimenta o scoring (broll_score.py).
 """
 import os
 import json
+import math
 import hashlib
 import tempfile
 import concurrent.futures
@@ -94,6 +95,18 @@ CLASSIFIER_SYSTEM_OLLAMA = (
     'this offer won\'t last."\nOUTPUT: {"block_type": "cta", "emotion": "urgency", '
     '"energy": "high", "visual_type": "none", "broll_scene": "NO BROLL - show offer '
     'page on screen", "avoid": "any broll - this is CTA", "duration": 0}\n\n'
+    'Exemplo 6 (ENUMERAÇÃO — o trecho LISTA 2+ visuais distintos → preencha '
+    '"broll_items" com um clip por item, em inglês concreto):\nINPUT: "This formula '
+    'combines three powerful ingredients: turmeric, ginger and black pepper."\n'
+    'OUTPUT: {"block_type": "ingredients", "emotion": "confidence", "energy": '
+    '"medium", "visual_type": "illustrative", "broll_scene": "close-up of turmeric, '
+    'ginger and black pepper on a kitchen counter", "broll_items": ["fresh turmeric '
+    'root close-up", "fresh ginger root on cutting board", "black peppercorns in a '
+    'wooden spoon"], "avoid": "pills, lab", "duration": 5}\n\n'
+    'REGRA broll_items: SÓ inclua quando o trecho ENUMERA 2+ coisas visuais distintas '
+    "(ingredientes, sintomas, partes do corpo, etapas) que merecem clipes separados — "
+    "liste cada uma como uma cena concreta em inglês. Caso normal: NÃO inclua o campo "
+    '(ou use []).\n\n'
     "Retorne APENAS o JSON. Sem explicação, sem markdown."
 )
 
@@ -408,6 +421,61 @@ def split_enumerations(segments: List[Dict], profiles: List[Dict]):
                 p["broll_items"] = []
                 out_segs.append(sub)
                 out_profs.append(p)
+        else:
+            out_segs.append(seg)
+            out_profs.append(prof)
+    return out_segs, out_profs
+
+
+LONG_SEG_MIN     = float(os.environ.get("LONG_SEG_MIN", "4.0"))      # só fatia trechos >= isso
+LONG_SEG_SLOT    = float(os.environ.get("LONG_SEG_SLOT", "5.0"))     # alvo de seg por sub-slot (densidade normal)
+LONG_SEG_MIN_SUB = float(os.environ.get("LONG_SEG_MIN_SUB", "2.0"))  # cada sub-slot >= isso
+# Regra do editor: "não pode ter 3 segundos da mesma coisa na tela". No modo INTENSO
+# (default do vertical ED) cada sub-slot é forçado a <= MAX_SHOT → o visual troca antes
+# de 3s. Cada slot recebe um clipe DISTINTO (dedup M2 da seleção).
+MAX_SHOT         = float(os.environ.get("MAX_SHOT_SEC", "3.0"))
+_NO_SPLIT_ARCS   = {"cta"}                                            # blocos que não recebem b-roll
+_DENSITY_FACTOR  = {"calm": 1.6, "normal": 1.0, "intense": 0.65}     # slot maior = menos cortes
+
+
+def split_long_segments(segments: List[Dict], profiles, density: str = "normal"):
+    """Fatia trechos LONGOS de narração em vários sub-slots de TEMPO — cada um recebe um
+    clipe DISTINTO (a dedup de sequência M2 da seleção evita repetir a mesma cena). Ataca
+    o teto de "1 clipe por trecho" (a causa real de "seleciona poucos"), INDEPENDENTE de o
+    trecho enumerar coisas. Conservador: só trechos >= LONG_SEG_MIN, que NÃO sejam já uma
+    rajada de enumeração e que recebam b-roll (CTA não). Marca cada slot com `_enum_group`
+    (reusa a plumbing de rajada: isento do piso de 3s na seleção + ritmo sem gap/limite de
+    consecutivos entre irmãos). density: "calm" (menos cortes) | "normal" | "intense" (mais).
+    Retorna (segments, profiles) alinhados 1:1 — pronto pro resto do pipeline."""
+    profiles = profiles if profiles is not None else [None] * len(segments)
+    slot_target = LONG_SEG_SLOT * _DENSITY_FACTOR.get(density, 1.0)
+    out_segs, out_profs = [], []
+    for seg, prof in zip(segments, profiles):
+        if seg.get("_enum_group") is not None:          # já é rajada → não re-fatia
+            out_segs.append(seg); out_profs.append(prof); continue
+        try:
+            dur = float(seg["end"]) - float(seg["start"])
+        except (KeyError, TypeError, ValueError):
+            dur = 0.0
+        arc = str(seg.get("arc_position", "")).lower()
+        eligible = dur >= LONG_SEG_MIN and arc not in _NO_SPLIT_ARCS
+        n = int(round(dur / slot_target)) if eligible else 0
+        # Regra "nada > 3s na tela": no modo intenso, garante fatias <= MAX_SHOT (mais cortes)
+        if eligible and density == "intense":
+            n = max(n, math.ceil(dur / MAX_SHOT))
+        n = min(n, int(dur // LONG_SEG_MIN_SUB))        # garante cada slot >= LONG_SEG_MIN_SUB
+        if n >= 2:
+            slot = dur / n
+            gid = id(seg)
+            for k in range(n):
+                sub = dict(seg)
+                sub["start"] = round(float(seg["start"]) + k * slot, 3)
+                sub["end"]   = round(float(seg["start"]) + (k + 1) * slot, 3)
+                sub["_enum_group"] = gid                 # rajada → ritmo/seleção tratam igual
+                if k > 0:
+                    sub["lettering"] = False              # lettering só no 1º sub-slot
+                out_segs.append(sub)
+                out_profs.append(dict(prof) if prof else prof)
         else:
             out_segs.append(seg)
             out_profs.append(prof)

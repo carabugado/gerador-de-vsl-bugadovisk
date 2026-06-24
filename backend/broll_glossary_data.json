@@ -1,0 +1,4038 @@
+[
+ {
+  "concept": "knee_pain",
+  "triggers": [
+   "joelho",
+   "joelhos",
+   "knee",
+   "knees",
+   "dor no joelho",
+   "knee pain",
+   "dor nos joelhos"
+  ],
+  "visuals": [
+   "a person holding their knee with both hands in pain",
+   "close-up of a swollen knee joint",
+   "a 3D anatomical illustration of a knee joint highlighted in red",
+   "an older person rubbing their painful knee while sitting"
+  ],
+  "avoid": [
+   "happy person dancing",
+   "surgery scene",
+   "before and after comparison"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "back_pain",
+  "triggers": [
+   "costas",
+   "dor nas costas",
+   "back pain",
+   "upper back",
+   "dor na coluna",
+   "coluna",
+   "dor na coluna vertebral"
+  ],
+  "visuals": [
+   "a person pressing a hand against their upper back in discomfort",
+   "close-up of a person arching their painful back",
+   "a 3D anatomical illustration of a spine highlighted in red",
+   "a man grimacing while holding his back"
+  ],
+  "avoid": [
+   "happy person running",
+   "surgery scene"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "lower_back_pain",
+  "triggers": [
+   "lombar",
+   "lombal",
+   "dor lombar",
+   "lower back",
+   "lower back pain",
+   "lombalgia",
+   "região lombar"
+  ],
+  "visuals": [
+   "a person placing both hands on their lower back in pain",
+   "close-up of hands pressing the lower back",
+   "an older woman holding her lower back while bending",
+   "a 3D anatomical illustration of the lumbar spine highlighted in red"
+  ],
+  "avoid": [
+   "happy person lifting weights with ease"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "shoulder_pain",
+  "triggers": [
+   "ombro",
+   "ombros",
+   "shoulder",
+   "shoulders",
+   "dor no ombro",
+   "shoulder pain"
+  ],
+  "visuals": [
+   "a person clutching their shoulder in pain",
+   "close-up of a hand gripping a sore shoulder",
+   "a 3D anatomical illustration of a shoulder joint highlighted in red",
+   "a man wincing while rotating his stiff shoulder"
+  ],
+  "avoid": [
+   "happy person swimming"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "neck_pain",
+  "triggers": [
+   "pescoço",
+   "nuca",
+   "cervical",
+   "neck pain",
+   "dor no pescoço",
+   "stiff neck",
+   "torcicolo"
+  ],
+  "visuals": [
+   "a person rubbing the back of their stiff neck",
+   "close-up of a hand massaging a painful neck",
+   "a woman tilting her head while holding her sore neck",
+   "a 3D anatomical illustration of the cervical spine highlighted in red"
+  ],
+  "avoid": [
+   "happy person looking around freely"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "headache_dizziness",
+  "triggers": [
+   "cabeça",
+   "dor de cabeça",
+   "headache",
+   "enxaqueca",
+   "migraine",
+   "dor na cabeça",
+   "tontura",
+   "tonto",
+   "vertigem",
+   "cabeça latejando",
+   "dizziness",
+   "dizzy",
+   "lightheaded",
+   "throbbing head"
+  ],
+  "visuals": [
+   "a person pressing both hands against their temples with a painful headache",
+   "a woman closing her eyes and rubbing her forehead in pain",
+   "a person steadying themselves against a wall feeling dizzy",
+   "close-up of a pained face squinting from a throbbing migraine"
+  ],
+  "avoid": [
+   "happy person laughing",
+   "real surgery footage"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "belly_stomach",
+  "triggers": [
+   "barriga",
+   "estômago",
+   "abdômen",
+   "abdomen",
+   "belly",
+   "stomach",
+   "tummy",
+   "dor de barriga",
+   "stomach ache"
+  ],
+  "visuals": [
+   "a person holding their stomach with both hands in discomfort",
+   "close-up of hands pressing on the belly",
+   "a woman placing her hands over her bloated stomach",
+   "a 3D anatomical illustration of a stomach highlighted in red"
+  ],
+  "avoid": [
+   "surgery scene"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "hip_pain",
+  "triggers": [
+   "quadril",
+   "quadris",
+   "hip",
+   "hips",
+   "dor no quadril",
+   "hip pain"
+  ],
+  "visuals": [
+   "a person holding their hip in pain while standing",
+   "close-up of a hand pressing on a sore hip",
+   "an older woman holding her hip while walking",
+   "a 3D anatomical illustration of a hip joint highlighted in red"
+  ],
+  "avoid": [
+   "happy person dancing freely"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "hand_wrist_pain",
+  "triggers": [
+   "mãos",
+   "punho",
+   "pulso",
+   "hand pain",
+   "wrist",
+   "dor nas mãos",
+   "dor no punho",
+   "wrist pain"
+  ],
+  "visuals": [
+   "a person rubbing their aching hand and wrist",
+   "close-up of hands holding a stiff sore wrist",
+   "an older person flexing painful fingers and wrist",
+   "a 3D anatomical illustration of a wrist joint highlighted in red"
+  ],
+  "avoid": [
+   "happy person typing fast with ease"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "feet_pain",
+  "triggers": [
+   "pés",
+   "foot",
+   "feet",
+   "dor nos pés",
+   "foot pain",
+   "planta do pé",
+   "sole of foot"
+  ],
+  "visuals": [
+   "a person sitting and rubbing their sore foot",
+   "close-up of hands massaging the sole of a foot",
+   "a woman holding her aching foot after taking off a shoe",
+   "a 3D anatomical illustration of a foot highlighted in red"
+  ],
+  "avoid": [
+   "happy person running barefoot on the beach"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "finger_joint_pain",
+  "triggers": [
+   "dedo",
+   "dedos",
+   "finger",
+   "fingers",
+   "nó dos dedos",
+   "knuckle",
+   "knuckles",
+   "dor nos dedos",
+   "finger pain"
+  ],
+  "visuals": [
+   "close-up of swollen aching finger joints",
+   "an older person rubbing their stiff fingers",
+   "a hand struggling to bend painful knuckles",
+   "a 3D anatomical illustration of finger joints highlighted in red"
+  ],
+  "avoid": [
+   "happy person playing piano effortlessly"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "joints_general",
+  "triggers": [
+   "articulação",
+   "articulações",
+   "junta",
+   "juntas",
+   "joint",
+   "joints",
+   "dor nas articulações",
+   "joint pain",
+   "stiff joints",
+   "achy joints",
+   "body aches",
+   "aching joints",
+   "sore joints",
+   "dor nas juntas",
+   "dor articular",
+   "dores no corpo"
+  ],
+  "visuals": [
+   "a person rubbing an aching joint in discomfort",
+   "close-up of stiff swollen joints",
+   "a 3D anatomical illustration of joints glowing in red",
+   "an older woman wincing as she massages her aching joints"
+  ],
+  "avoid": [
+   "happy person exercising with full mobility",
+   "real surgery footage"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "eyes_vision",
+  "triggers": [
+   "olho",
+   "olhos",
+   "vista",
+   "visão",
+   "eyes",
+   "vision",
+   "eyesight",
+   "olhos cansados",
+   "vista cansada"
+  ],
+  "visuals": [
+   "a person rubbing their tired strained eyes",
+   "close-up of a human eye",
+   "an older person squinting while trying to read",
+   "a 3D anatomical illustration of a human eye"
+  ],
+  "avoid": [
+   "eye surgery scene",
+   "happy person reading effortlessly"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "blurry_vision",
+  "triggers": [
+   "visão embaçada",
+   "visão turva",
+   "vista embaçada",
+   "embaçado",
+   "enxergar mal",
+   "blurry vision",
+   "blurred vision",
+   "fuzzy vision",
+   "cloudy vision",
+   "poor eyesight"
+  ],
+  "visuals": [
+   "point-of-view shot of a blurry out-of-focus eye chart",
+   "an older person squinting and struggling to read a book up close",
+   "blurry defocused view of a city street as seen by someone with poor vision",
+   "a person rubbing their tired eyes while looking at a screen"
+  ],
+  "avoid": [
+   "sharp clear crisp vision",
+   "person reading easily without glasses"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "prostate_pelvic",
+  "triggers": [
+   "próstata",
+   "prostate",
+   "bexiga",
+   "bladder",
+   "região pélvica",
+   "pelvic",
+   "urinary",
+   "trato urinário"
+  ],
+  "visuals": [
+   "a man holding his lower abdomen with discomfort",
+   "close-up of a man pressing his pelvic area",
+   "a 3D anatomical illustration of a prostate gland highlighted in red",
+   "a man standing with a hand on his lower belly looking uncomfortable"
+  ],
+  "avoid": [
+   "nudity",
+   "any sexual content",
+   "surgery scene",
+   "syringe or catheter"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "frequent_urination",
+  "triggers": [
+   "xixi",
+   "urina",
+   "urinar",
+   "vontade de urinar",
+   "urinate",
+   "urination",
+   "frequent urination",
+   "ir ao banheiro",
+   "bathroom urgency",
+   "noctúria",
+   "nighttime bathroom",
+   "urinar muito",
+   "micção frequente",
+   "ir ao banheiro a noite",
+   "bexiga fraca",
+   "urge to pee",
+   "bathroom at night",
+   "nighttime urination",
+   "weak bladder",
+   "constant urge"
+  ],
+  "visuals": [
+   "an older man getting out of bed at night to rush to the bathroom",
+   "a person waiting anxiously outside a closed restroom door",
+   "a man checking his watch with a worried face needing the bathroom again",
+   "a silhouette of a person walking to a glowing bathroom in the dark"
+  ],
+  "avoid": [
+   "nudity",
+   "toilet bowl close-up",
+   "any sexual content"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "nail_fungus",
+  "triggers": [
+   "unha",
+   "unha do pé",
+   "toenail",
+   "nail fungus",
+   "toenail fungus",
+   "micose",
+   "fungo na unha",
+   "micose na unha",
+   "unha amarela",
+   "unha grossa",
+   "fungal nail",
+   "yellow nail",
+   "thick nails"
+  ],
+  "visuals": [
+   "extreme close-up of a yellow thickened fungal toenail",
+   "close-up of cracked discolored toenails affected by fungus",
+   "a person examining their damaged yellow toenails with concern",
+   "macro shot of crumbling fungal nail on a bare foot"
+  ],
+  "avoid": [
+   "before and after nail comparison",
+   "real surgery footage",
+   "fungus medication or pill"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "scalp_hair_root",
+  "triggers": [
+   "couro cabeludo",
+   "scalp",
+   "raiz do cabelo",
+   "hair root",
+   "hair follicle",
+   "folículo",
+   "comichão no couro cabeludo",
+   "itchy scalp"
+  ],
+  "visuals": [
+   "close-up of a person parting their hair to show the scalp",
+   "a person scratching their scalp",
+   "close-up of hair roots and scalp",
+   "a 3D illustration of a hair follicle in the scalp"
+  ],
+  "avoid": [
+   "bald shaming",
+   "hair transplant surgery",
+   "before and after comparison"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "leg_thigh",
+  "triggers": [
+   "perna",
+   "pernas",
+   "coxa",
+   "coxas",
+   "thigh",
+   "thighs",
+   "dor nas pernas",
+   "leg pain",
+   "panturrilha",
+   "calf"
+  ],
+  "visuals": [
+   "a person rubbing their aching leg while sitting",
+   "close-up of hands massaging a sore thigh",
+   "an older person holding their leg in discomfort",
+   "a 3D anatomical illustration of leg muscles highlighted in red"
+  ],
+  "avoid": [
+   "happy person sprinting with ease"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "ankle_pain",
+  "triggers": [
+   "tornozelo",
+   "tornozelos",
+   "ankle",
+   "ankles",
+   "dor no tornozelo",
+   "ankle pain",
+   "twisted ankle",
+   "torção"
+  ],
+  "visuals": [
+   "a person holding their swollen ankle in pain",
+   "close-up of a hand gripping a sore ankle",
+   "a person sitting on the floor cradling a twisted ankle",
+   "a 3D anatomical illustration of an ankle joint highlighted in red"
+  ],
+  "avoid": [
+   "happy person jumping freely"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "chest_heart_area",
+  "triggers": [
+   "peito",
+   "tórax",
+   "chest",
+   "peito apertado",
+   "chest tightness",
+   "região do coração",
+   "heart area",
+   "aperto no peito"
+  ],
+  "visuals": [
+   "a person pressing a hand against their chest with discomfort",
+   "close-up of a hand over the center of the chest",
+   "an older person clutching their chest while sitting",
+   "a 3D anatomical illustration of a chest with the heart area glowing"
+  ],
+  "avoid": [
+   "heart attack dramatization",
+   "surgery scene",
+   "medication or syringe"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "belly_fat",
+  "triggers": [
+   "gordura",
+   "barriga gorda",
+   "gordura na barriga",
+   "gordura abdominal",
+   "pneuzinho",
+   "belly fat",
+   "fat belly",
+   "stubborn fat",
+   "abdominal fat",
+   "muffin top",
+   "spare tire"
+  ],
+  "visuals": [
+   "close-up of a person pinching their belly fat with both hands",
+   "a person looking down at their large belly over the waistband of their jeans",
+   "a person measuring their waist with a tape measure",
+   "an overweight person sitting with a visible belly bulge under their shirt"
+  ],
+  "avoid": [
+   "before and after weight loss comparison",
+   "slim fit athletic body"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "inflammation_swelling",
+  "triggers": [
+   "inflamação",
+   "inflamado",
+   "inchaço",
+   "inchado",
+   "inchada",
+   "inflammation",
+   "inflamed",
+   "swelling",
+   "swollen",
+   "puffy"
+  ],
+  "visuals": [
+   "close-up of a red swollen ankle being touched by a hand",
+   "a person pressing a finger into puffy swollen skin leaving a mark",
+   "close-up of a swollen inflamed hand with reddened skin",
+   "a 3D medical render of glowing red inflamed tissue"
+  ],
+  "avoid": [
+   "real surgery footage",
+   "happy person dancing"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "joint_stiffness",
+  "triggers": [
+   "rigidez",
+   "rigidez articular",
+   "articulação rígida",
+   "junta travada",
+   "dureza nas juntas",
+   "stiffness",
+   "joint stiffness",
+   "stiff knees",
+   "creaky joints"
+  ],
+  "visuals": [
+   "an older person slowly and painfully bending their stiff fingers",
+   "a person clutching a stiff aching shoulder while trying to move their arm",
+   "close-up of arthritic hands struggling to make a fist",
+   "a person wincing while bending a stiff knee in the morning"
+  ],
+  "avoid": [
+   "athlete stretching easily",
+   "real surgery footage"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "memory_loss_brain_fog",
+  "triggers": [
+   "perda de memoria",
+   "esquecimento",
+   "esqueci",
+   "esquecida",
+   "nevoa mental",
+   "memoria fraca",
+   "memory loss",
+   "forgetfulness",
+   "forgetful",
+   "brain fog",
+   "foggy brain",
+   "mental fog",
+   "memory problems"
+  ],
+  "visuals": [
+   "a confused older person holding their head trying to remember something",
+   "a person searching the house unable to find their misplaced keys",
+   "a frustrated person staring blankly with a hand on their forehead",
+   "a foggy hazy abstract shot of a head silhouette representing brain fog"
+  ],
+  "avoid": [
+   "sharp focused student acing an exam"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "fatigue_low_energy",
+  "triggers": [
+   "cansaço",
+   "cansado",
+   "cansada",
+   "fadiga",
+   "exausto",
+   "exausta",
+   "sem energia",
+   "esgotado",
+   "falta de energia",
+   "tired",
+   "fatigue",
+   "exhausted",
+   "low energy",
+   "drained",
+   "worn out",
+   "no energy"
+  ],
+  "visuals": [
+   "an exhausted person slumped over a desk rubbing their tired eyes",
+   "a tired woman yawning while holding a coffee mug in the morning",
+   "a drained person lying on the couch too tired to get up",
+   "an older man sitting on the edge of the bed looking utterly worn out"
+  ],
+  "avoid": [
+   "energetic person sprinting joyfully"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "low_libido",
+  "triggers": [
+   "baixa libido",
+   "libido baixa",
+   "sem desejo",
+   "falta de desejo",
+   "perda de libido",
+   "low libido",
+   "low sex drive",
+   "loss of desire",
+   "lost the spark"
+  ],
+  "visuals": [
+   "a distant unhappy couple lying back-to-back in bed at night",
+   "a tired man sitting on the edge of the bed with his head down",
+   "a couple sitting apart on a sofa looking disconnected and sad",
+   "a sad woman lying awake while her partner sleeps turned away"
+  ],
+  "avoid": [
+   "nudity",
+   "sexual content",
+   "passionate intimate scene"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "insomnia_poor_sleep",
+  "triggers": [
+   "insonia",
+   "nao consigo dormir",
+   "sono ruim",
+   "noite mal dormida",
+   "acordar a noite",
+   "sem dormir",
+   "insomnia",
+   "poor sleep",
+   "cant sleep",
+   "sleepless",
+   "restless night",
+   "tossing and turning"
+  ],
+  "visuals": [
+   "a frustrated person lying awake in bed staring at the ceiling at night",
+   "a person looking at an alarm clock glowing 3 AM in a dark bedroom",
+   "a restless person tossing and turning under the covers at night",
+   "a tired woman sitting up in bed in the dark unable to sleep"
+  ],
+  "avoid": [
+   "person sleeping peacefully and waking up refreshed"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "high_blood_sugar",
+  "triggers": [
+   "acucar alto",
+   "acucar no sangue",
+   "glicemia alta",
+   "glicose alta",
+   "diabetes",
+   "blood sugar",
+   "high blood sugar",
+   "blood glucose",
+   "high glucose",
+   "sugar levels"
+  ],
+  "visuals": [
+   "close-up of a glucose meter displaying a high blood sugar reading",
+   "a person pricking their fingertip to test blood sugar with a glucometer",
+   "a 3D animation of sugar molecules flowing through a blood vessel",
+   "a person looking worried while reading a high number on a blood sugar monitor"
+  ],
+  "avoid": [
+   "insulin syringe injection",
+   "person taking pills as medicine"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "high_blood_pressure",
+  "triggers": [
+   "pressao alta",
+   "hipertensao",
+   "pressao arterial",
+   "high blood pressure",
+   "hypertension",
+   "blood pressure",
+   "high bp"
+  ],
+  "visuals": [
+   "close-up of a blood pressure monitor showing a high reading on the screen",
+   "a person sitting with a blood pressure cuff inflated on their upper arm",
+   "a 3D render of blood pumping forcefully through a narrowed artery",
+   "a worried older man checking his blood pressure at home"
+  ],
+  "avoid": [
+   "person taking pills as medicine",
+   "real surgery footage"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "hair_loss",
+  "triggers": [
+   "queda de cabelo",
+   "cabelo caindo",
+   "calvicie",
+   "careca",
+   "cabelo ralo",
+   "perda de cabelo",
+   "hair loss",
+   "hair falling out",
+   "balding",
+   "thinning hair",
+   "receding hairline",
+   "bald spot"
+  ],
+  "visuals": [
+   "close-up of loose hair strands tangled in a hairbrush",
+   "a worried man examining his thinning hairline and bald spot in the mirror",
+   "a person looking down at clumps of hair fallen into the shower drain",
+   "close-up of a thinning scalp with visible bald patches"
+  ],
+  "avoid": [
+   "before and after hair growth comparison",
+   "thick full healthy hair model"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "poor_digestion_bloating",
+  "triggers": [
+   "digestao ruim",
+   "ma digestao",
+   "inchaco abdominal",
+   "barriga estufada",
+   "estufado",
+   "gases",
+   "indigestao",
+   "bad digestion",
+   "poor digestion",
+   "bloating",
+   "bloated",
+   "abdominal bloating",
+   "indigestion",
+   "upset stomach"
+  ],
+  "visuals": [
+   "a person clutching their bloated swollen stomach in discomfort",
+   "a woman pressing both hands on her distended belly looking uncomfortable",
+   "close-up of a bloated abdomen pushing against a tight shirt",
+   "a person grimacing with stomach pain while sitting on the couch"
+  ],
+  "avoid": [
+   "person enjoying a big meal happily",
+   "real surgery footage"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "tingling_numbness",
+  "triggers": [
+   "formigamento",
+   "formigando",
+   "dormencia",
+   "adormecido",
+   "agulhadas",
+   "pernas dormentes",
+   "tingling",
+   "numbness",
+   "pins and needles",
+   "prickling",
+   "tingling feet"
+  ],
+  "visuals": [
+   "close-up of a person rubbing their tingling numb hand",
+   "a 3D render of glowing nerve endings firing in a foot",
+   "a person shaking out a numb leg with pins and needles",
+   "close-up of someone massaging their numb tingling fingers"
+  ],
+  "avoid": [
+   "real surgery footage",
+   "needle injection"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "poor_circulation",
+  "triggers": [
+   "ma circulacao",
+   "circulacao ruim",
+   "maos frias",
+   "pes frios",
+   "circulacao",
+   "poor circulation",
+   "bad circulation",
+   "cold hands",
+   "cold feet",
+   "blood flow"
+  ],
+  "visuals": [
+   "a person rubbing their cold hands together to warm them up",
+   "close-up of pale cold feet being warmed under a blanket",
+   "a 3D animation of blood struggling to flow through a narrow vein",
+   "a person wrapping cold hands around a hot mug of tea"
+  ],
+  "avoid": [
+   "real surgery footage",
+   "needle injection"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "weak_grip_strength",
+  "triggers": [
+   "forca nas maos",
+   "maos fracas",
+   "sem forca",
+   "nao consigo abrir",
+   "abrir pote",
+   "weak grip",
+   "weak hands",
+   "cant open jar",
+   "losing grip",
+   "abrir um pote",
+   "pote de vidro"
+  ],
+  "visuals": [
+   "a person struggling and failing to open a tight jar lid",
+   "close-up of weak hands trembling while gripping a railing",
+   "an older person unable to twist open a bottle cap",
+   "a frustrated person giving up trying to grip a heavy bag"
+  ],
+  "avoid": [
+   "strong athletic grip lifting weights"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "difficulty_walking_climbing",
+  "triggers": [
+   "dificuldade para andar",
+   "dificuldade para subir",
+   "subir escada",
+   "subir escadas",
+   "levantar da cama",
+   "levantar da cadeira",
+   "trouble walking",
+   "hard to walk",
+   "climbing stairs",
+   "getting up",
+   "struggle to stand"
+  ],
+  "visuals": [
+   "an older person gripping the handrail struggling to climb a staircase",
+   "a person using both hands to painfully push themselves up from a chair",
+   "an elderly man slowly and carefully stepping up a single stair",
+   "a person struggling to get out of bed in the morning holding their back"
+  ],
+  "avoid": [
+   "person running up stairs energetically"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "frustration",
+  "triggers": [
+   "frustração",
+   "frustrado",
+   "frustrada",
+   "irritação",
+   "irritado",
+   "frustration",
+   "frustrated",
+   "fed up",
+   "annoyed"
+  ],
+  "visuals": [
+   "a frustrated person rubbing their forehead with a stressed expression",
+   "a man clenching his fists in frustration at a table",
+   "a woman throwing her hands up in exasperation",
+   "close-up of a person's tense face with a frown of frustration"
+  ],
+  "avoid": [
+   "smiling happy person",
+   "calm relaxed person"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "sadness",
+  "triggers": [
+   "tristeza",
+   "triste",
+   "abatido",
+   "abatida",
+   "deprimido",
+   "sadness",
+   "unhappy",
+   "heartbroken",
+   "downcast"
+  ],
+  "visuals": [
+   "a sad woman sitting alone looking down with a sorrowful expression",
+   "an older man with a melancholic face staring out a window",
+   "close-up of a person's downcast eyes filled with sadness",
+   "a person sitting on the edge of a bed with slumped shoulders"
+  ],
+  "avoid": [
+   "laughing person",
+   "celebration"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "fear_anxiety",
+  "triggers": [
+   "medo",
+   "ansiedade",
+   "ansioso",
+   "ansiosa",
+   "preocupado",
+   "preocupada",
+   "assustado",
+   "fear",
+   "anxiety",
+   "anxious",
+   "worried",
+   "scared",
+   "afraid"
+  ],
+  "visuals": [
+   "an anxious woman biting her nails with a worried look",
+   "a man sitting awake at night looking stressed and fearful",
+   "close-up of a worried face with wide eyes and furrowed brow",
+   "a person holding their head with an anxious overwhelmed expression"
+  ],
+  "avoid": [
+   "confident relaxed person",
+   "carefree smiling person"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "shame_embarrassment",
+  "triggers": [
+   "vergonha",
+   "envergonhado",
+   "envergonhada",
+   "constrangimento",
+   "constrangido",
+   "humilhação",
+   "shame",
+   "ashamed",
+   "embarrassed",
+   "embarrassment",
+   "humiliated"
+  ],
+  "visuals": [
+   "an embarrassed man covering his face with his hand in shame",
+   "a woman looking away avoiding eye contact with a shy uncomfortable expression",
+   "a person lowering their head with a red embarrassed face",
+   "close-up of a person hiding their face out of embarrassment"
+  ],
+  "avoid": [
+   "proud confident person",
+   "person posing boldly"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "discouragement_hopelessness",
+  "triggers": [
+   "desânimo",
+   "desanimado",
+   "desanimada",
+   "desesperança",
+   "sem esperança",
+   "desistir",
+   "discouraged",
+   "hopeless",
+   "hopelessness",
+   "giving up",
+   "defeated"
+  ],
+  "visuals": [
+   "a discouraged person sitting with head in hands feeling defeated",
+   "a man slumped on a couch staring blankly into space",
+   "a tired woman with a hopeless expression resting her chin on her hand",
+   "close-up of a weary face that has given up hope"
+  ],
+  "avoid": [
+   "energetic motivated person",
+   "person celebrating"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "loneliness_isolation",
+  "triggers": [
+   "solidão",
+   "sozinho",
+   "sozinha",
+   "solitário",
+   "isolado",
+   "isolada",
+   "loneliness",
+   "lonely",
+   "alone",
+   "isolated"
+  ],
+  "visuals": [
+   "a lonely older person sitting by themselves in an empty room",
+   "a solitary figure looking out a rainy window alone",
+   "a person sitting alone on a bench in an empty park",
+   "close-up of a sad isolated person with no one around"
+  ],
+  "avoid": [
+   "group of friends together",
+   "crowded happy gathering"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "anger",
+  "triggers": [
+   "raiva",
+   "bravo",
+   "brava",
+   "furioso",
+   "furiosa",
+   "irado",
+   "anger",
+   "angry",
+   "furious",
+   "rage"
+  ],
+  "visuals": [
+   "an angry man with a furious expression and clenched jaw",
+   "a woman frowning intensely with crossed arms in anger",
+   "close-up of a tense angry face with narrowed eyes",
+   "a person gritting their teeth in anger"
+  ],
+  "avoid": [
+   "peaceful smiling person",
+   "calm relaxed person"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "confidence",
+  "triggers": [
+   "confiança",
+   "confiante",
+   "autoconfiança",
+   "seguro de si",
+   "segura de si",
+   "confidence",
+   "confident",
+   "self-assured",
+   "empowered"
+  ],
+  "visuals": [
+   "a confident woman standing tall with a self-assured smile",
+   "a confident man with crossed arms looking directly at the camera",
+   "a person standing proudly with good posture and a bright expression",
+   "close-up of a confident face with a determined smile"
+  ],
+  "avoid": [
+   "insecure slouching person",
+   "person hiding their face"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "hope_optimism",
+  "triggers": [
+   "esperança",
+   "esperançoso",
+   "esperançosa",
+   "otimismo",
+   "otimista",
+   "hope",
+   "hopeful",
+   "optimism",
+   "optimistic"
+  ],
+  "visuals": [
+   "a hopeful woman looking up toward the light with a gentle smile",
+   "a person gazing at the sunrise with a hopeful expression",
+   "an optimistic man smiling softly while looking into the distance",
+   "close-up of a serene hopeful face bathed in warm light"
+  ],
+  "avoid": [
+   "hopeless defeated person",
+   "dark gloomy scene"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "relief",
+  "triggers": [
+   "alívio",
+   "aliviado",
+   "aliviada",
+   "que alívio",
+   "finalmente livre",
+   "relief",
+   "relieved",
+   "at ease",
+   "finally free"
+  ],
+  "visuals": [
+   "a relieved woman exhaling deeply with a calm smile and eyes closed",
+   "a man placing his hand on his chest with a look of relief",
+   "a person leaning back and relaxing with a peaceful relieved expression",
+   "close-up of a relaxed face letting out a sigh of relief"
+  ],
+  "avoid": [
+   "tense anxious person",
+   "person in distress"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "joy_happiness",
+  "triggers": [
+   "alegria",
+   "feliz",
+   "felicidade",
+   "contente",
+   "radiante",
+   "joy",
+   "joyful",
+   "happy",
+   "happiness",
+   "cheerful",
+   "smile",
+   "sorriso",
+   "sorrindo"
+  ],
+  "visuals": [
+   "a joyful woman laughing happily with a big bright smile",
+   "a happy couple smiling and laughing together",
+   "a cheerful older person beaming with a genuine happy smile",
+   "close-up of a radiant joyful face full of happiness"
+  ],
+  "avoid": [
+   "sad crying person",
+   "frowning person"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "gratitude",
+  "triggers": [
+   "gratidão",
+   "grato",
+   "grata",
+   "agradecido",
+   "agradecida",
+   "gratitude",
+   "grateful",
+   "thankful",
+   "blessed"
+  ],
+  "visuals": [
+   "a grateful woman with both hands over her heart and a thankful smile",
+   "an older person looking up with a warm grateful expression",
+   "a person with hands clasped together expressing heartfelt gratitude",
+   "close-up of a touched grateful face with soft eyes"
+  ],
+  "avoid": [
+   "angry ungrateful person",
+   "indifferent expression"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "energy_vitality",
+  "triggers": [
+   "energia",
+   "vitalidade",
+   "cheio de energia",
+   "disposição",
+   "vigor",
+   "revigorado",
+   "energy",
+   "vitality",
+   "energetic",
+   "vibrant",
+   "full of life"
+  ],
+  "visuals": [
+   "an energetic woman stretching with a vibrant smile in the morning",
+   "a vital older man jogging outdoors full of energy",
+   "a person jumping with arms raised full of vitality",
+   "a lively woman dancing happily with high energy"
+  ],
+  "avoid": [
+   "exhausted person lying down",
+   "tired sluggish person"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "peace_calm",
+  "triggers": [
+   "paz",
+   "calma",
+   "tranquilidade",
+   "tranquilo",
+   "tranquila",
+   "sereno",
+   "serenidade",
+   "peace",
+   "peaceful",
+   "calm",
+   "serene",
+   "tranquil"
+  ],
+  "visuals": [
+   "a calm woman meditating peacefully with eyes closed",
+   "a serene person breathing deeply in a quiet natural setting",
+   "a relaxed man sitting peacefully with a tranquil expression",
+   "close-up of a calm serene face at total peace"
+  ],
+  "avoid": [
+   "stressed anxious person",
+   "chaotic scene"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "determination_motivation",
+  "triggers": [
+   "determinação",
+   "determinado",
+   "determinada",
+   "motivação",
+   "motivado",
+   "motivada",
+   "foco",
+   "determination",
+   "determined",
+   "motivated",
+   "driven",
+   "focused"
+  ],
+  "visuals": [
+   "a determined woman with a focused resolute expression",
+   "a motivated man tying his shoes ready to take action",
+   "a person with a steady determined gaze looking ahead",
+   "close-up of a focused determined face full of resolve"
+  ],
+  "avoid": [
+   "giving up discouraged person",
+   "apathetic person"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "pride_accomplishment",
+  "triggers": [
+   "orgulho",
+   "orgulhoso",
+   "orgulhosa",
+   "realização",
+   "conquista",
+   "vitória pessoal",
+   "pride",
+   "proud",
+   "accomplished",
+   "achievement"
+  ],
+  "visuals": [
+   "a proud woman smiling with her chin held high",
+   "a person raising their arms in triumph with a proud smile",
+   "a satisfied older man nodding with a proud accomplished look",
+   "close-up of a beaming proud face glowing with accomplishment"
+  ],
+  "avoid": [
+   "ashamed person",
+   "defeated person"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "worry_overwhelm",
+  "triggers": [
+   "preocupação",
+   "sobrecarregado",
+   "sobrecarregada",
+   "estresse",
+   "estressado",
+   "estressada",
+   "tensão",
+   "worry",
+   "overwhelmed",
+   "stress",
+   "stressed",
+   "overwhelm"
+  ],
+  "visuals": [
+   "an overwhelmed woman surrounded by stress holding her head",
+   "a stressed man pinching the bridge of his nose with eyes closed",
+   "a worried person staring anxiously with a heavy expression",
+   "close-up of a tense stressed face overwhelmed with worry"
+  ],
+  "avoid": [
+   "carefree relaxed person",
+   "calm smiling person"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "freedom_lifestyle",
+  "triggers": [
+   "liberdade",
+   "livre",
+   "sua liberdade",
+   "freedom",
+   "free",
+   "your freedom",
+   "feel free",
+   "liberdade de novo"
+  ],
+  "visuals": [
+   "a woman standing on a mountain top with arms raised wide and open at sunrise",
+   "a person walking freely through an open green field with arms spread",
+   "a happy older couple standing outdoors looking at a wide open landscape"
+  ],
+  "avoid": [
+   "person in a hospital bed",
+   "person sitting alone looking sad indoors"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "travel_adventure",
+  "triggers": [
+   "viajar",
+   "viagem",
+   "viajando",
+   "ferias",
+   "ferias dos sonhos",
+   "travel",
+   "traveling",
+   "vacation",
+   "explore the world"
+  ],
+  "visuals": [
+   "an older couple with luggage smiling at an airport",
+   "a happy senior couple taking photos in front of a famous landmark",
+   "two travelers looking at a map together on a sunny city street",
+   "a smiling woman looking out an airplane window"
+  ],
+  "avoid": [
+   "person in a hospital bed"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "playing_with_grandkids",
+  "triggers": [
+   "netos",
+   "netinhos",
+   "brincar com os netos",
+   "neto",
+   "neta",
+   "grandkids",
+   "grandchildren",
+   "grandchild",
+   "play with grandkids",
+   "grandfather playing"
+  ],
+  "visuals": [
+   "a smiling grandfather playing in the park with two young grandchildren",
+   "an older woman lifting a laughing toddler grandchild in her arms outdoors",
+   "a grandfather pushing a child on a swing in a sunny backyard",
+   "grandparents and grandchildren playing together on the grass"
+  ],
+  "avoid": [
+   "person too tired to get off the couch"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "dancing_joy",
+  "triggers": [
+   "dancar",
+   "dancando",
+   "danca",
+   "baile",
+   "dancing",
+   "dance again",
+   "dance floor",
+   "dancar de novo"
+  ],
+  "visuals": [
+   "a happy older couple dancing together in a living room",
+   "a smiling woman dancing freely with arms in the air",
+   "an older couple slow dancing at a party with people clapping",
+   "a joyful man dancing in his kitchen"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "gardening_hobby",
+  "triggers": [
+   "jardinagem",
+   "jardim",
+   "cuidar do jardim",
+   "plantas",
+   "horta",
+   "gardening",
+   "gardening again",
+   "planting flowers",
+   "tend the garden"
+  ],
+  "visuals": [
+   "a smiling older woman planting flowers in a sunny garden",
+   "an older man kneeling and tending to vegetable plants in a backyard garden",
+   "a senior watering colorful flowers with a watering can",
+   "hands gently planting a small green seedling in soil"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "walking_outdoors",
+  "triggers": [
+   "caminhar",
+   "caminhada",
+   "passear",
+   "passeio",
+   "walking",
+   "go for a walk",
+   "stroll",
+   "caminhar de novo"
+  ],
+  "visuals": [
+   "a happy older couple walking hand in hand on a path through a sunny park",
+   "a smiling senior woman taking a brisk walk outdoors in the morning",
+   "two friends walking together along a tree-lined trail",
+   "an older man walking a dog in a green park"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "running_jogging",
+  "triggers": [
+   "correr",
+   "corrida",
+   "trotar",
+   "running",
+   "jogging",
+   "go for a run",
+   "correr de novo"
+  ],
+  "visuals": [
+   "a fit older man jogging on a path in the park at sunrise",
+   "a smiling woman running outdoors in athletic clothes",
+   "a senior runner stretching before a jog in a sunny park",
+   "a person jogging along a scenic beach boardwalk"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "beach_relaxation",
+  "triggers": [
+   "praia",
+   "litoral",
+   "areia",
+   "beach",
+   "seaside",
+   "ocean",
+   "by the sea",
+   "praia de novo"
+  ],
+  "visuals": [
+   "a happy older couple walking barefoot along the beach at sunset",
+   "a smiling senior woman relaxing in a chair on a sunny beach",
+   "an older couple sitting on the sand looking at the ocean",
+   "a person standing at the shoreline with waves washing over their feet"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "active_vibrant_life",
+  "triggers": [
+   "vida ativa",
+   "cheio de energia",
+   "energia",
+   "vitalidade",
+   "active life",
+   "active lifestyle",
+   "full of energy",
+   "vitality",
+   "active again"
+  ],
+  "visuals": [
+   "a smiling older couple riding bicycles together on a sunny trail",
+   "an energetic senior woman doing yoga outdoors in a park",
+   "a fit older man hiking up a green hill with a backpack",
+   "a group of active seniors exercising together outdoors"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "independence_self_sufficiency",
+  "triggers": [
+   "independencia",
+   "independente",
+   "por conta propria",
+   "sem ajuda",
+   "autonomia",
+   "independence",
+   "independent",
+   "on your own",
+   "without help",
+   "do it yourself"
+  ],
+  "visuals": [
+   "a confident older woman carrying her own grocery bags up the steps of her home",
+   "a smiling senior man confidently driving his car",
+   "an independent older woman cooking a meal alone in her bright kitchen",
+   "a senior confidently climbing the stairs without holding the railing"
+  ],
+  "avoid": [
+   "person being pushed in a wheelchair by a caregiver",
+   "person needing help to stand up"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "restful_sleep",
+  "triggers": [
+   "dormir bem",
+   "dormir",
+   "sono",
+   "sono profundo",
+   "boa noite de sono",
+   "noite de sono",
+   "sleep well",
+   "good sleep",
+   "deep sleep",
+   "sleeping peacefully",
+   "restful night"
+  ],
+  "visuals": [
+   "a person sleeping peacefully in bed with a calm expression",
+   "a woman sleeping soundly under soft white blankets at night",
+   "an older couple sleeping restfully side by side in a cozy bedroom",
+   "a man relaxing in bed with eyes closed in deep sleep"
+  ],
+  "avoid": [
+   "person lying awake staring at the ceiling at night"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "wake_up_refreshed",
+  "triggers": [
+   "acordar disposto",
+   "acordar bem",
+   "acordar descansado",
+   "acordar com energia",
+   "wake up refreshed",
+   "wake up energized",
+   "morning energy",
+   "wake up rested",
+   "start your day"
+  ],
+  "visuals": [
+   "a smiling woman stretching her arms happily as she wakes up in bed",
+   "a refreshed older man sitting up in bed by a sunny window in the morning",
+   "a person opening the curtains to bright morning sunlight with a smile",
+   "a woman waking up energized and smiling at sunrise"
+  ],
+  "avoid": [
+   "person hitting the snooze button exhausted"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "intimacy_connection",
+  "triggers": [
+   "intimidade",
+   "casal apaixonado",
+   "romance",
+   "conexao",
+   "carinho",
+   "intimacy",
+   "intimate moment",
+   "loving couple",
+   "closeness",
+   "reconnect"
+  ],
+  "visuals": [
+   "an older couple embracing tenderly and smiling at each other",
+   "a loving senior couple cuddling under a blanket on the sofa",
+   "a husband gently holding his wife's face and smiling",
+   "an affectionate couple holding hands and laughing together at home"
+  ],
+  "avoid": [
+   "nudity",
+   "anything sexual or explicit",
+   "couple in bed in a suggestive pose"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "family_gathering",
+  "triggers": [
+   "familia",
+   "reuniao em familia",
+   "reuniao familiar",
+   "almoco em familia",
+   "jantar em familia",
+   "family gathering",
+   "family reunion",
+   "family dinner",
+   "time with family"
+  ],
+  "visuals": [
+   "a large happy family laughing together around a dinner table",
+   "three generations of a family gathered and smiling outdoors",
+   "an older couple surrounded by their children and grandchildren at a backyard meal",
+   "a joyful family toasting glasses together at a celebration"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "confident_self_esteem",
+  "triggers": [
+   "confianca",
+   "confiante",
+   "autoestima",
+   "seguro de si",
+   "orgulho",
+   "confidence",
+   "confident",
+   "self-esteem",
+   "feel confident",
+   "proud of yourself"
+  ],
+  "visuals": [
+   "a confident older woman smiling proudly with arms crossed",
+   "a well-dressed senior man standing tall and smiling confidently",
+   "a confident woman looking at herself in the mirror and smiling",
+   "a proud older man walking down the street with a confident posture"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "carefree_laughter",
+  "triggers": [
+   "rindo",
+   "gargalhada",
+   "alegria",
+   "felicidade",
+   "sem preocupacao",
+   "laughing",
+   "laughter",
+   "carefree",
+   "smiling again"
+  ],
+  "visuals": [
+   "an older couple laughing together joyfully outdoors",
+   "a group of senior friends laughing around a cafe table",
+   "a happy woman throwing her head back laughing in the sunshine",
+   "two friends sharing a carefree laugh on a park bench"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "fishing_outdoor_hobby",
+  "triggers": [
+   "pescar",
+   "pescaria",
+   "pesca",
+   "fishing",
+   "go fishing",
+   "by the lake",
+   "fishing trip"
+  ],
+  "visuals": [
+   "a smiling older man fishing peacefully at the edge of a calm lake",
+   "a grandfather and grandchild fishing together from a wooden dock",
+   "a senior man casting a fishing line at sunrise by the water",
+   "two friends fishing from a small boat on a quiet lake"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "golf_leisure_sport",
+  "triggers": [
+   "golfe",
+   "jogar golfe",
+   "tenis",
+   "quadra",
+   "golf",
+   "play golf",
+   "tennis",
+   "round of golf"
+  ],
+  "visuals": [
+   "a smiling older man swinging a golf club on a green golf course",
+   "a senior couple riding a golf cart together on a sunny course",
+   "an older woman playing tennis and smiling on an outdoor court",
+   "a group of senior friends playing golf together"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "enjoying_nature",
+  "triggers": [
+   "natureza",
+   "ar puro",
+   "ao ar livre",
+   "campo",
+   "montanha",
+   "trilha",
+   "nature",
+   "fresh air",
+   "outdoors",
+   "hiking trail",
+   "in nature"
+  ],
+  "visuals": [
+   "an older couple hiking on a scenic mountain trail surrounded by green trees",
+   "a smiling senior woman breathing in fresh air in a sunny meadow",
+   "a person sitting peacefully on a rock overlooking a forest valley",
+   "an older man enjoying the view from a hilltop in nature"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "pet_companionship",
+  "triggers": [
+   "cachorro",
+   "passear com o cachorro",
+   "animal de estimacao",
+   "brincar com o cachorro",
+   "walk the dog",
+   "playing with the dog",
+   "puppy"
+  ],
+  "visuals": [
+   "a happy older woman walking her dog in a sunny park",
+   "a smiling senior man playing fetch with a dog in the backyard",
+   "an older couple cuddling their dog on the couch",
+   "a person laughing while a dog runs to greet them outdoors"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "doctor_authority",
+  "triggers": [
+   "médico",
+   "médica",
+   "doutor",
+   "doutora",
+   "doctor",
+   "physician",
+   "jaleco",
+   "white coat"
+  ],
+  "visuals": [
+   "a doctor in a white coat smiling at the camera in a clinic",
+   "a female physician with a stethoscope around her neck",
+   "a confident doctor standing with arms crossed in a hospital hallway"
+  ],
+  "avoid": [
+   "surgery scene",
+   "patient lying on operating table",
+   "syringe close-up"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "scientist_lab",
+  "triggers": [
+   "cientista",
+   "scientist",
+   "laboratório",
+   "laboratorio",
+   "researcher",
+   "pesquisador",
+   "pesquisadora",
+   "research team"
+  ],
+  "visuals": [
+   "a scientist in a white lab coat holding a test tube in a laboratory",
+   "a researcher examining a beaker of liquid at a lab bench",
+   "scientists working at a lab bench with scientific equipment",
+   "a woman in safety goggles pipetting liquid into a vial"
+  ],
+  "avoid": [
+   "explosion in lab",
+   "mad scientist cartoon"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "microscope_analysis",
+  "triggers": [
+   "microscópio",
+   "microscopio",
+   "microscope",
+   "under the microscope"
+  ],
+  "visuals": [
+   "a scientist looking into a microscope in a lab",
+   "close-up of a microscope with a sample slide on the stage",
+   "a researcher adjusting the focus knob on a microscope"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "clinical_study",
+  "triggers": [
+   "estudo clínico",
+   "estudo clinico",
+   "clinical study",
+   "clinical trial",
+   "ensaio clínico",
+   "ensaio clinico",
+   "estudo",
+   "study",
+   "pesquisa",
+   "research study"
+  ],
+  "visuals": [
+   "a researcher reviewing a clinical study document with charts",
+   "a scientist writing notes on a clipboard in a lab",
+   "close-up of a printed research paper with data tables",
+   "people reviewing medical data on a tablet in a clinic"
+  ],
+  "avoid": [
+   "surgery",
+   "pills as medicine"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "dna_genetics",
+  "triggers": [
+   "dna",
+   "genética",
+   "genetica",
+   "genetic",
+   "genes",
+   "código genético",
+   "codigo genetico",
+   "double helix",
+   "hélice",
+   "helice"
+  ],
+  "visuals": [
+   "a rotating 3D DNA double helix on a dark background",
+   "a glowing blue DNA strand animation",
+   "a scientist studying a 3D DNA model in a lab"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "cells_biology",
+  "triggers": [
+   "célula",
+   "celula",
+   "células",
+   "celulas",
+   "cell",
+   "cells",
+   "celular",
+   "cellular",
+   "molécula",
+   "molecula",
+   "molecules",
+   "nível celular",
+   "cellular level",
+   "mitocôndria",
+   "mitochondria"
+  ],
+  "visuals": [
+   "a 3D animation of cells floating in the bloodstream",
+   "close-up microscopic view of human cells with glowing nuclei",
+   "glowing molecules moving in a dark blue environment",
+   "a 3D render of a single cell dividing"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "rising_graph",
+  "triggers": [
+   "gráfico",
+   "grafico",
+   "graph",
+   "chart",
+   "resultados",
+   "results",
+   "crescimento",
+   "growth",
+   "subindo",
+   "rising",
+   "aumento",
+   "increase"
+  ],
+  "visuals": [
+   "an animated line graph rising upward on a screen",
+   "a bar chart with green bars climbing higher",
+   "a businessperson pointing at an upward trending graph",
+   "a 3D arrow going up over a chart"
+  ],
+  "avoid": [
+   "graph going down",
+   "red declining chart"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "ugc_testimonial",
+  "triggers": [
+   "depoimento",
+   "testimonial",
+   "testemunho",
+   "relato",
+   "história real",
+   "historia real",
+   "real story",
+   "user review",
+   "review"
+  ],
+  "visuals": [
+   "an ordinary person talking directly to the camera in their living room",
+   "a middle-aged woman speaking to a selfie camera at home",
+   "a man recording a video testimonial holding his phone",
+   "a happy person talking to the camera in a casual home setting"
+  ],
+  "avoid": [
+   "professional studio actor",
+   "scripted commercial"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "approval_checkmark",
+  "triggers": [
+   "aprovado",
+   "approved",
+   "aprovação",
+   "aprovacao",
+   "approval",
+   "verificado",
+   "verified",
+   "checkmark",
+   "selo",
+   "certified",
+   "certificado"
+  ],
+  "visuals": [
+   "a green checkmark appearing inside a circle",
+   "a hand stamping an APPROVED seal on a document",
+   "a glowing green tick mark on a dark background",
+   "a verified badge icon animating on screen"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "scientific_evidence",
+  "triggers": [
+   "comprovado",
+   "comprovada",
+   "proven",
+   "evidência",
+   "evidencia",
+   "evidence",
+   "ciência",
+   "ciencia",
+   "science",
+   "científico",
+   "cientifico",
+   "scientific"
+  ],
+  "visuals": [
+   "a scientist holding up a research document in a laboratory",
+   "a researcher pointing at data on a glowing screen",
+   "test tubes lined up in a rack with scientific equipment",
+   "close-up of hands analyzing lab results on paper"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "medical_expert_speaking",
+  "triggers": [
+   "especialista",
+   "specialist",
+   "expert",
+   "especialistas",
+   "experts",
+   "autoridade",
+   "authority",
+   "professor",
+   "professora"
+  ],
+  "visuals": [
+   "a doctor in a white coat explaining something to the camera",
+   "an expert in a suit speaking confidently in an office",
+   "a medical professional gesturing while talking in a clinic"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "lab_research_equipment",
+  "triggers": [
+   "equipamento",
+   "equipment",
+   "tubo de ensaio",
+   "test tube",
+   "beaker",
+   "pipeta",
+   "pipette",
+   "vidraria",
+   "amostras",
+   "samples"
+  ],
+  "visuals": [
+   "rows of test tubes filled with colored liquid in a lab",
+   "a pipette dropping liquid into a petri dish",
+   "close-up of laboratory glassware with bubbling liquid",
+   "a centrifuge spinning samples in a research lab"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "data_screen_analysis",
+  "triggers": [
+   "dados",
+   "data",
+   "análise",
+   "analise",
+   "analysis",
+   "estatística",
+   "estatistica",
+   "statistics",
+   "números",
+   "numeros",
+   "numbers"
+  ],
+  "visuals": [
+   "a scientist analyzing data on a large computer screen",
+   "glowing data visualizations on a holographic display",
+   "a person reviewing charts and numbers on a monitor",
+   "close-up of a screen full of scientific data and graphs"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "doctor_recommends",
+  "triggers": [
+   "recomendado por médicos",
+   "recomendado por medicos",
+   "doctor recommended",
+   "médicos recomendam",
+   "medicos recomendam",
+   "doctors recommend",
+   "indicado por médicos",
+   "indicado por medicos"
+  ],
+  "visuals": [
+   "a doctor giving a thumbs up in a clinic",
+   "a smiling doctor nodding while talking to a patient",
+   "a physician shaking hands with a happy patient"
+  ],
+  "avoid": [
+   "doctor handing pills",
+   "prescription pad with medication"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "breakthrough_discovery",
+  "triggers": [
+   "descoberta",
+   "discovery",
+   "breakthrough",
+   "avanço",
+   "avanco",
+   "inovação",
+   "inovacao",
+   "innovation",
+   "revolucionário",
+   "revolucionario",
+   "revolutionary"
+  ],
+  "visuals": [
+   "a scientist looking excited while holding a test tube up to the light",
+   "a researcher having a eureka moment in a lab",
+   "a glowing light bulb above scientific equipment",
+   "two scientists pointing at a screen in surprise"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "university_institution",
+  "triggers": [
+   "universidade",
+   "university",
+   "instituto",
+   "institute",
+   "harvard",
+   "faculdade",
+   "college",
+   "instituição",
+   "instituicao",
+   "centro de pesquisa",
+   "research center"
+  ],
+  "visuals": [
+   "the exterior of a prestigious university building with columns",
+   "a modern research institute building",
+   "a campus walkway with academic buildings in the background"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "real_people_results",
+  "triggers": [
+   "pessoas reais",
+   "real people",
+   "milhares de pessoas",
+   "thousands of people",
+   "clientes satisfeitos",
+   "satisfied customers",
+   "muitas pessoas",
+   "many people"
+  ],
+  "visuals": [
+   "a diverse group of happy people smiling at the camera",
+   "a montage of different smiling faces of ordinary people",
+   "several people giving thumbs up outdoors"
+  ],
+  "avoid": [
+   "before and after comparison",
+   "weight loss before after photos"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "study_participants",
+  "triggers": [
+   "participantes",
+   "participants",
+   "voluntários",
+   "voluntarios",
+   "volunteers",
+   "grupo de teste",
+   "test group",
+   "testaram",
+   "tested",
+   "sujeitos"
+  ],
+  "visuals": [
+   "a group of diverse people sitting in a clinical waiting room",
+   "people filling out forms in a research study setting",
+   "a nurse talking with participants in a clinic"
+  ],
+  "avoid": [
+   "people taking pills",
+   "injection scene"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "ingredient_science",
+  "triggers": [
+   "ingrediente",
+   "ingredient",
+   "ingredientes",
+   "ingredients",
+   "composto",
+   "compound",
+   "extrato",
+   "extract",
+   "fórmula",
+   "formula",
+   "princípio ativo",
+   "principio ativo"
+  ],
+  "visuals": [
+   "a 3D molecule structure rotating next to a natural plant",
+   "close-up of a scientist studying a plant extract in a vial",
+   "natural ingredients displayed next to laboratory equipment",
+   "a glowing molecular diagram over a green leaf"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "expert_writing_notes",
+  "triggers": [
+   "anotações",
+   "anotacoes",
+   "prancheta",
+   "clipboard",
+   "relatório",
+   "relatorio",
+   "report",
+   "documentação",
+   "documentacao"
+  ],
+  "visuals": [
+   "a doctor writing notes on a clipboard in a clinic",
+   "close-up of a hand writing on a medical chart",
+   "a researcher taking notes while looking at samples"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "turmeric_root",
+  "triggers": [
+   "cúrcuma",
+   "curcuma",
+   "açafrão da terra",
+   "turmeric",
+   "curcumin",
+   "curcumina"
+  ],
+  "visuals": [
+   "close-up of fresh turmeric roots and bright orange turmeric powder on a wooden table",
+   "a pile of golden turmeric powder in a small bowl next to whole turmeric rhizomes",
+   "turmeric powder being scooped with a spoon, vivid orange color"
+  ],
+  "avoid": [
+   "pills",
+   "medication",
+   "syringe"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "ginger_root",
+  "triggers": [
+   "gengibre",
+   "raiz de gengibre",
+   "ginger",
+   "ginger root"
+  ],
+  "visuals": [
+   "close-up of fresh ginger root on a cutting board",
+   "sliced ginger root next to a cup of ginger tea",
+   "a hand holding a knobby fresh ginger rhizome"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "black_pepper",
+  "triggers": [
+   "pimenta preta",
+   "pimenta do reino",
+   "piperina",
+   "black pepper",
+   "piperine",
+   "peppercorns"
+  ],
+  "visuals": [
+   "close-up of black peppercorns spilling from a wooden spoon",
+   "black pepper being ground from a pepper mill",
+   "a pile of whole black peppercorns on a dark surface"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "green_tea",
+  "triggers": [
+   "chá verde",
+   "cha verde",
+   "green tea",
+   "matcha",
+   "egcg",
+   "catequinas",
+   "catechins"
+  ],
+  "visuals": [
+   "a cup of green tea with fresh green tea leaves beside it",
+   "green tea leaves and matcha powder on a wooden table",
+   "steam rising from a glass cup of green tea"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "magnesium_mineral",
+  "triggers": [
+   "magnésio",
+   "magnesio",
+   "magnesium",
+   "minerais",
+   "minerals",
+   "zinco",
+   "zinc",
+   "selênio",
+   "selenium"
+  ],
+  "visuals": [
+   "close-up of white magnesium mineral crystals and supplement capsules",
+   "scientific 3D render of a mineral molecule glowing",
+   "mineral salt crystals scattered on a dark surface"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "omega_fish_oil",
+  "triggers": [
+   "ômega",
+   "omega",
+   "ômega 3",
+   "omega 3",
+   "óleo de peixe",
+   "oleo de peixe",
+   "fish oil",
+   "epa",
+   "dha"
+  ],
+  "visuals": [
+   "translucent golden omega-3 fish oil softgel capsules close-up",
+   "a clear glass bowl of amber fish oil softgels",
+   "golden oil capsules glistening on a white surface"
+  ],
+  "avoid": [
+   "medication bottle",
+   "pills as medicine"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "herbal_botanicals",
+  "triggers": [
+   "erva",
+   "ervas",
+   "plantas medicinais",
+   "botânico",
+   "botanico",
+   "herb",
+   "herbs",
+   "herbal",
+   "botanical",
+   "extrato de planta",
+   "plant extract"
+  ],
+  "visuals": [
+   "assortment of dried medicinal herbs and green leaves on a wooden table",
+   "fresh green herbs and botanical leaves arranged in small piles",
+   "a hand picking fresh green herb leaves from a plant"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "berries_fruit",
+  "triggers": [
+   "frutas",
+   "fruta",
+   "berries",
+   "frutas vermelhas",
+   "mirtilo",
+   "blueberry",
+   "blueberries",
+   "amora",
+   "açaí",
+   "acai",
+   "antioxidantes",
+   "antioxidants",
+   "antioxidante"
+  ],
+  "visuals": [
+   "close-up of fresh blueberries, raspberries and blackberries glistening with water drops",
+   "a bowl overflowing with colorful fresh berries",
+   "fresh red and purple berries scattered on a white surface"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "natural_roots",
+  "triggers": [
+   "raiz",
+   "raízes",
+   "raizes",
+   "root",
+   "roots",
+   "ashwagandha",
+   "ginseng",
+   "maca",
+   "maca peruana",
+   "tongkat"
+  ],
+  "visuals": [
+   "assorted dried natural roots and rhizomes on a rustic wooden surface",
+   "close-up of a ginseng root with fine tendrils",
+   "dried herbal roots arranged next to a mortar and pestle"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "supplement_capsule",
+  "triggers": [
+   "cápsula",
+   "capsula",
+   "cápsulas",
+   "capsulas",
+   "comprimido",
+   "comprimidos",
+   "suplemento",
+   "suplementos",
+   "capsule",
+   "capsules",
+   "supplement",
+   "softgel",
+   "dosagem natural"
+  ],
+  "visuals": [
+   "close-up of natural herbal supplement capsules spilling from an unlabeled bottle",
+   "a hand holding two amber supplement capsules over an open jar",
+   "green plant-based supplement capsules on a wooden spoon"
+  ],
+  "avoid": [
+   "prescription medication",
+   "pharmacy pills",
+   "syringe",
+   "pill as drug treatment"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "supplement_powder_blend",
+  "triggers": [
+   "blend",
+   "mistura",
+   "powder",
+   "supplement powder",
+   "scoop",
+   "dosador",
+   "pó do suplemento"
+  ],
+  "visuals": [
+   "a scoop of natural supplement powder over a glass of water",
+   "fine beige supplement powder in a scoop next to a shaker bottle",
+   "powder blend being poured into a glass, swirling cloud"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "bloodstream_circulation",
+  "triggers": [
+   "corrente sanguínea",
+   "corrente sanguinea",
+   "circulação",
+   "circulacao",
+   "fluxo sanguíneo",
+   "fluxo de sangue",
+   "bloodstream",
+   "blood flow",
+   "blood circulation",
+   "vasos sanguíneos",
+   "blood vessels",
+   "artérias",
+   "arteries"
+  ],
+  "visuals": [
+   "3D medical animation of red blood cells flowing through a blood vessel",
+   "scientific render of blood streaming inside an artery",
+   "close-up 3D visualization of red blood cells moving through veins"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "gut_microbiome",
+  "triggers": [
+   "intestino",
+   "microbioma",
+   "microbiota",
+   "flora intestinal",
+   "microbiome",
+   "gut bacteria",
+   "digestão",
+   "digestion",
+   "probióticos",
+   "probiotics",
+   "probiótico"
+  ],
+  "visuals": [
+   "3D medical animation of the human intestines",
+   "scientific render of gut bacteria inside the intestine",
+   "3D visualization of beneficial bacteria in the digestive tract"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "neurons_brain",
+  "triggers": [
+   "neurônio",
+   "neuronio",
+   "neurônios",
+   "neuronios",
+   "neuron",
+   "neurons",
+   "cérebro",
+   "cerebro",
+   "brain",
+   "sinapse",
+   "synapse",
+   "sinapses",
+   "synapses",
+   "neural"
+  ],
+  "visuals": [
+   "3D medical render of a human brain with glowing neural connections",
+   "scientific animation of neurons firing with electric signals",
+   "close-up 3D visualization of neurons and synapses lighting up"
+  ],
+  "avoid": [],
+  "priority": "high"
+ },
+ {
+  "concept": "healthy_joint_cartilage",
+  "triggers": [
+   "articulação",
+   "articulacao",
+   "articulações",
+   "articulacoes",
+   "cartilagem",
+   "joint",
+   "joints",
+   "cartilage",
+   "lubrificação articular",
+   "joint lubrication",
+   "colágeno",
+   "collagen"
+  ],
+  "visuals": [
+   "3D medical render of a healthy knee joint with smooth cartilage",
+   "scientific animation of cartilage cushioning between two bones",
+   "3D visualization of a flexible joint moving smoothly"
+  ],
+  "avoid": [
+   "real surgery",
+   "swollen inflamed joint as treatment claim"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "vitamins_nutrients",
+  "triggers": [
+   "vitamina",
+   "vitaminas",
+   "vitamin",
+   "vitamins",
+   "nutriente",
+   "nutrientes",
+   "nutrient",
+   "nutrients",
+   "vitamina c",
+   "vitamina d",
+   "vitamin c",
+   "vitamin d"
+  ],
+  "visuals": [
+   "colorful fresh fruits and vegetables rich in vitamins arranged on a table",
+   "fresh oranges and lemons next to a bowl of vitamin-rich foods",
+   "a variety of vitamin-rich foods and natural supplement capsules"
+  ],
+  "avoid": [
+   "prescription medication"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "antioxidant_action",
+  "triggers": [
+   "antioxidante",
+   "antioxidantes",
+   "radicais livres",
+   "radical livre",
+   "antioxidant",
+   "antioxidants",
+   "free radicals",
+   "free radical",
+   "estresse oxidativo",
+   "oxidative stress"
+  ],
+  "visuals": [
+   "3D scientific animation of antioxidant molecules neutralizing free radicals",
+   "glowing molecular render of antioxidants protecting a cell",
+   "colorful antioxidant-rich berries and green tea on a white surface"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "amino_acids_protein",
+  "triggers": [
+   "aminoácido",
+   "aminoacido",
+   "aminoácidos",
+   "aminoacidos",
+   "amino acid",
+   "amino acids",
+   "proteína",
+   "proteina",
+   "protein",
+   "l-arginina",
+   "l-arginine"
+  ],
+  "visuals": [
+   "3D molecular render of amino acid chains glowing",
+   "scientific visualization of protein molecules folding",
+   "abstract 3D model of linked amino acid molecules"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "natural_extract_dropper",
+  "triggers": [
+   "tintura",
+   "óleo essencial",
+   "oleo essencial",
+   "tincture",
+   "essential oil",
+   "óleo natural",
+   "gotas",
+   "drops"
+  ],
+  "visuals": [
+   "a glass dropper bottle of natural plant extract with herbs around it",
+   "amber tincture bottle dripping golden liquid onto a spoon",
+   "dropper releasing a drop of herbal extract over green leaves"
+  ],
+  "avoid": [
+   "medication",
+   "pharmaceutical bottle"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "beautiful_hair",
+  "triggers": [
+   "cabelo bonito",
+   "cabelo lindo",
+   "cabelos",
+   "beautiful hair",
+   "gorgeous hair",
+   "luscious hair",
+   "hair"
+  ],
+  "visuals": [
+   "a woman running her fingers through long shiny healthy hair",
+   "close-up of glossy flowing hair in soft light",
+   "a woman flipping her voluminous hair over her shoulder"
+  ],
+  "avoid": [
+   "bald head",
+   "hair falling out",
+   "clumps of hair in a brush"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "thick_hair_volume",
+  "triggers": [
+   "cabelo grosso",
+   "cabelo cheio",
+   "volume no cabelo",
+   "cabelo encorpado",
+   "thick hair",
+   "full hair",
+   "voluminous hair",
+   "hair volume"
+  ],
+  "visuals": [
+   "close-up of thick voluminous hair with full body",
+   "a woman brushing through dense healthy hair",
+   "hands lifting a thick ponytail of strong hair"
+  ],
+  "avoid": [
+   "thinning hairline",
+   "scalp showing through hair"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "radiant_skin",
+  "triggers": [
+   "pele radiante",
+   "pele brilhante",
+   "pele iluminada",
+   "pele bonita",
+   "radiant skin",
+   "glowing skin",
+   "luminous skin"
+  ],
+  "visuals": [
+   "close-up of a woman's glowing radiant facial skin",
+   "a woman touching her smooth luminous cheek and smiling",
+   "soft beauty light on a woman's healthy glowing complexion"
+  ],
+  "avoid": [
+   "acne",
+   "skin rash",
+   "wrinkled skin"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "smooth_skin",
+  "triggers": [
+   "pele lisa",
+   "pele macia",
+   "pele firme",
+   "smooth skin",
+   "soft skin",
+   "supple skin",
+   "firm skin"
+  ],
+  "visuals": [
+   "close-up of smooth soft facial skin",
+   "a woman gently gliding her hand over her smooth cheek",
+   "macro shot of flawless even skin texture"
+  ],
+  "avoid": [
+   "wrinkles",
+   "dry flaky skin"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "wrinkle_free_youthful_face",
+  "triggers": [
+   "rosto jovem",
+   "sem rugas",
+   "aparencia jovem",
+   "rejuvenescer",
+   "pele jovem",
+   "youthful face",
+   "young looking",
+   "wrinkle free",
+   "anti aging",
+   "ageless"
+  ],
+  "visuals": [
+   "close-up of a smiling middle-aged woman with smooth youthful skin",
+   "a woman admiring her wrinkle-free face in a mirror",
+   "soft portrait of a radiant ageless face"
+  ],
+  "avoid": [
+   "deep wrinkles",
+   "sagging skin",
+   "before and after comparison"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "white_teeth_smile",
+  "triggers": [
+   "dentes brancos",
+   "sorriso branco",
+   "dentes lindos",
+   "white teeth",
+   "bright smile",
+   "pearly white teeth"
+  ],
+  "visuals": [
+   "close-up of a wide smile showing bright white teeth",
+   "a woman smiling confidently revealing white teeth",
+   "a man with a clean white-teeth grin laughing"
+  ],
+  "avoid": [
+   "yellow stained teeth",
+   "missing teeth",
+   "dental tools in mouth"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "bright_smile",
+  "triggers": [
+   "sorriso",
+   "sorrindo",
+   "sorriso lindo",
+   "seu sorriso",
+   "smile",
+   "smiling",
+   "your smile",
+   "beaming smile"
+  ],
+  "visuals": [
+   "a happy woman smiling brightly outdoors",
+   "close-up of a genuine joyful smile",
+   "a person laughing with a big warm smile"
+  ],
+  "avoid": [
+   "sad face",
+   "frowning person"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "healthy_nails",
+  "triggers": [
+   "unhas saudaveis",
+   "unhas bonitas",
+   "unhas fortes",
+   "healthy nails",
+   "strong nails",
+   "beautiful nails"
+  ],
+  "visuals": [
+   "close-up of clean healthy fingernails with natural shine",
+   "a woman showing her smooth strong manicured nails",
+   "hands with neat glossy natural nails"
+  ],
+  "avoid": [
+   "yellow fungal nails",
+   "cracked broken nails",
+   "discolored toenails"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "clear_complexion",
+  "triggers": [
+   "pele limpa",
+   "pele sem manchas",
+   "tez limpa",
+   "clear complexion",
+   "clear skin",
+   "even skin tone",
+   "blemish free"
+  ],
+  "visuals": [
+   "close-up of a clear even-toned facial complexion",
+   "a woman with clean spotless skin smiling softly",
+   "natural beauty portrait of flawless clear skin"
+  ],
+  "avoid": [
+   "dark spots",
+   "blotchy skin",
+   "pimples"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "slim_body_figure",
+  "triggers": [
+   "corpo em forma",
+   "corpo slim",
+   "silhueta",
+   "corpo magro",
+   "boa forma",
+   "slim body",
+   "toned body",
+   "fit figure",
+   "in shape",
+   "slim waist"
+  ],
+  "visuals": [
+   "a fit woman in activewear showing a slim toned silhouette",
+   "a slim person standing confidently in casual clothes",
+   "a woman in workout clothes with a trim healthy figure"
+  ],
+  "avoid": [
+   "nudity",
+   "before and after weight comparison",
+   "exposed bare belly"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "toned_arms",
+  "triggers": [
+   "bracos definidos",
+   "bracos torneados",
+   "bracos firmes",
+   "toned arms",
+   "firm arms",
+   "sculpted arms"
+  ],
+  "visuals": [
+   "close-up of a woman's toned firm arms in a sleeveless top",
+   "a fit person flexing slim sculpted arms in a gym",
+   "a woman raising her toned arms confidently in activewear"
+  ],
+  "avoid": [
+   "nudity",
+   "sagging skin"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "flat_toned_stomach",
+  "triggers": [
+   "barriga lisa",
+   "barriga chapada",
+   "abdomen definido",
+   "ventre liso",
+   "flat stomach",
+   "toned belly",
+   "flat tummy",
+   "trim waistline"
+  ],
+  "visuals": [
+   "a fit woman in fitted activewear with a flat toned midsection",
+   "a slim person showing a trim waistline in workout clothes",
+   "a woman placing hands on her flat firm stomach over clothing"
+  ],
+  "avoid": [
+   "nudity",
+   "exposed bare belly",
+   "fat belly",
+   "before and after"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "shiny_lustrous_hair",
+  "triggers": [
+   "cabelo brilhante",
+   "cabelo sedoso",
+   "brilho no cabelo",
+   "cabelo bonito",
+   "cabelo saudavel",
+   "shiny hair",
+   "lustrous hair",
+   "silky hair",
+   "healthy hair",
+   "beautiful hair"
+  ],
+  "visuals": [
+   "close-up of silky shiny hair catching the light",
+   "a woman tossing her glossy lustrous hair",
+   "macro shot of smooth reflective hair strands"
+  ],
+  "avoid": [
+   "dull frizzy hair",
+   "dry damaged hair"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "smooth_hands_skin",
+  "triggers": [
+   "maos bonitas",
+   "maos macias",
+   "pele das maos",
+   "smooth hands",
+   "soft hands",
+   "beautiful hands"
+  ],
+  "visuals": [
+   "close-up of smooth soft well-cared-for hands",
+   "a woman gently rubbing lotion into her smooth hands",
+   "macro shot of supple even-toned skin on the hands"
+  ],
+  "avoid": [
+   "wrinkled hands",
+   "cracked dry skin"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "looking_in_mirror_confident",
+  "triggers": [
+   "se olhar no espelho",
+   "olhar no espelho",
+   "no espelho",
+   "look in the mirror",
+   "in the mirror",
+   "mirror reflection"
+  ],
+  "visuals": [
+   "a woman admiring her appearance in a bathroom mirror and smiling",
+   "a person looking confidently at their reflection in a mirror",
+   "a smiling woman touching her face while gazing in the mirror"
+  ],
+  "avoid": [
+   "sad person staring at mirror",
+   "before and after"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "full_lips_lush",
+  "triggers": [
+   "labios bonitos",
+   "labios cheios",
+   "full lips",
+   "plump lips",
+   "soft lips"
+  ],
+  "visuals": [
+   "close-up of soft full natural lips with a gentle smile",
+   "macro beauty shot of healthy plump lips",
+   "a woman with smooth lush lips smiling"
+  ],
+  "avoid": [
+   "chapped cracked lips"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "glowing_makeup_beauty_routine",
+  "triggers": [
+   "se arrumar",
+   "rotina de beleza",
+   "se cuidar",
+   "cuidados com a pele",
+   "beauty routine",
+   "skincare routine",
+   "getting ready",
+   "self care beauty"
+  ],
+  "visuals": [
+   "a woman applying skincare cream to her radiant face at a vanity",
+   "close-up of a woman doing her beauty routine in front of a mirror",
+   "a smiling woman patting moisturizer onto her glowing skin"
+  ],
+  "avoid": [
+   "pills",
+   "injections",
+   "syringe"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "healthy_glow_outdoors",
+  "triggers": [
+   "aparencia saudavel",
+   "vico",
+   "saudavel e bonita",
+   "healthy glow",
+   "healthy look",
+   "fresh faced",
+   "vibrant appearance"
+  ],
+  "visuals": [
+   "a woman with a fresh healthy glow smiling in natural sunlight",
+   "close-up of a vibrant glowing face outdoors",
+   "a radiant person enjoying soft daylight with healthy skin"
+  ],
+  "avoid": [
+   "pale tired face",
+   "dull complexion"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "cant_open_jar",
+  "triggers": [
+   "abrir o pote",
+   "abrir pote",
+   "abrir o vidro",
+   "tampa do pote",
+   "abrir a tampa",
+   "desenroscar",
+   "open a jar",
+   "open the jar",
+   "jar lid",
+   "twist the lid",
+   "stuck lid",
+   "grip strength",
+   "abrir um pote",
+   "pote de vidro",
+   "um pote de vidro",
+   "glass jar"
+  ],
+  "visuals": [
+   "an older person struggling to open a glass jar lid with both hands",
+   "close-up of weak hands gripping and twisting a stubborn jar lid",
+   "a frustrated person straining to unscrew a tight bottle cap in the kitchen"
+  ],
+  "avoid": [
+   "person easily opening a jar with a big smile"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "climbing_stairs_difficulty",
+  "triggers": [
+   "subir escada",
+   "subir escadas",
+   "subir a escada",
+   "subir degraus",
+   "degraus",
+   "escada",
+   "climb the stairs",
+   "climbing stairs",
+   "up the stairs",
+   "staircase"
+  ],
+  "visuals": [
+   "an older person climbing stairs slowly while gripping the handrail",
+   "a person pausing on the staircase out of breath and holding the railing",
+   "close-up of a hand clutching a banister while struggling up the steps"
+  ],
+  "avoid": [
+   "young person running energetically up the stairs"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "getting_out_of_bed",
+  "triggers": [
+   "levantar da cama",
+   "sair da cama",
+   "levantar de manha",
+   "sair da cama de manha",
+   "get out of bed",
+   "getting out of bed",
+   "rise from bed",
+   "out of bed in the morning"
+  ],
+  "visuals": [
+   "an older person struggling to push themselves up out of bed in the morning",
+   "a person sitting on the edge of the bed wincing and holding their lower back",
+   "close-up of a hand pressing on the mattress to slowly get up"
+  ],
+  "avoid": [
+   "person jumping energetically out of bed"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "getting_up_from_chair",
+  "triggers": [
+   "levantar da cadeira",
+   "levantar da poltrona",
+   "sair da cadeira",
+   "levantar do sofa",
+   "get up from a chair",
+   "getting out of a chair",
+   "rise from a chair",
+   "stand up from the couch",
+   "push up from the sofa"
+  ],
+  "visuals": [
+   "an older person pushing on the armrests to slowly stand up from a chair",
+   "a person gripping the table edge to lift themselves out of a seat",
+   "close-up of trembling hands pressing on chair arms while rising"
+  ],
+  "avoid": [
+   "person springing up effortlessly from a chair"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "tying_shoes_difficulty",
+  "triggers": [
+   "amarrar o sapato",
+   "amarrar os sapatos",
+   "amarrar o cadarco",
+   "cadarco",
+   "tie my shoes",
+   "tie shoes",
+   "tying shoes",
+   "tie shoelaces",
+   "lace up shoes",
+   "bend down to tie"
+  ],
+  "visuals": [
+   "an older person struggling to bend over and tie their shoelaces",
+   "close-up of stiff fingers fumbling with shoelaces",
+   "a person sitting and straining to reach their shoes to tie them"
+  ],
+  "avoid": [
+   "person easily tying running shoes before a workout"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "carrying_groceries",
+  "triggers": [
+   "carregar compras",
+   "carregar as compras",
+   "carregar sacolas",
+   "sacolas de compras",
+   "carregar mercado",
+   "carry the groceries",
+   "carrying groceries",
+   "grocery bags",
+   "carry heavy bags",
+   "lug the shopping"
+  ],
+  "visuals": [
+   "an older person struggling to carry heavy grocery bags from the car",
+   "a person grimacing while lifting heavy shopping bags with both hands",
+   "close-up of strained hands gripping the handles of full grocery bags"
+  ],
+  "avoid": [
+   "person carrying groceries with ease and smiling"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "bending_down_difficulty",
+  "triggers": [
+   "se abaixar",
+   "abaixar para pegar",
+   "pegar algo no chao",
+   "inclinar para frente",
+   "bend down",
+   "bend over",
+   "bending down",
+   "reach the floor",
+   "pick something up off the floor",
+   "stoop down"
+  ],
+  "visuals": [
+   "an older person struggling to bend down to pick something up off the floor",
+   "a person bending over slowly with a hand pressed to their lower back",
+   "close-up of someone wincing as they reach toward the ground"
+  ],
+  "avoid": [
+   "person bending down easily during exercise"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "nighttime_bathroom_trips",
+  "triggers": [
+   "ir ao banheiro a noite",
+   "levantar para o banheiro",
+   "banheiro de madrugada",
+   "correr para o banheiro",
+   "segurar o xixi",
+   "vontade de urinar",
+   "bathroom at night",
+   "get up to pee",
+   "nighttime bathroom trips",
+   "rush to the bathroom",
+   "frequent urination"
+  ],
+  "visuals": [
+   "a person getting out of bed at night and walking to the bathroom in the dark",
+   "an older person hurrying down a dim hallway toward the bathroom at night",
+   "close-up of a hand turning on a bathroom light in the middle of the night"
+  ],
+  "avoid": [
+   "person sleeping peacefully through the night",
+   "toilet bowl shown explicitly"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "reading_small_print",
+  "triggers": [
+   "letras pequenas",
+   "letra pequena",
+   "ler de perto",
+   "ler o jornal",
+   "forcar a vista",
+   "ler o rotulo",
+   "read small print",
+   "reading small print",
+   "fine print",
+   "squint to read",
+   "read the label",
+   "read up close"
+  ],
+  "visuals": [
+   "an older person squinting and holding a newspaper at arm's length to read it",
+   "a person struggling to read the small print on a product label",
+   "close-up of a face squinting hard while trying to read a phone screen"
+  ],
+  "avoid": [
+   "person reading comfortably without effort"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "opening_bottle_cap",
+  "triggers": [
+   "abrir a garrafa",
+   "abrir garrafa",
+   "abrir tampa de garrafa",
+   "tampa da garrafa",
+   "abrir a tampinha",
+   "open a bottle",
+   "open the bottle cap",
+   "twist off a bottle cap",
+   "loosen the cap",
+   "stuck bottle cap"
+  ],
+  "visuals": [
+   "an older person struggling to twist open a tight plastic bottle cap",
+   "close-up of weak hands straining to unscrew a water bottle cap",
+   "a frustrated person trying to open a bottle with both hands"
+  ],
+  "avoid": [
+   "person opening a bottle effortlessly"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "reaching_overhead_difficulty",
+  "triggers": [
+   "alcancar a prateleira",
+   "pegar algo no alto",
+   "levantar o braco",
+   "alcancar o armario",
+   "prateleira alta",
+   "reach the top shelf",
+   "reach overhead",
+   "reach up high",
+   "grab something off a high shelf",
+   "raise my arm"
+  ],
+  "visuals": [
+   "an older person struggling to reach up to a high kitchen shelf",
+   "a person grimacing while stretching an arm overhead to grab something",
+   "close-up of someone wincing as they raise their arm to reach a cabinet"
+  ],
+  "avoid": [
+   "person reaching overhead with ease"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "walking_difficulty",
+  "triggers": [
+   "andar com dificuldade",
+   "caminhar com dor",
+   "dar alguns passos",
+   "mancar",
+   "arrastar os pes",
+   "andar devagar",
+   "trouble walking",
+   "hard to walk",
+   "walk a few steps",
+   "limping",
+   "shuffle along",
+   "walk slowly"
+  ],
+  "visuals": [
+   "an older person walking slowly and unsteadily with a cane",
+   "a person limping and shifting weight carefully with each painful step",
+   "close-up of feet shuffling slowly across the floor"
+  ],
+  "avoid": [
+   "person walking briskly and confidently"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "buttoning_clothes",
+  "triggers": [
+   "abotoar a camisa",
+   "abotoar",
+   "fechar o botao",
+   "fechar o ziper",
+   "subir o ziper",
+   "button my shirt",
+   "buttoning a shirt",
+   "do up the buttons",
+   "zip up a jacket",
+   "fasten buttons"
+  ],
+  "visuals": [
+   "an older person struggling to button up a shirt with stiff fingers",
+   "close-up of trembling hands fumbling to fasten small shirt buttons",
+   "a person frustrated while trying to zip up a jacket"
+  ],
+  "avoid": [
+   "person dressing quickly and easily"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "getting_up_from_floor",
+  "triggers": [
+   "levantar do chao",
+   "me levantar do chao",
+   "sair do chao",
+   "get up off the floor",
+   "getting up from the floor",
+   "stand up from the ground",
+   "rise off the floor"
+  ],
+  "visuals": [
+   "an older person struggling to push themselves up off the floor",
+   "a person on all fours slowly trying to get back onto their feet",
+   "close-up of a hand pressing on the floor to lift the body up"
+  ],
+  "avoid": [
+   "person standing up from the floor effortlessly"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "getting_in_out_of_car",
+  "triggers": [
+   "entrar no carro",
+   "sair do carro",
+   "entrar e sair do carro",
+   "subir no carro",
+   "descer do carro",
+   "get in the car",
+   "get out of the car",
+   "climb into the car",
+   "step out of the car"
+  ],
+  "visuals": [
+   "an older person struggling to lower themselves into a car seat",
+   "a person gripping the car door frame to slowly climb out of the vehicle",
+   "close-up of a hand holding the door while easing into the car with effort"
+  ],
+  "avoid": [
+   "person hopping into a car easily"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "household_chores_difficulty",
+  "triggers": [
+   "lavar a louca",
+   "varrer a casa",
+   "tarefas de casa",
+   "fazer a faxina",
+   "passar o aspirador",
+   "arrumar a casa",
+   "do the housework",
+   "wash the dishes",
+   "sweep the floor",
+   "household chores",
+   "vacuum the house",
+   "mop the floor"
+  ],
+  "visuals": [
+   "an older person pausing to rub their aching back while doing the dishes",
+   "a person grimacing while bending to sweep the kitchen floor",
+   "close-up of tired hands gripping a mop and stopping to rest"
+  ],
+  "avoid": [
+   "person cheerfully cleaning with ease"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "playing_with_grandkids_difficulty",
+  "triggers": [
+   "brincar com os netos",
+   "brincar com as criancas",
+   "correr atras das criancas",
+   "pegar o neto no colo",
+   "play with the grandkids",
+   "keep up with the kids",
+   "pick up the grandchild",
+   "run after the kids",
+   "get down on the floor with kids"
+  ],
+  "visuals": [
+   "an older person sitting on the sidelines unable to keep up while grandkids play",
+   "a grandparent wincing while trying to lift a small grandchild",
+   "a person watching children run while holding their aching back"
+  ],
+  "avoid": [
+   "grandparent running and playing energetically with kids"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "opening_packages",
+  "triggers": [
+   "abrir embalagem",
+   "abrir o pacote",
+   "abrir a caixa",
+   "rasgar a embalagem",
+   "abrir o plastico",
+   "open the package",
+   "open packaging",
+   "tear open a package",
+   "open a sealed box",
+   "rip open the plastic"
+  ],
+  "visuals": [
+   "an older person struggling to tear open a tightly sealed plastic package",
+   "close-up of weak hands failing to rip open a stubborn package",
+   "a frustrated person fighting with scissors to open packaging"
+  ],
+  "avoid": [
+   "person opening a package quickly and easily"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "product_bottle",
+  "triggers": [
+   "frasco",
+   "frascos",
+   "pote do produto",
+   "o produto",
+   "suplemento",
+   "the bottle",
+   "the product",
+   "supplement bottle",
+   "this formula",
+   "our formula"
+  ],
+  "visuals": [
+   "a supplement bottle on a clean white surface",
+   "a hand holding a dietary supplement bottle with a label",
+   "a close-up of a supplement bottle of capsules rotating on a table",
+   "a single supplement jar lit on a neutral studio background"
+  ],
+  "avoid": [
+   "pills shown as medicine",
+   "syringe",
+   "prescription medication"
+  ],
+  "priority": "normal"
+ },
+ {
+  "concept": "multiple_bottles_bundle",
+  "triggers": [
+   "kit",
+   "combo",
+   "pacote",
+   "estoque",
+   "6 frascos",
+   "3 frascos",
+   "bundle",
+   "supply",
+   "6 month supply",
+   "3 bottles",
+   "six bottles"
+  ],
+  "visuals": [
+   "several supplement bottles lined up in a row on a table",
+   "a bundle of six supplement bottles grouped together",
+   "multiple product jars arranged as a package deal",
+   "a stack of supplement bottles shown as a bulk supply"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "special_offer_screen",
+  "triggers": [
+   "oferta",
+   "oferta especial",
+   "promocao",
+   "desconto",
+   "special offer",
+   "discount",
+   "today only offer",
+   "limited offer"
+  ],
+  "visuals": [
+   "a website special offer page on a laptop screen",
+   "a discount banner with a percentage off on a screen",
+   "a sales offer page displayed on a computer monitor",
+   "an on-screen promotional offer with price highlighted"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "checkout_buy_now",
+  "triggers": [
+   "comprar",
+   "compre agora",
+   "checkout",
+   "carrinho",
+   "finalizar compra",
+   "pedido",
+   "buy now",
+   "order now",
+   "add to cart",
+   "shopping cart",
+   "place your order"
+  ],
+  "visuals": [
+   "a hand clicking an add to cart button on a screen",
+   "an online checkout page with an order button",
+   "a finger tapping a buy now button on a phone",
+   "a shopping cart icon on an e-commerce website screen"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "price_discount",
+  "triggers": [
+   "preco",
+   "precos",
+   "barato",
+   "centavos por dia",
+   "low price",
+   "pennies a day",
+   "affordable",
+   "price drop"
+  ],
+  "visuals": [
+   "a price tag showing a low number on a product",
+   "a crossed-out higher price next to a lower price on screen",
+   "a discounted price displayed in large text on a screen",
+   "a calculator and a small price written on paper"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "money_savings",
+  "triggers": [
+   "dinheiro",
+   "economia",
+   "economizar",
+   "poupar",
+   "grana",
+   "money",
+   "savings",
+   "save money",
+   "dollars",
+   "save big"
+  ],
+  "visuals": [
+   "a person putting cash into a piggy bank",
+   "a hand counting US dollar bills",
+   "a stack of money next to a piggy bank",
+   "coins being dropped into a glass savings jar"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "money_back_guarantee",
+  "triggers": [
+   "garantia",
+   "reembolso",
+   "satisfacao garantida",
+   "devolucao",
+   "risco zero",
+   "guarantee",
+   "money back",
+   "refund",
+   "risk free",
+   "guaranteed",
+   "60 day guarantee",
+   "90 day guarantee"
+  ],
+  "visuals": [
+   "a gold money-back guarantee seal badge",
+   "a guarantee certificate stamp on a white background",
+   "a hand holding a guarantee seal with a checkmark",
+   "a money back guarantee shield icon on screen"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "free_shipping_bonus",
+  "triggers": [
+   "frete gratis",
+   "brinde",
+   "bonus",
+   "gratis",
+   "de graca",
+   "free shipping",
+   "free bonus",
+   "free gift",
+   "included free",
+   "at no cost"
+  ],
+  "visuals": [
+   "a cardboard shipping box with a free shipping label",
+   "a gift box wrapped with a ribbon as a bonus",
+   "a delivery package on a doorstep with a free tag",
+   "a hand holding a free bonus gift box"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "secure_payment",
+  "triggers": [
+   "pagamento seguro",
+   "compra segura",
+   "cartao",
+   "site seguro",
+   "secure payment",
+   "secure checkout",
+   "credit card",
+   "safe purchase",
+   "ssl secure"
+  ],
+  "visuals": [
+   "a hand entering a credit card on a secure checkout page",
+   "a padlock icon on a website payment screen",
+   "a credit card next to a laptop showing a secure site",
+   "a secure payment badge with a lock symbol on screen"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "urgency_hourglass",
+  "triggers": [
+   "urgencia",
+   "tempo acabando",
+   "nao perca tempo",
+   "running out of time",
+   "hurry",
+   "act now",
+   "time is running out",
+   "before it's too late",
+   "don't wait"
+  ],
+  "visuals": [
+   "an hourglass with sand running out on a desk",
+   "a close-up of sand falling through an hourglass",
+   "a stopwatch with the hand ticking quickly",
+   "an hourglass nearly empty against a dark background"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "countdown_clock",
+  "triggers": [
+   "relogio",
+   "contagem regressiva",
+   "cronometro",
+   "minutos restantes",
+   "tempo limitado",
+   "countdown",
+   "timer",
+   "clock ticking",
+   "minutes left",
+   "limited time",
+   "deadline"
+  ],
+  "visuals": [
+   "a countdown timer displayed on a screen ticking down",
+   "a close-up of a clock with hands moving fast",
+   "a digital countdown clock with red numbers",
+   "an alarm clock ticking on a nightstand"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "limited_stock",
+  "triggers": [
+   "estoque limitado",
+   "ultimas unidades",
+   "acabando",
+   "esgotando",
+   "restam poucos",
+   "limited stock",
+   "almost sold out",
+   "running low",
+   "few left",
+   "while supplies last",
+   "selling out"
+  ],
+  "visuals": [
+   "a nearly empty shelf with only a few bottles left",
+   "a warehouse shelf with sparse product stock",
+   "a low stock warning displayed on a screen",
+   "a single last bottle on an empty store shelf"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "calendar_timeframe",
+  "triggers": [
+   "em 3 semanas",
+   "em 30 dias",
+   "calendario",
+   "semanas",
+   "in 3 weeks",
+   "in 30 days",
+   "calendar",
+   "days from now",
+   "within a month"
+  ],
+  "visuals": [
+   "a wall calendar with dates circled in red marker",
+   "a hand flipping pages of a calendar",
+   "a desk calendar with days being crossed off",
+   "a close-up of a calendar with a circled future date"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "click_button_below",
+  "triggers": [
+   "botao abaixo",
+   "clique abaixo",
+   "clique no botao",
+   "aqui embaixo",
+   "logo abaixo",
+   "button below",
+   "click below",
+   "tap the button",
+   "click the button",
+   "down below"
+  ],
+  "visuals": [
+   "a finger pointing down toward a button on a screen",
+   "a hand tapping a bright orange button on a phone",
+   "an animated arrow pointing to a call to action button",
+   "a cursor hovering over a button on a website"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "doorstep_delivery",
+  "triggers": [
+   "entrega",
+   "chega em casa",
+   "na sua porta",
+   "encomenda",
+   "receber em casa",
+   "delivery",
+   "shipped to your door",
+   "arrives at home",
+   "doorstep",
+   "mailbox",
+   "delivered"
+  ],
+  "visuals": [
+   "a delivery box left on a home doorstep",
+   "a courier handing a package to a person at the door",
+   "a person picking up a parcel from their front porch",
+   "a shipping box being placed at a house entrance"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "best_value_choice",
+  "triggers": [
+   "melhor opcao",
+   "mais vendido",
+   "mais escolhido",
+   "recomendado",
+   "melhor custo",
+   "best value",
+   "most popular",
+   "best seller",
+   "recommended option",
+   "smart choice",
+   "best deal"
+  ],
+  "visuals": [
+   "a best value badge highlighting one product package",
+   "three product packages with the middle one highlighted",
+   "a most popular ribbon placed on a product bundle",
+   "an offer page with one option marked as best value"
+  ],
+  "avoid": [],
+  "priority": "normal"
+ },
+ {
+  "concept": "doctor_authority",
+  "triggers": [
+   "medico",
+   "doutor",
+   "medica",
+   "especialista",
+   "doctor",
+   "physician",
+   "medical expert"
+  ],
+  "visuals": [
+   "a confident doctor in a white coat with a stethoscope smiling",
+   "a physician in a white coat talking to a patient in a clinic",
+   "close-up of a doctor in a lab coat holding a clipboard"
+  ],
+  "avoid": [
+   "surgery scene",
+   "syringe",
+   "patient on operating table"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "freedom_lifestyle",
+  "triggers": [
+   "liberdade",
+   "sua vida",
+   "aproveitar a vida",
+   "sua liberdade",
+   "viver de novo",
+   "freedom",
+   "your life",
+   "live again",
+   "enjoy life",
+   "feel free"
+  ],
+  "visuals": [
+   "a happy older couple walking freely on a sunny beach",
+   "a smiling person with arms spread wide outdoors in nature",
+   "a joyful group of friends traveling and laughing together outdoors"
+  ],
+  "avoid": [
+   "person stuck in bed looking sad"
+  ],
+  "priority": "high"
+ },
+ {
+  "concept": "confidence",
+  "triggers": [
+   "confianca",
+   "autoestima",
+   "confiante",
+   "se sentir bem",
+   "confidence",
+   "self esteem",
+   "confident",
+   "feel good about yourself"
+  ],
+  "visuals": [
+   "a confident person standing tall and smiling with arms crossed",
+   "a woman walking confidently down the street smiling",
+   "a man looking self-assured and proud in casual clothes"
+  ],
+  "avoid": [
+   "insecure person hunched over"
+  ],
+  "priority": "high"
+ }
+]

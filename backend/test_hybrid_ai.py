@@ -27,23 +27,34 @@ def test_safe_json():
 def test_chain_for():
     print("\n[2] chain_for — roteamento por tarefa")
     orig = llm._backend_available
+    orig_pref = llm._preferred_backend
     llm._provider_override = lambda: {}        # sem override no config
+    llm._preferred_backend = lambda: ""        # 'auto' — testa o roteamento B puro
     try:
         llm._backend_available = lambda b: True   # tudo disponível
-        check("classifier → Ollama primeiro (alto volume → local/cota)",
-              llm.chain_for("classifier")[0] == "ollama" and "gemini" in llm.chain_for("classifier"))
-        check("ugc_prompt → Ollama primeiro", llm.chain_for("ugc_prompt")[0] == "ollama")
-        check("director → Gemini primeiro (baixo volume; Ollama reserva)",
-              llm.chain_for("director")[0] == "gemini" and "ollama" in llm.chain_for("director"))
+        check("classifier → Groq primeiro (rápido/grátis; Ollama/Gemini reserva)",
+              llm.chain_for("classifier")[0] == "groq" and "ollama" in llm.chain_for("classifier"))
+        check("ugc_prompt → Groq primeiro", llm.chain_for("ugc_prompt")[0] == "groq")
+        check("director → Groq primeiro (Gemini/Ollama reserva)",
+              llm.chain_for("director")[0] == "groq" and "ollama" in llm.chain_for("director"))
         check("vision_verify → Gemini primeiro (Ollama reserva)",
               llm.chain_for("vision_verify")[0] == "gemini"
               and "ollama" in llm.chain_for("vision_verify"))
-        check("phoenix → Gemini primeiro (Ollama reserva)",
-              llm.chain_for("phoenix")[0] == "gemini" and "ollama" in llm.chain_for("phoenix"))
-        check("context → Gemini primeiro", llm.chain_for("context")[0] == "gemini")
+        check("phoenix → Groq primeiro (Gemini/Ollama reserva)",
+              llm.chain_for("phoenix")[0] == "groq" and "ollama" in llm.chain_for("phoenix"))
+        check("context → Groq primeiro", llm.chain_for("context")[0] == "groq")
+        check("vision_verify NÃO usa Groq (sem visão)",
+              "groq" not in llm.chain_for("vision_verify"))
         check("nenhuma tarefa usa OpenRouter ou Claude",
               all("openrouter" not in b and b != "anthropic"
                   for t in llm._TASK_DEFAULTS for b in llm.chain_for(t)))
+
+        # seletor "Claude" força anthropic em tudo (quando disponível)
+        llm._backend_available = lambda b: True
+        llm._preferred_backend = lambda: "anthropic"
+        check("escolher Claude → anthropic primeiro em todas as tarefas",
+              all(llm.chain_for(t)[0] == "anthropic" for t in ("director", "classifier", "vision_verify")))
+        llm._preferred_backend = lambda: ""
 
         # só Gemini disponível → classifier cai pro Gemini
         llm._backend_available = lambda b: b == "gemini"
@@ -55,6 +66,7 @@ def test_chain_for():
         check("override phoenix→anthropic respeitado", llm.chain_for("phoenix")[0] == "anthropic")
     finally:
         llm._backend_available = orig
+        llm._preferred_backend = orig_pref
         llm._provider_override = llm._provider_override
 
 

@@ -43,10 +43,12 @@ def available() -> bool:
     return len(llm.vision_chain()) > 0
 
 
-def _frame_b64(path: str) -> Optional[str]:
-    img = _extract_frame_ffmpeg(path, 1.0)
-    if img is None:
-        return None
+# Quantos frames por clip mandar pra visão. 1 = rápido/barato; 3 = "ver o clip de
+# verdade" (início/meio/fim — capta movimento/conteúdo). Modo Qualidade Alta usa 3.
+VISION_FRAMES = int(os.environ.get("VISION_FRAMES", "1"))
+
+
+def _one_b64(img) -> Optional[str]:
     try:
         import cv2
         ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 80])
@@ -55,12 +57,43 @@ def _frame_b64(path: str) -> Optional[str]:
         return None
 
 
-def verify(frame_b64: str, script_excerpt: str, desired: str) -> Optional[dict]:
-    """Pergunta à IA de visão (Ollama → Claude) se o frame casa. Dict ou None."""
-    user = (f'O script diz: "{script_excerpt}"\n'
-            f'O B-roll ideal seria: "{desired}"\nEsta imagem combina?')
+def _frames_b64(path: str, duration: float = 0.0, n: int = 1) -> List[str]:
+    """N frames (base64) espaçados no clip — capta o conteúdo todo, não 1 instante."""
+    dur = float(duration or 0)
+    if n <= 1 or dur < 2.0:
+        times = [dur * 0.5 if dur > 1.0 else 1.0]
+    elif n <= 3:
+        times = [dur * f for f in (0.1, 0.5, 0.8)][:n]   # margem do fim (clip curto)
+    else:
+        times = [dur * (i + 1) / (n + 1) for i in range(n)]
+    out = []
+    for t in times:
+        img = _extract_frame_ffmpeg(path, max(0.0, t))
+        if img is not None:
+            b = _one_b64(img)
+            if b:
+                out.append(b)
+    return out
+
+
+def _frame_b64(path: str) -> Optional[str]:        # compat
+    fs = _frames_b64(path, 0.0, 1)
+    return fs[0] if fs else None
+
+
+def verify(frames, script_excerpt: str, desired: str) -> Optional[dict]:
+    """Pergunta à IA de visão (Claude/Gemini/Ollama) se o clip casa. `frames`: 1 ou
+    vários (início/meio/fim do mesmo clip). Dict ou None."""
+    imgs = [f for f in (frames if isinstance(frames, list) else [frames]) if f]
+    if not imgs:
+        return None
+    multi = len(imgs) > 1
+    user = (f'O script diz: "{script_excerpt}"\nO B-roll ideal seria: "{desired}"\n'
+            + (f"As {len(imgs)} imagens são quadros (início/meio/fim) do MESMO clipe. "
+               "Avalie o CLIPE como um todo. " if multi else "")
+            + "Esse clipe combina?")
     try:
-        raw = llm.vision_complete(_VERIFY_SYSTEM, user, frame_b64,
+        raw = llm.vision_complete(_VERIFY_SYSTEM, user, imgs,
                                   max_tokens=300, temperature=0.2, force_json=True)
         data = llm.safe_json(raw)
         if not isinstance(data, dict):
@@ -76,18 +109,21 @@ def verify(frame_b64: str, script_excerpt: str, desired: str) -> Optional[dict]:
         return None
 
 
-def rerank(script_excerpt: str, desired: str, candidates: List[Dict]) -> List[Dict]:
+def rerank(script_excerpt: str, desired: str, candidates: List[Dict],
+           n_frames: int = None) -> List[Dict]:
     """Re-ranqueia os candidatos pelo match_score do Vision (top-K, em paralelo).
+    n_frames: quadros por clip (Modo Qualidade Alta = 3 → "vê o clip de verdade").
     Mistura: score_final = 0.5*embedding_norm + 0.5*(match_score/10). Falha → mantém ordem."""
     top = candidates[:VERIFY_TOP_K]
     if not top or not available():
         return candidates
+    nf = n_frames or VISION_FRAMES
 
     def _eval(c):
-        b64 = _frame_b64(c["path"])
-        if not b64:
+        frames = _frames_b64(c["path"], c.get("duration", 0), nf)
+        if not frames:
             return c, None
-        return c, verify(b64, script_excerpt, desired)
+        return c, verify(frames, script_excerpt, desired)
 
     evaluated = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=_MAX_WORKERS) as ex:

@@ -1,10 +1,11 @@
 #!/bin/bash
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# ── IA: Ollama LOCAL (primário, grátis, sem cota) + Gemini (reserva) ───────────
-# Tarefas inteligentes (classificador, UGC, visão, auto-tag, PHOENIX) → Ollama local.
-# Gemini entra de reserva quando a cota free dele estiver disponível. Busca de
-# B-roll é sempre CLIP local. (OpenRouter foi removido — cota free não aguentava.)
+# ── IA: roteamento híbrido grátis — Groq/Gemini (nuvem, rápido) + Ollama LOCAL ──
+# Tarefas de texto (classificador, UGC, diretor, PHOENIX) → Groq-first quando há
+# chave; senão Ollama local. Visão/auto-tag → Gemini ou Ollama. Ollama local é a
+# reserva offline. Busca de B-roll é sempre por embeddings (CLIP local).
+# (OpenRouter foi removido — a cota free não aguentava o volume de uma VSL.)
 export OLLAMA_MODEL="${OLLAMA_MODEL:-qwen2.5:7b}"
 export OLLAMA_VISION_MODEL="${OLLAMA_VISION_MODEL:-llama3.2-vision:11b}"
 
@@ -17,8 +18,8 @@ if command -v ollama >/dev/null 2>&1; then
       sleep 1
     done
   fi
-  # Reserva: só baixa um modelo de texto se o Ollama NÃO tiver nenhum (não força
-  # download quando OpenRouter é o primário e já há qualquer modelo instalado).
+  # Só baixa um modelo de texto se o Ollama NÃO tiver nenhum (não força download
+  # quando já existe qualquer modelo instalado).
   if ! ollama list 2>/dev/null | tail -n +2 | grep -q .; then
     echo "⬇️  Ollama sem modelos — baixando $OLLAMA_MODEL como reserva (uma vez)..."
     ollama pull "$OLLAMA_MODEL"
@@ -27,9 +28,9 @@ if command -v ollama >/dev/null 2>&1; then
     echo "⬇️  Baixando $OLLAMA_VISION_MODEL (uma vez, ~8GB)..."
     ollama pull "$OLLAMA_VISION_MODEL"
   fi
-  echo "🧠 Ollama (reserva) pronto."
+  echo "🧠 Ollama (reserva local) pronto."
 else
-  echo "ℹ️  Ollama não instalado — sem reserva offline (OpenRouter cobre as tarefas)."
+  echo "ℹ️  Ollama não instalado — sem reserva offline. As tarefas dependem de chave Groq/Gemini."
 fi
 
 source "$SCRIPT_DIR/backend/.venv/bin/activate"

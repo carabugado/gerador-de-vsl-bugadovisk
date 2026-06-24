@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Tradução Simultânea</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a1d; color: #e7e7ea;
+    font-family: -apple-system, "Segoe UI", sans-serif; font-size: 12px;
+    padding: 14px;
+  }
+  h1 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .sub { color: #8a8a96; font-size: 10px; margin-bottom: 12px; }
+  .card {
+    background: #232328; border: 1px solid #34343c; border-radius: 6px;
+    padding: 12px; margin-bottom: 10px;
+  }
+  label { display: block; font-size: 10px; color: #9a9aa6; text-transform: uppercase;
+          letter-spacing: 0.06em; margin-bottom: 6px; }
+  input[type=text] {
+    width: 100%; background: #1a1a1d; border: 1px solid #34343c; border-radius: 4px;
+    color: #e7e7ea; font-size: 12px; padding: 8px; outline: none; font-family: inherit;
+  }
+  input[type=text]:focus { border-color: #57b6ff; }
+  .row { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  button {
+    border: 1px solid #34343c; background: #2c2c32; color: #cfcfd6;
+    border-radius: 4px; padding: 7px 10px; font-size: 11px; cursor: pointer;
+    transition: 0.15s;
+  }
+  button:hover { border-color: #57b6ff; color: #fff; }
+  .btn-primary {
+    width: 100%; background: #57b6ff; color: #0a1622; border-color: #57b6ff;
+    font-weight: 700; padding: 11px; font-size: 13px; margin-top: 4px;
+  }
+  .btn-primary:hover { background: #7cc6ff; }
+  .btn-primary:disabled, button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .hint { font-size: 9px; color: #6a6a76; margin-top: 5px; font-style: italic; }
+  .pill { padding: 6px 10px; font-size: 11px; }
+  .pill.on { border-color: #57b6ff; background: rgba(87,182,255,0.14); color: #9bd2ff; }
+  .file { font-size: 10px; color: #8a8a96; margin-top: 6px; word-break: break-all; }
+  .file.set { color: #9bd2ff; }
+  #status {
+    margin: 10px 0; font-size: 11px; padding: 8px; border-radius: 4px;
+    min-height: 18px; display: none;
+  }
+  #status.info    { display: block; background: #25303a; color: #7fc6ff; }
+  #status.success { display: block; background: #1f3326; color: #6fe39a; }
+  #status.error   { display: block; background: #3a2222; color: #ff8a8a; }
+  details { margin-bottom: 10px; }
+  summary.opt { cursor: pointer; font-size: 10px; color: #6a6a76; }
+  code { color: #9bd2ff; }
+</style>
+</head>
+<body>
+  <h1>🌐 Tradução Simultânea</h1>
+  <div class="sub">Traduz uma legenda mantendo os tempos exatos — pra encaixar embaixo do original</div>
+
+  <details class="card" id="cfgCard">
+    <summary class="opt" style="font-size:11px;color:#9a9aa6">⚙ Chave Gemini (opcional com Ollama local)</summary>
+    <input type="text" id="geminiKey" placeholder="AIza…" style="margin-top:8px">
+    <div class="row">
+      <button onclick="saveGeminiKey()" style="flex:1">💾 Salvar chave</button>
+      <button onclick="testGemini()" style="flex:1">🔌 Testar Gemini</button>
+    </div>
+    <div class="hint">Fica no backend (<code>~/.vsl_config.json</code>), compartilhada com os outros painéis. A tradução usa o <b>Gemini primeiro</b> (melhor qualidade) e cai no Ollama local só se o Gemini falhar.</div>
+  </details>
+
+  <div class="card">
+    <label>1 · Legenda de origem (.srt)</label>
+    <input type="text" id="srtPath" placeholder="escolha o .srt em inglês…">
+    <div class="row">
+      <button onclick="pickSrt()" style="flex:1">📄 Escolher .srt…</button>
+      <button onclick="detectSrt()" style="flex:1">🎯 Achar ao lado do vídeo</button>
+    </div>
+    <div class="file" id="srtInfo"></div>
+    <div class="hint">"Achar ao lado do vídeo" procura um .srt com o mesmo nome do vídeo da sua timeline (V1).</div>
+  </div>
+
+  <div class="card">
+    <label>2 · Traduzir para</label>
+    <div class="row" id="langRow">
+      <button class="pill on" data-lang="pt">🇧🇷 Português</button>
+      <button class="pill" data-lang="es">🇪🇸 Espanhol</button>
+      <button class="pill" data-lang="en">🇺🇸 Inglês</button>
+      <button class="pill" data-lang="fr">🇫🇷 Francês</button>
+    </div>
+
+    <label style="margin-top:12px">3 · Onde colocar na timeline</label>
+    <label style="text-transform:none;letter-spacing:0;color:#cfcfd6;display:flex;align-items:center;gap:7px;font-size:11px;margin:0;cursor:pointer">
+      <input type="checkbox" id="anchorPlayhead" checked style="width:auto;margin:0">
+      Encaixar na posição do cursor (playhead)
+    </label>
+    <div class="hint">Posicione o cursor no <b>início da fala</b> antes de traduzir — a legenda cai exatamente ali, sincronizada. Desmarque para colocar no início da sequência (00:00).</div>
+  </div>
+
+  <button class="btn-primary" id="btnGo" onclick="translateAndPlace()">
+    🌐 Traduzir e colocar na timeline
+  </button>
+  <div class="hint" style="text-align:center;margin-top:6px">
+    Gera o .srt traduzido ao lado do original e importa como faixa de legenda.
+  </div>
+
+  <div id="status"></div>
+
+  <div class="hint" style="margin-top:10px">
+    💡 Se a versão do seu Premiere não aceitar criar a faixa automaticamente, o
+    .srt traduzido fica <b>importado no projeto</b> — é só arrastar pra uma faixa de legenda.
+  </div>
+
+  <script src="./js/CSInterface.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

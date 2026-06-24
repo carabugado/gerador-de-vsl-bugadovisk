@@ -138,7 +138,9 @@ def select(segments: List[Dict], profiles: List[Dict], assets: List[Dict],
         profile = profiles[i] or {}
         duration_needed = seg["end"] - seg["start"]
 
-        if duration_needed < MIN_BROLL_DURATION:
+        # sub-slots de enumeração (rajada de "3 ingredientes") são curtos de propósito —
+        # isentos do piso de 3s (o ritmo cuida do timing). Mesma regra do broll_search.
+        if duration_needed < MIN_BROLL_DURATION and not seg.get("_enum_group"):
             ranked.append({"index": i, "skip": True, "candidates": []})
             matches.append(make_result(seg, None, "skip"))
             continue

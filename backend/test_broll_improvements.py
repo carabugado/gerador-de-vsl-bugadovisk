@@ -179,6 +179,9 @@ def test_enumeration():
     # sem broll_items → não divide
     s4, _ = bc.split_enumerations([{"start": 0.0, "end": 10.0}], [{"broll_items": []}])
     check("sem itens → não divide", len(s4) == 1)
+    # regressão: o prompt LOCAL (Ollama) precisa pedir broll_items, senão "3 ingredientes"
+    # colapsa em 1 clipe no caminho grátis (objetivo nº1 do usuário).
+    check("prompt Ollama menciona broll_items", "broll_items" in bc.CLASSIFIER_SYSTEM_OLLAMA)
 
 
 if __name__ == "__main__":

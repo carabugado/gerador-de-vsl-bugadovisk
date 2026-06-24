@@ -65,6 +65,20 @@ def detect_vertical(context: dict, rules: dict) -> str:
     return best
 
 
+def vertical_from_path(path: str, rules: dict) -> str:
+    """Fallback: deduz a vertical pelo CAMINHO da pasta de B-rolls (ex.: '.../JOELHO/'
+    → JT) quando não há doc/contexto. Usa as mesmas keywords da detecção por contexto."""
+    if not path:
+        return ""
+    hay = str(path).lower()
+    best, best_hits = "", 0
+    for vert, terms in rules.get("vertical_keywords", {}).items():
+        hits = sum(1 for t in terms if t.strip().lower() in hay)
+        if hits > best_hits:
+            best, best_hits = vert, hits
+    return best
+
+
 def _matches_rule(text: str, rule: dict) -> bool:
     """Regra casa se: TODOS os termos de 'all' aparecem, ou QUALQUER de 'any'."""
     allt = [t.lower() for t in rule.get("all", [])]
@@ -111,9 +125,26 @@ def apply_compliance(segments: List[Dict], matches: List[Dict],
         if m.get("status") not in _ACTIVE or not m.get("broll_path"):
             continue
 
-        # texto do ASSET: nome do arquivo + direção visual pretendida
+        # Clipe da pasta +18 (ED): local, curado pelo editor pra uma VSL adulta — o
+        # conteúdo sexual/nudez é INTENCIONAL e o clip nunca sai da máquina (sem risco
+        # de ban em anúncio/nuvem). Não bloqueia (senão barra justo o que a VSL ED
+        # precisa). Biblioteca/Pexels/gerados seguem sob compliance normal.
+        if m.get("broll_source") == "ed":
+            continue
+
+        # texto do ASSET: nome do arquivo + LEGENDA do clipe (o que ele REALMENTE
+        # mostra, do BLIP) + direção visual pretendida. A legenda é o melhor sinal de
+        # conteúdo — pega clipe de nome-hash que mostra cirurgia/medicamento/etc.
+        caption = ""
+        try:
+            import asset_tagger
+            tg = asset_tagger.load_tags(m.get("broll_path") or "") or {}
+            caption = str(tg.get("caption") or "")
+        except Exception:
+            caption = ""
         asset_text = " ".join([
             _clean_name(m.get("broll_filename", "") or ""),
+            caption.lower(),
             (seg.get("visual_query", "") or "").lower(),
             (seg.get("scene_type", "") or "").lower(),
         ])
