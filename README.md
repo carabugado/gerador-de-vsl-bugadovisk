@@ -190,10 +190,24 @@ gerador-de-vsl-bugadovisk/
 │   ├── jsx/host.jsx    # ExtendScript — controla a timeline
 │   └── CSXS/manifest.xml
 ├── cep-translate/      # Painel auxiliar de tradução de SRT
+├── tdp-ferramenta/     # TDP — Troca de Produto (projeto Python separado)
 ├── install_mac.sh      # Instalador macOS
 ├── install_translate_mac.sh
 └── start_server.sh     # Inicia o servidor Python
 ```
+
+---
+
+## 🔁 TDP — Troca de Produto
+
+Projeto separado, em [`tdp-ferramenta/`](tdp-ferramenta/): pega uma VSL longa, acha **todas as aparições do produto antigo** (falado + texto na tela + visual) e entrega o `troca_COMPLETO.xml` pro Premiere (V1 cortado e colorido · V2 produto novo · A1 áudio original · A2+ vozes), mais o **rebrand de voz** e um **QA do vídeo final**.
+
+```bash
+cd tdp-ferramenta && ./install_mac.sh
+python -m troca_produto doctor
+```
+
+Tutorial completo em [`tdp-ferramenta/README.md`](tdp-ferramenta/README.md).
 
 ---
 

@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
+# saídas de demanda (pesam e são descartáveis)
+tdp_projeto/
+tdp_*/
+briefing.json
+*.mp4
+*.mov
+*.wav
+*.mp3
