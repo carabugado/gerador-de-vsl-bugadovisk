@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from troca_produto.pipeline.analyze import combine_ranges, mentions_to_ranges
+from troca_produto.pipeline.analyze import candidate_times, combine_ranges, mentions_to_ranges
 from troca_produto.pipeline.ranges import (
     Range,
     check_coverage,
@@ -127,3 +127,22 @@ def test_combine_mantem_tipo_quando_nao_ha_cruzamento():
 
 def test_combine_vazio():
     assert combine_ranges([], []) == []
+
+
+def test_candidate_times_cerca_cada_mencao():
+    times = candidate_times([{"start": 10.0}], 60.0, offsets=(-1.5, 0.5, 3.0))
+    assert times == [8.5, 10.5, 13.0]
+
+
+def test_candidate_times_nao_sai_do_video():
+    assert candidate_times([{"start": 0.2}], 1.0, offsets=(-1.5, 0.5, 3.0)) == [0.7]
+
+
+def test_candidate_times_nao_repete_momento():
+    times = candidate_times([{"start": 10.0}, {"start": 10.0}], 60.0, offsets=(0.5,))
+    assert times == [10.5]
+
+
+def test_candidate_times_respeita_o_limite():
+    mentions = [{"start": float(i)} for i in range(50)]
+    assert len(candidate_times(mentions, 100.0, limit=10)) == 10

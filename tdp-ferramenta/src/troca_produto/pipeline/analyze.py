@@ -77,6 +77,28 @@ def mentions_to_ranges(mentions, *, pad: float = 0.15) -> list[Range]:
     return merge_ranges(ranges, gap=0.4)
 
 
+#: Deslocamentos (em segundos) ao redor de cada menção falada. O packshot
+#: costuma entrar um pouco depois de o locutor falar o nome.
+REF_OFFSETS = (-1.5, -0.5, 0.5, 1.5, 3.0)
+
+
+def candidate_times(mentions, duration: float, *, offsets=REF_OFFSETS, limit: int = 60) -> list[float]:
+    """Momentos onde vale procurar o produto antigo na tela.
+
+    Serve pra quem ainda NÃO tem foto do produto antigo: roda a análise só de
+    áudio, extrai estes frames e escolhe 3–5 que mostram o produto — eles
+    viram os `old_assets` do CLIP.
+    """
+    times: set[float] = set()
+    for item in mentions or []:
+        start = float(item["start"] if isinstance(item, dict) else getattr(item, "start", 0.0))
+        for offset in offsets:
+            moment = round(start + offset, 2)
+            if 0.0 <= moment <= max(0.0, duration):
+                times.add(moment)
+    return sorted(times)[:limit]
+
+
 def is_url(value: str) -> bool:
     return str(value).startswith(("http://", "https://"))
 

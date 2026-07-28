@@ -3,6 +3,7 @@
     python -m troca_produto init    --out briefing.json
     python -m troca_produto doctor
     python -m troca_produto analyze --briefing briefing.json --dir tdp_projeto
+    python -m troca_produto refs    --dir tdp_projeto
     python -m troca_produto review  --dir tdp_projeto
     python -m troca_produto rebrand --dir tdp_projeto [--run]
     python -m troca_produto export  --dir tdp_projeto
@@ -170,6 +171,44 @@ def cmd_review(args) -> int:
     if changed:
         _print("")
         _print(f"estado atualizado em {project.state_path}")
+    return EXIT_OK
+
+
+# ── refs ────────────────────────────────────────────────────────────────────
+def cmd_refs(args) -> int:
+    """Frames candidatos a virar `old_assets`, tirados das menções faladas."""
+    from .media.ffmpeg import has_ffmpeg, run
+    from .media.frames import Frame, contact_sheet, extract_frame_at_cmd
+    from .pipeline.analyze import candidate_times
+
+    project = Project(args.dir)
+    state = project.load_state()
+    if not state.mentions:
+        _print("nenhuma menção falada no estado — rode o analyze (pode ser com swap_target: audio).")
+        return EXIT_ERROR
+    if not has_ffmpeg():
+        _print("ffmpeg/ffprobe não estão no PATH (macOS: brew install ffmpeg)")
+        return EXIT_ERROR
+
+    out_dir = project.dir / "refs"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    times = candidate_times(state.mentions, state.duration, limit=args.limit)
+    frames = []
+    for index, moment in enumerate(times):
+        path = out_dir / f"ref_{index:03d}_{moment:07.2f}s.jpg"
+        run(extract_frame_at_cmd(state.video, path, moment, width=640), check=False)
+        if path.is_file():
+            frames.append(Frame(index=index, time=moment, path=str(path)))
+
+    _print(f"{len(frames)} frames em {out_dir}  (nas {len(state.mentions)} menções faladas)")
+    try:
+        sheet = contact_sheet(frames, out_dir / "contact_sheet.jpg", fps=state.fps)
+        _print(f"contact sheet: {sheet}")
+    except Exception as exc:
+        _print(f"contact sheet não montado: {exc}")
+    _print("")
+    _print("agora: abra a pasta, apague os frames que NÃO mostram o produto antigo,")
+    _print("e aponte os 3–5 melhores em `old_assets` no briefing.")
     return EXIT_OK
 
 
@@ -401,6 +440,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--auto-assets", action="store_true", help="escolhe a arte por quantidade falada")
     p.add_argument("--sheet", action="store_true", help="monta o contact sheet pra conferência visual")
     p.set_defaults(func=cmd_review)
+
+    p = sub.add_parser("refs", help="frames candidatos a old_assets (quando você não tem foto do produto antigo)")
+    p.add_argument("--dir", required=True)
+    p.add_argument("--limit", type=int, default=60)
+    p.set_defaults(func=cmd_refs)
 
     p = sub.add_parser("rebrand", help="plano (e geração) da troca de voz")
     p.add_argument("--dir", required=True)

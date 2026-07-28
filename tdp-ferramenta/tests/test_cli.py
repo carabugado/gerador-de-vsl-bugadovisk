@@ -140,3 +140,9 @@ def test_help_lista_todos_os_comandos(capsys):
     texto = capsys.readouterr().out
     for comando in ("init", "doctor", "analyze", "review", "rebrand", "export", "cutout", "qa"):
         assert comando in texto
+
+
+def test_refs_sem_mencoes(tmp_path, capsys):
+    project = _projeto(tmp_path)
+    assert main(["refs", "--dir", str(project.dir)]) == 1
+    assert "analyze" in capsys.readouterr().out

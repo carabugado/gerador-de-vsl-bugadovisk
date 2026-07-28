@@ -83,6 +83,13 @@ python -m troca_produto init --out briefing.json
 TDP_VISUAL_ENGINE=cloud TDP_HOTWORDS=1 \
   python -m troca_produto analyze --briefing briefing.json --dir tdp_projeto
 
+# 2b. NÃO TEM FOTO DO PRODUTO ANTIGO?
+#     rode o passo 2 com swap_target: audio, e tire as referências do próprio vídeo:
+python -m troca_produto refs --dir tdp_projeto
+#     → frames em volta de cada menção falada + contact sheet.
+#       Escolha 3–5 que mostram o produto antigo, aponte em old_assets e
+#       rode o analyze de novo com swap_target: both.
+
 # 3. CONFIRA A COBERTURA
 #    se o visual cobrir >30–40% do vídeo, está errado (over-detection).
 #    A ferramenta avisa sozinha; refaça com CLIP-only e confira no olho:
@@ -155,7 +162,7 @@ A **quantidade falada** ("6 frascos", "free +3", "3 1") é casada com o pack cer
 
 ```
 src/troca_produto/
-  cli.py                  init · doctor · analyze · review · rebrand · export · cutout · qa
+  cli.py                  init · doctor · analyze · refs · review · rebrand · export · cutout · qa
   briefing.py             briefing da demanda + validação
   project.py              layout de tdp_projeto/ e o state.json
   review.py               revisão humana das aparições
