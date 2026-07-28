@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68,<81", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "troca-produto"
+version = "0.1.0"
+description = "TDP — Troca de Produto: acha o produto antigo numa VSL (falado + texto na tela + visual) e gera XML pro Premiere + rebrand de voz"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [{ name = "Bugado Visk" }]
+
+dependencies = [
+    "numpy>=1.24",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+# ASR (Whisper local). Puxa torch.
+asr = ["openai-whisper>=20231117"]
+# Visão: CLIP local + Pillow. Puxa torch.
+clip = ["torch>=2.0", "transformers>=4.40", "Pillow>=10.0"]
+# Download de VSL por URL
+url = ["yt-dlp>=2024.8.6"]
+# Recorte de produto (PNG transparente)
+cutout = ["rembg[cpu]>=2.0.57"]
+# Diarização por referência do narrador
+# setuptools<81 é OBRIGATÓRIO: webrtcvad (via resemblyzer) usa pkg_resources
+voice = ["resemblyzer>=0.1.1", "scikit-learn>=1.3", "setuptools<81"]
+dev = ["pytest>=7.4", "pytest-cov>=4.1"]
+all = [
+    "openai-whisper>=20231117",
+    "torch>=2.0",
+    "transformers>=4.40",
+    "Pillow>=10.0",
+    "yt-dlp>=2024.8.6",
+    "rembg[cpu]>=2.0.57",
+    "resemblyzer>=0.1.1",
+    "scikit-learn>=1.3",
+    "setuptools<81",
+]
+
+[project.scripts]
+troca-produto = "troca_produto.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+filterwarnings = ["ignore::DeprecationWarning"]
