@@ -19,6 +19,10 @@ const _CFG_MAP = {
     brollDensity:  "broll_density",
     brollVertical: "vertical",
     edFolder:      "ed_folder",
+    swapNewFolder: "swap_new_folder",
+    swapRefFolder: "swap_ref_folder",
+    swapOldName:   "swap_old_name",
+    swapNewName:   "swap_new_name",
 };
 
 // ── Chaves Gemini: uma box por chave, 6 primeiros visíveis, "+" adiciona ────────
@@ -581,6 +585,10 @@ const STEP_LABELS = {
     indexing:       "Indexando B-rolls",
     tagging:        "Tagueando assets",
     matching:       "Escolhendo B-rolls",
+    swap_transcribe:"Troca: lendo a narração",
+    swap_scan:      "Troca: procurando o produto em cena",
+    swap_index:     "Troca: indexando clipes do produto novo",
+    swap_render:    "Troca: renderizando o vídeo",
     done:           "Concluído",
     error:          "Erro",
 };
@@ -700,6 +708,11 @@ const STEP_RANGE = {
     indexing:       [52, 66],
     tagging:        [66, 72],
     matching:       [72, 99],
+    // Troca de Produto (pipeline próprio — mesma barra)
+    swap_transcribe: [2, 20],
+    swap_scan:       [20, 75],
+    swap_index:      [75, 95],
+    swap_render:     [5, 95],
 };
 let _lastPct = 0;
 
@@ -1402,6 +1415,256 @@ async function _doInsert() {
     setStatus(msg, "success");
 }
 
+// ── 🔁 Troca de Produto (troca de pote) ───────────────────────────────────────
+
+let _swapZones = [];
+let _swapLabels = { old: "", nova: "" };
+
+function toggleSwapBox() {
+    const box = document.getElementById("swapBox");
+    if (!box) return;
+    const open = box.style.display === "none";
+    box.style.display = open ? "block" : "none";
+    const btn = document.getElementById("btnSwapToggle");
+    if (btn) btn.textContent = open ? "🧪 Fechar" : "🧪 Abrir…";
+}
+
+function setSwapSensitivity(v) {
+    const inp = document.getElementById("swapSensitivity");
+    if (inp) inp.value = v;
+    document.querySelectorAll(".swapsensbtn").forEach(b => {
+        const on = b.dataset.v === v;
+        b.style.background = on ? "#2b6cb0" : "";
+        b.style.color = on ? "#fff" : "";
+        b.style.fontWeight = on ? "700" : "";
+    });
+}
+
+async function analyzeProductSwap() {
+    saveConfig();
+    const videoPath = document.getElementById("videoPath").value.trim();
+    if (!videoPath) { setStatus("Informe/detecte o vídeo principal primeiro.", "error"); return; }
+    if (!(await pingStatus())) { setStatus("Backend offline — rode start_server.sh.", "error"); return; }
+
+    const oldForm = document.getElementById("swapOldForm").value;
+    const newForm = document.getElementById("swapNewForm").value;
+    const newFolder = document.getElementById("swapNewFolder").value.trim();
+
+    const btn = document.getElementById("btnSwapAnalyze");
+    const lbl = document.getElementById("btnSwapLabel");
+    btn.classList.add("processing"); btn.disabled = true;
+    if (lbl) lbl.textContent = "Analisando...";
+    _lastPct = 0;
+    startPolling();
+    setStatus(`Procurando "${oldForm}" na narração e em cena...`, "info");
+
+    try {
+        const data = await xhrPost(API + "/product_swap", {
+            video_path: videoPath,
+            old_form: oldForm,
+            new_form: newForm,
+            old_name: document.getElementById("swapOldName").value.trim(),
+            new_name: document.getElementById("swapNewName").value.trim(),
+            new_folder: newFolder,
+            ref_folder: document.getElementById("swapRefFolder").value.trim(),
+            transcript_srt: _transcriptSrt || null,
+            sensitivity: document.getElementById("swapSensitivity").value || "normal",
+        });
+        stopPolling();
+        setProgress(null);
+        _swapZones = data.zones || [];
+        _swapLabels = { old: data.old_label || oldForm, nova: data.new_label || newForm };
+        renderSwapResults(data);
+        const s = data.stats || {};
+        setStatus(
+            `🔁 ${s.visual || 0} aparição(ões) em cena · ${s.audio || 0} menção(ões) na ` +
+            `narração · ${s.planned || 0} troca(s) planejada(s).`,
+            "success");
+    } catch (e) {
+        stopPolling();
+        setProgress(null);
+        setStatus("Erro na análise de troca: " + e.message, "error");
+    }
+    btn.classList.remove("processing"); btn.disabled = false;
+    if (lbl) lbl.textContent = "Analisar trocas";
+}
+
+function renderSwapResults(data) {
+    const list = document.getElementById("segmentList");
+    if (!list) return;
+    list.innerHTML = "";
+    document.getElementById("bottomBar").style.display = "none";   // barra própria abaixo
+
+    const s = data.stats || {};
+    const header = document.createElement("div");
+    header.className = "swap-header-card";
+    header.innerHTML =
+        `<h3>🔁 Troca de Produto — ${_swapLabels.old} → ${_swapLabels.nova}</h3>` +
+        `<div class="swap-sub">` +
+        `🎬 <b>${s.visual || 0}</b> zona(s) com o pote em cena · ` +
+        `🎙️ <b>${s.audio || 0}</b> menção(ões) na narração · ` +
+        `✅ <b>${s.planned || 0}</b> troca(s) com clipe novo` +
+        (s.new_clips ? ` · 📦 ${s.new_clips} clipe(s) do produto novo` : "") +
+        `</div>` +
+        `<div class="swap-header-actions">` +
+        `<button class="btn-insert" onclick="insertProductSwapsTimeline()">⬆ Inserir na timeline (V3 + marcadores)</button>` +
+        `<button class="btn-approve-all" onclick="renderSwapVideo()">🎬 Renderizar MP4 trocado</button>` +
+        `</div>`;
+    list.appendChild(header);
+
+    (data.zones || []).forEach(z => list.appendChild(buildSwapCard(z)));
+}
+
+function _swapBadge(type) {
+    if (type === "audio") return '<span class="swap-badge audio">🎙️ NARRAÇÃO</span>';
+    if (type === "both")  return '<span class="swap-badge both">🎙️+🎬 FALA E CENA</span>';
+    return '<span class="swap-badge visual">🎬 EM CENA</span>';
+}
+
+function buildSwapCard(z) {
+    const card = document.createElement("div");
+    const stClass = { ok: "status-ok", review: "status-review", marker: "status-no_broll",
+                      no_clip: "status-error", rejected: "status-error" }[z.status] || "";
+    card.className = "seg-card " + stClass;
+    card.id = "swapCard-" + z.index;
+
+    let body = "";
+    if (z.type === "audio") {
+        const terms = (z.matched_terms || []).join(", ");
+        body = `<div class="seg-text">“${z.text || ""}”</div>` +
+               `<div class="seg-nobroll">🎙️ Menção falada (${terms}) — vira MARCADOR ` +
+               `vermelho pra regravar esse trecho da narração.</div>`;
+    } else {
+        const dur = (z.end - z.start).toFixed(1);
+        if (z.replacement_path) {
+            const thumb = `${API}/thumbnail?path=${encodeURIComponent(z.replacement_path)}`;
+            body = `<div style="display:flex;gap:8px;align-items:center">` +
+                   `<img src="${thumb}" style="width:88px;border-radius:5px;flex-shrink:0" onerror="this.style.display='none'">` +
+                   `<div style="flex:1;min-width:0">` +
+                   `<div class="broll-chip"><span class="broll-chip-icon">🎞️</span>` +
+                   `<span class="broll-chip-name">${z.replacement_filename || ""}</span>` +
+                   `<span class="broll-chip-score good">${(z.replacement_score * 100).toFixed(0)}%</span></div>` +
+                   `<div class="seg-reason">Pote antigo em cena por ${dur}s — coberto pelo clipe novo acima.</div>` +
+                   `</div></div>`;
+        } else {
+            body = `<div class="seg-nobroll">🎬 Pote antigo em cena por ${dur}s — sem clipe do ` +
+                   `produto novo (defina a pasta e reanalise, ou troque na mão; vira marcador laranja).</div>`;
+        }
+        if ((z.mentions || []).length) {
+            body += `<div class="seg-reason">🎙️ Narração fala do produto aqui: “${z.mentions[0]}”</div>`;
+        }
+    }
+
+    let actions = "";
+    if (z.type !== "audio") {
+        actions = `<div class="swap-actions">` +
+            `<button class="btn-sm" onclick="swapZoneAction(${z.index}, 'accept')">✓ Aprovar</button>` +
+            `<button class="btn-sm" onclick="swapZoneAction(${z.index}, 'swap')">↔ Outro clipe</button>` +
+            `<button class="btn-sm" onclick="swapZoneAction(${z.index}, 'reject')">✕ Rejeitar</button>` +
+            `</div>`;
+    }
+
+    card.innerHTML =
+        `<div class="seg-head">` +
+        `<span class="seg-num">#${z.index + 1}</span>` +
+        `<span class="seg-tc">${formatTime(z.start)} → ${formatTime(z.end)}</span>` +
+        _swapBadge(z.type) +
+        (z.status === "rejected" ? '<span class="seg-peak-badge" style="color:#f87171">rejeitado</span>' : "") +
+        `</div>` +
+        `<div style="padding:8px 10px">${body}</div>` + actions;
+    return card;
+}
+
+async function swapZoneAction(index, action) {
+    try {
+        const r = await xhrPost(API + "/product_swap/zone_action", { index, action });
+        if (r && r.zone) {
+            _swapZones[index] = r.zone;
+            const old = document.getElementById("swapCard-" + index);
+            if (old) old.replaceWith(buildSwapCard(r.zone));
+        }
+    } catch (e) {
+        setStatus("Erro: " + e.message, "error");
+    }
+}
+
+// Insere na timeline: clipes do produto novo na V3 + marcadores nas menções.
+async function insertProductSwapsTimeline() {
+    if (!cs) { setStatus("Fora do Premiere — use o Renderizar MP4.", "error"); return; }
+
+    let data;
+    try {
+        data = await xhrGet(API + "/product_swap/matches");
+    } catch (e) {
+        setStatus("Erro ao buscar o plano de troca: " + e.message, "error");
+        return;
+    }
+    const insertable = data.insertable || [];
+    const markers = data.markers || [];
+    if (!insertable.length && !markers.length) {
+        setStatus("Nada para inserir — nenhuma zona aprovada.", "error");
+        return;
+    }
+
+    let msg = "";
+    const BATCH = 10;
+    let totalInserted = 0, totalErrors = [];
+    for (let i = 0; i < insertable.length; i += BATCH) {
+        const jsonStr = JSON.stringify(insertable.slice(i, i + BATCH));
+        setStatus(`Inserindo trocas ${i + 1}–${Math.min(i + BATCH, insertable.length)}...`, "info");
+        await new Promise(resolve => {
+            cs.evalScript(`insertProductSwaps(${JSON.stringify(jsonStr)})`, result => {
+                try {
+                    const res = JSON.parse(result);
+                    if (res.ok) {
+                        totalInserted += res.inserted;
+                        if (res.errors) totalErrors = totalErrors.concat(res.errors);
+                    } else totalErrors.push(res.error || "erro no JSX");
+                } catch {
+                    totalErrors.push("JSX: " + String(result || "sem resposta").slice(0, 160));
+                }
+                resolve();
+            });
+        });
+    }
+    if (insertable.length) {
+        msg = `✅ ${totalInserted}/${insertable.length} clipe(s) do produto novo na V3.`;
+        if (totalErrors.length) {
+            msg += ` (${totalErrors.length} erro(s) — ${totalErrors[0]})`;
+            console.warn("[swap] erros:", totalErrors);
+        }
+    }
+
+    if (markers.length) {
+        await new Promise(resolve => {
+            cs.evalScript(`insertSwapMarkers(${JSON.stringify(JSON.stringify(markers))})`, r => {
+                try { const mr = JSON.parse(r); msg += ` + ${mr.inserted} marcador(es) de troca.`; }
+                catch {}
+                resolve();
+            });
+        });
+    }
+    setStatus(msg || "Nada inserido.", totalInserted || markers.length ? "success" : "error");
+}
+
+// Render final por ffmpeg: corta as zonas e troca só o vídeo — áudio intacto.
+async function renderSwapVideo() {
+    if (!_swapZones.length) { setStatus("Analise as trocas primeiro.", "error"); return; }
+    _lastPct = 0;
+    startPolling();
+    setStatus("Renderizando o vídeo trocado (pode demorar)...", "info");
+    try {
+        const r = await xhrPost(API + "/product_swap/render", {});
+        stopPolling();
+        setProgress(null);
+        setStatus(`🎬 Vídeo trocado pronto (${r.swaps} troca(s)): ${r.out_path}`, "success");
+    } catch (e) {
+        stopPolling();
+        setProgress(null);
+        setStatus("Erro no render: " + e.message, "error");
+    }
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatTime(sec) {
@@ -1749,6 +2012,7 @@ async function boot() {
     const up = await ensureBackend();
     await loadConfig();
     checkLibraryConfig();
+    setSwapSensitivity("normal");   // destaca o botão default da Troca de Produto
     if (up) {
         refreshLlmStatus(); refreshAIHealth();
         // Revê saúde + alertas de API a cada 30s (mostra cota estourada mesmo parado)

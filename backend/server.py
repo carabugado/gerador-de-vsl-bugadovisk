@@ -40,6 +40,7 @@ import copy_chief
 from compliance import apply_compliance, detect_vertical, vertical_from_path
 from compliance import _load_rules as _compliance_rules
 from rhythm import apply_rhythm
+import product_swap
 from vsl_director import analyze_full_vsl
 from copymerda import analyze_and_generate_prompts
 from higgsfield_gen import generate_clip as higgs_generate
@@ -255,6 +256,10 @@ class LibraryConfigRequest(BaseModel):
     vertical: Optional[str] = None             # nicho manual (WL|ED|NR|PT|VS|JT|FG) ou vazio=auto
     pexels_api_key: Optional[str] = None       # Pexels (fallback online quando lib local não tem)
     ed_folder: Optional[str] = None            # pasta ED+ (clipes sugestivos, só vertical ED, só local)
+    swap_new_folder: Optional[str] = None      # Troca de Produto: pasta de clipes do produto novo
+    swap_ref_folder: Optional[str] = None      # Troca de Produto: referências do produto antigo
+    swap_old_name: Optional[str] = None        # Troca de Produto: nome do produto antigo
+    swap_new_name: Optional[str] = None        # Troca de Produto: nome do produto novo
 
 
 class LearnProjectRequest(BaseModel):
@@ -371,6 +376,7 @@ _CONFIG_FIELDS = [
     "gemini_api_key", "gemini_api_keys", "groq_api_key", "generated_dir",
     "video_path", "llm_backend", "provider_override", "broll_density", "vertical",
     "pexels_api_key", "ed_folder",
+    "swap_new_folder", "swap_ref_folder", "swap_old_name", "swap_new_name",
 ]
 
 
@@ -1589,6 +1595,219 @@ async def tag_assets(req: TagAssetsRequest):
     st2["pid"] = pid
     _write_tag_state(st2)
     return {"ok": True, "status": "running", "pid": pid}
+
+
+# ── Troca de Produto (troca de pote) ─────────────────────────────────────────
+# Detecta onde o produto ANTIGO aparece (menção na narração + pote em cena) e
+# monta a troca pelo produto NOVO: plano por zona, inserção na timeline (V3 +
+# marcadores) ou render final por ffmpeg mantendo o áudio original.
+
+_swap_session: Dict = {}
+
+
+class ProductSwapRequest(BaseModel):
+    video_path: str
+    old_form: str                        # formato antigo: capsulas|gotas|gummies|po|spray|creme|texto livre
+    new_form: str                        # formato novo (rótulo/plano)
+    old_name: Optional[str] = ""         # nome do produto antigo (ajuda áudio + visual)
+    new_name: Optional[str] = ""
+    new_folder: Optional[str] = ""       # pasta com clipes do produto NOVO
+    ref_folder: Optional[str] = ""       # fotos/vídeos do produto ANTIGO (referência visual)
+    transcript_srt: Optional[str] = None # legenda em tempo do VÍDEO (senão Whisper)
+    sensitivity: Optional[str] = "normal"   # low|normal|high
+    scan_interval: Optional[float] = None   # segundos entre frames (default 1.0)
+
+
+class SwapZoneActionRequest(BaseModel):
+    index: int
+    action: str          # "accept" | "reject" | "swap" (próximo candidato)
+
+
+class SwapRenderRequest(BaseModel):
+    out_path: Optional[str] = ""
+
+
+@app.post("/product_swap")
+async def product_swap_analyze(req: ProductSwapRequest):
+    """Analisa a VSL e devolve TODAS as zonas de troca (áudio + visual) com o
+    plano de substituição pelo produto novo."""
+    global _swap_session
+    _clear_tag_state()   # progresso da troca não pode ser shadowado pelo tagging
+    if not os.path.exists(req.video_path):
+        raise HTTPException(400, f"Vídeo não encontrado: {req.video_path}")
+    if req.new_folder and not os.path.isdir(req.new_folder):
+        raise HTTPException(400, f"Pasta do produto novo não encontrada: {req.new_folder}")
+    if req.ref_folder and not os.path.isdir(req.ref_folder):
+        raise HTTPException(400, f"Pasta de referência não encontrada: {req.ref_folder}")
+
+    try:
+        # 1. Transcrição (tempo do VÍDEO): .srt colado > sidecar/cache/Whisper.
+        segments: List[Dict] = []
+        if req.transcript_srt and req.transcript_srt.strip():
+            from transcribe import parse_srt_text
+            set_progress("swap_transcribe", detail="Lendo transcrição (.srt)...")
+            segments = parse_srt_text(req.transcript_srt)
+        if not segments:
+            set_progress("swap_transcribe", detail="Transcrevendo a narração (Whisper)...")
+            segments = await asyncio.get_event_loop().run_in_executor(
+                None, transcribe, req.video_path
+            )
+
+        # 2. Análise (áudio + visual + plano) com progresso por etapa.
+        def _cb(stage, cur, total):
+            if stage == "scan":
+                set_progress("swap_scan", current=cur, total=total,
+                             detail=f"Procurando o produto em cena — frame {cur}/{total}")
+            elif stage == "embed":
+                set_progress("swap_scan", current=total, total=total,
+                             detail="Comparando frames com o produto (CLIP)...")
+            elif stage == "index":
+                set_progress("swap_index", current=cur, total=total,
+                             detail=f"Indexando clipes do produto novo — {cur}/{total}")
+
+        result = await asyncio.get_event_loop().run_in_executor(
+            None, lambda: product_swap.analyze(
+                req.video_path, req.old_form, req.new_form,
+                old_name=req.old_name or "", new_name=req.new_name or "",
+                segments=segments, new_folder=req.new_folder or "",
+                ref_folder=req.ref_folder or "",
+                sensitivity=req.sensitivity or "normal",
+                interval=req.scan_interval, progress_cb=_cb,
+            )
+        )
+
+        _swap_session = {
+            "video_path": req.video_path,
+            "zones": result["zones"],
+            "old_label": result["old_label"],
+            "new_label": result["new_label"],
+            "undo_stack": [],
+        }
+        set_progress("done")
+        enriched = [_swap_zone_enriched(i) for i in range(len(result["zones"]))]
+        return {"zones": enriched, "stats": result["stats"],
+                "old_label": result["old_label"], "new_label": result["new_label"]}
+    except HTTPException:
+        raise
+    except Exception as e:
+        set_progress("error", detail=str(e))
+        raise HTTPException(500, str(e))
+
+
+def _swap_zone_enriched(i: int) -> Dict:
+    z = _swap_session["zones"][i]
+    return {
+        "index": i,
+        "type": z.get("type", ""),
+        "start": z.get("start", 0),
+        "end": z.get("end", 0),
+        "score": z.get("score", 0),
+        "status": z.get("status", ""),
+        "text": z.get("text", ""),
+        "matched_terms": z.get("matched_terms", []),
+        "mentions": [m.get("text", "") for m in z.get("mentions", [])],
+        "replacement_path": z.get("replacement_path", ""),
+        "replacement_filename": z.get("replacement_filename", ""),
+        "replacement_score": z.get("replacement_score", 0),
+        "candidates": z.get("candidates", []),
+    }
+
+
+@app.post("/product_swap/zone_action")
+def swap_zone_action(req: SwapZoneActionRequest):
+    """accept / reject / swap (troca pro próximo clipe candidato) numa zona."""
+    if not _swap_session:
+        raise HTTPException(400, "Nenhuma análise de troca ativa.")
+    zones = _swap_session["zones"]
+    if not (0 <= req.index < len(zones)):
+        raise HTTPException(400, "Índice inválido.")
+    z = zones[req.index]
+    _swap_session["undo_stack"].append((req.index, dict(z)))
+
+    if req.action == "accept":
+        if z.get("type") == "audio":
+            raise HTTPException(400, "Menção de áudio vira marcador — nada a aprovar.")
+        z["status"] = "ok" if z.get("replacement_path") else "no_clip"
+    elif req.action == "reject":
+        z["status"] = "rejected"
+    elif req.action == "swap":
+        cands = z.get("candidates", [])
+        if len(cands) < 2:
+            _swap_session["undo_stack"].pop()
+            raise HTTPException(400, "Sem candidatos alternativos.")
+        cur = z.get("replacement_path", "")
+        pos = next((k for k, c in enumerate(cands) if c["path"] == cur), -1)
+        nxt = cands[(pos + 1) % len(cands)]
+        z["replacement_path"] = nxt["path"]
+        z["replacement_filename"] = nxt.get("filename", os.path.basename(nxt["path"]))
+        z["replacement_score"] = nxt.get("score", 0)
+        z["status"] = "review"
+    else:
+        _swap_session["undo_stack"].pop()
+        raise HTTPException(400, "Ação inválida.")
+    return {"ok": True, "zone": _swap_zone_enriched(req.index)}
+
+
+@app.get("/product_swap/matches")
+def swap_matches():
+    """Itens prontos pra timeline: clipes (zonas visuais com substituto, não
+    rejeitadas) + marcadores (menções de áudio E zonas sem clipe)."""
+    if not _swap_session:
+        raise HTTPException(400, "Nenhuma análise de troca ativa.")
+    zones = _swap_session["zones"]
+    old_l, new_l = _swap_session["old_label"], _swap_session["new_label"]
+    insertable, markers = [], []
+    for z in zones:
+        if z.get("status") == "rejected":
+            continue
+        if z.get("type") == "audio":
+            txt = (z.get("text", "") or "")[:120]
+            terms = ", ".join(z.get("matched_terms", []))
+            markers.append({
+                "start": z["start"],
+                "text": f"TROCAR ÁUDIO ({old_l} → {new_l}): \"{txt}\" [{terms}]",
+                "type": "audio",
+            })
+        elif z.get("replacement_path"):
+            insertable.append({
+                "start": z["start"], "end": z["end"],
+                "broll_path": z["replacement_path"],
+                "broll_filename": z.get("replacement_filename", ""),
+            })
+        else:
+            markers.append({
+                "start": z["start"],
+                "text": f"PRODUTO EM CENA sem clipe novo ({old_l} → {new_l}) — "
+                        f"{z['start']:.1f}s a {z['end']:.1f}s",
+                "type": "visual",
+            })
+    return {"insertable": insertable, "markers": markers,
+            "video_path": _swap_session["video_path"]}
+
+
+@app.post("/product_swap/render")
+async def swap_render(req: SwapRenderRequest):
+    """Renderiza o vídeo final trocado (ffmpeg): corta as zonas visuais no
+    lugar certo, insere o clipe do produto novo e mantém o áudio original."""
+    if not _swap_session:
+        raise HTTPException(400, "Nenhuma análise de troca ativa.")
+
+    def _cb(stage, cur, total):
+        set_progress("swap_render", current=cur, total=total,
+                     detail="Renderizando o vídeo trocado (ffmpeg)...")
+
+    set_progress("swap_render", detail="Montando o corte final...")
+    result = await asyncio.get_event_loop().run_in_executor(
+        None, lambda: product_swap.render_swap(
+            _swap_session["video_path"], _swap_session["zones"],
+            out_path=req.out_path or "", progress_cb=_cb,
+        )
+    )
+    set_progress("done" if result.get("ok") else "error",
+                 detail=result.get("error", ""))
+    if not result.get("ok"):
+        raise HTTPException(500, result.get("error", "Falha no render."))
+    return result
 
 
 @app.get("/index_status")

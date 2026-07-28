@@ -20,6 +20,7 @@
 | **Inserção em lote** | Aprova tudo e insere na timeline V2 de uma vez, em lotes de 10 |
 | **Compliance** | Bloqueia imagens proibidas (cigarro, armas, conteúdo sensível) |
 | **Ritmo** | Ajusta cortes para bater com os picos de energia da narração |
+| **🔁 Troca de Produto** | Detecta TODOS os trechos onde o produto antigo aparece (menção falada + pote em cena) e monta a troca pelo novo — na timeline ou renderizando o MP4 |
 
 ---
 
@@ -170,6 +171,41 @@ No painel, clique no ⚙ (canto superior direito) para configurar:
 
 ---
 
+## 🔁 Troca de Produto (troca de pote)
+
+Você tem uma VSL editada com o produto em **cápsulas** e precisa da versão em
+**gotas** (ou gummies, pó, spray, creme)? O painel encontra **todos** os
+trechos onde o produto antigo aparece e monta a troca:
+
+1. Abra **🔁 Troca de Produto** no painel e escolha o formato antigo → novo
+   (e o nome do produto, se quiser mais precisão)
+2. Aponte a **pasta de clipes do produto novo** (os vídeos que vão cobrir o pote antigo)
+3. Opcional: aponte fotos/vídeos do produto **antigo** como referência visual —
+   a detecção em cena fica muito mais precisa
+4. Clique **🔍 Analisar trocas**
+
+O sistema detecta em duas frentes:
+
+- **🎙️ Narração** — menções faladas ("cápsulas", "tome 2 cápsulas ao dia",
+  nome do produto), cravadas na palavra exata via word timestamps do Whisper.
+  Como narração não se corta, essas viram **marcadores vermelhos** na timeline
+  (para regravar o trecho).
+- **🎬 Em cena** — frames onde o pote/frasco aparece, via CLIP (prompts do
+  formato + imagens de referência). Frames consecutivos viram **zonas** com
+  início/fim exatos.
+
+Para cada zona visual, escolhe o melhor clipe do produto novo (encaixe de
+duração + enquadramento parecido). Aí você decide:
+
+- **⬆ Inserir na timeline** — clipes novos entram na **V3** cobrindo
+  exatamente o pote antigo (nada é retirado, o corte embaixo continua
+  intacto) + marcadores nas menções de áudio
+- **🎬 Renderizar MP4 trocado** — o ffmpeg corta no lugar certo, troca só o
+  vídeo das zonas e mantém **todo o áudio original**; sai um
+  `video_trocado.mp4` ao lado do original
+
+---
+
 ## 🏗️ Arquitetura
 
 ```
@@ -183,6 +219,7 @@ gerador-de-vsl-bugadovisk/
 │   ├── copymerda.py    # Gerador de prompts UGC (Copymerda)
 │   ├── compliance.py   # Filtro de conteúdo proibido
 │   ├── rhythm.py       # Ajuste de ritmo de corte
+│   ├── product_swap.py # 🔁 Troca de Produto — detecção (áudio+visual) e montagem
 │   └── requirements.txt
 ├── cep/                # Painel Premiere Pro (HTML/JS/ExtendScript)
 │   ├── index.html      # UI do painel

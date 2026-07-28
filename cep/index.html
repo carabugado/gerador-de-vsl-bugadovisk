@@ -536,6 +536,23 @@
   .btn-change-lib { width: auto; padding: 3px 8px; font-size: 10px; background: #18181c; color: #71717a; border: 1px solid #27272f; border-radius: 4px; cursor: pointer; }
   .btn-change-lib:hover { color: #a1a1aa; }
 
+  /* ─── TROCA DE PRODUTO ──────────────────────────── */
+  .swap-badge {
+    font-size: 9px; font-weight: 700; border-radius: 10px;
+    padding: 1px 6px; letter-spacing: 0.3px; border: 1px solid;
+  }
+  .swap-badge.audio  { color: #f87171; border-color: #7f1d1d; background: #1c0a0a; }
+  .swap-badge.visual { color: #4ade80; border-color: #166534; background: #052e16; }
+  .swap-badge.both   { color: #fbbf24; border-color: #92400e; background: #1c0e00; }
+  .swap-actions { display: flex; gap: 5px; padding: 6px 10px 8px; }
+  .swap-header-card {
+    background: #101418; border: 1px solid #1e3a2f; border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 8px;
+  }
+  .swap-header-card h3 { font-size: 12px; color: #4ade80; margin-bottom: 4px; }
+  .swap-header-card .swap-sub { font-size: 10px; color: #71717a; line-height: 1.5; }
+  .swap-header-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinning { display: inline-block; animation: spin 1s linear infinite; }
 
@@ -728,6 +745,83 @@
         <button class="btn-sm" onclick="resetStyleMemory()" title="Apaga toda a memória de estilo aprendida">🗑️ Limpar memória</button>
       </div>
       <div id="transcriptInfo" style="font-size:9px;color:#52525b;margin-top:3px;font-style:italic"></div>
+    </div>
+
+    <!-- 🔁 TROCA DE PRODUTO (troca de pote) -->
+    <div>
+      <label class="cfg-label" style="padding:0">🔁 Troca de Produto <span style="color:#3f3f47;font-weight:400">(pote antigo → novo)</span></label>
+      <div class="cfg-row" style="margin:0">
+        <button class="btn-sm" id="btnSwapToggle" onclick="toggleSwapBox()">🧪 Abrir…</button>
+      </div>
+      <div id="swapBox" style="display:none;margin-top:6px;background:#101418;border:1px solid #1e3a2f;border-radius:6px;padding:8px 10px">
+        <div style="font-size:9px;color:#71717a;font-style:italic;margin-bottom:6px;line-height:1.4">
+          Encontra TODOS os trechos onde o produto antigo aparece (falado na narração
+          e pote em cena) e monta a troca pelo novo — na timeline (V3 + marcadores)
+          ou renderizando um MP4 já trocado, sem mexer no áudio.
+        </div>
+        <div style="display:flex;gap:5px;margin-bottom:5px">
+          <div style="flex:1">
+            <label class="cfg-label">Produto antigo</label>
+            <input type="text" id="swapOldName" placeholder="Nome (opcional)">
+          </div>
+          <div style="width:96px">
+            <label class="cfg-label">Formato</label>
+            <select id="swapOldForm">
+              <option value="capsulas">Cápsulas</option>
+              <option value="gotas">Gotas</option>
+              <option value="gummies">Gummies</option>
+              <option value="po">Pó</option>
+              <option value="spray">Spray</option>
+              <option value="creme">Creme</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:5px;margin-bottom:5px">
+          <div style="flex:1">
+            <label class="cfg-label">Produto novo</label>
+            <input type="text" id="swapNewName" placeholder="Nome (opcional)">
+          </div>
+          <div style="width:96px">
+            <label class="cfg-label">Formato</label>
+            <select id="swapNewForm">
+              <option value="gotas">Gotas</option>
+              <option value="capsulas">Cápsulas</option>
+              <option value="gummies">Gummies</option>
+              <option value="po">Pó</option>
+              <option value="spray">Spray</option>
+              <option value="creme">Creme</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:5px">
+          <label class="cfg-label">Pasta de clipes do produto NOVO</label>
+          <div class="cfg-row" style="margin:0">
+            <input type="text" id="swapNewFolder" placeholder="/Volumes/HD/produto-gotas" style="flex:1">
+            <button class="btn-sm" onclick="pickFolder('swapNewFolder')">📁</button>
+          </div>
+        </div>
+        <div style="margin-bottom:5px">
+          <label class="cfg-label">Fotos/vídeos do produto ANTIGO <span style="font-weight:400;color:#52525b">(referência — melhora MUITO a detecção)</span></label>
+          <div class="cfg-row" style="margin:0">
+            <input type="text" id="swapRefFolder" placeholder="Opcional" style="flex:1">
+            <button class="btn-sm" onclick="pickFolder('swapRefFolder')">📁</button>
+          </div>
+        </div>
+        <div style="margin-bottom:7px">
+          <label class="cfg-label">Sensibilidade da detecção visual</label>
+          <div style="display:flex;gap:4px">
+            <button type="button" class="btn-sm swapsensbtn" data-v="low"    onclick="setSwapSensitivity('low')">Baixa</button>
+            <button type="button" class="btn-sm swapsensbtn" data-v="normal" onclick="setSwapSensitivity('normal')">Normal</button>
+            <button type="button" class="btn-sm swapsensbtn" data-v="high"   onclick="setSwapSensitivity('high')">Alta</button>
+          </div>
+          <input type="hidden" id="swapSensitivity" value="normal">
+        </div>
+        <button class="btn-process" id="btnSwapAnalyze" onclick="analyzeProductSwap()" style="background:linear-gradient(135deg,#0f766e,#16a34a)">
+          <span class="proc-spinner"></span>
+          <span class="proc-icon">🔍</span>
+          <span id="btnSwapLabel">Analisar trocas</span>
+        </button>
+      </div>
     </div>
 
     <div>

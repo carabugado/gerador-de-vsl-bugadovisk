@@ -231,6 +231,130 @@ function insertBRolls(matchesJSON) {
     return JSON.stringify({ ok: true, inserted: inserted, dissolves: dissolves, errors: errors });
 }
 
+/**
+ * Troca de Produto — insere os clipes do produto NOVO na faixa V3, cobrindo
+ * exatamente as zonas onde o pote antigo aparece (a V1/V2 não é tocada — nada
+ * é retirado), e cria marcadores vermelhos nas menções de áudio.
+ */
+function insertProductSwaps(matchesJSON) {
+    var matches;
+    try { matches = JSON.parse(matchesJSON); }
+    catch (e) { return JSON.stringify({ ok: false, error: "JSON inválido" }); }
+
+    var seq = getActiveSequence();
+    if (!seq) return JSON.stringify({ ok: false, error: "Nenhuma sequência ativa." });
+
+    // Garante que V3 existe (faixa índice 2) — acima da narração e dos B-rolls
+    while (seq.videoTracks.numTracks < 3) {
+        seq.videoTracks.addTrack();
+    }
+    var vTrack = seq.videoTracks[2];
+
+    var inserted = 0;
+    var errors = [];
+
+    // Pré-importa tudo (mesma razão do insertBRolls: item recém-importado às
+    // vezes não conforma a tempo do overwriteClip).
+    for (var pi = 0; pi < matches.length; pi++) {
+        var pm = matches[pi];
+        if (!pm.broll_path) continue;
+        if (!findInProject(app.project.rootItem, pm.broll_path)) {
+            try {
+                app.project.importFiles([pm.broll_path], true, app.project.rootItem, false);
+            } catch (e) { /* erro real aparece na inserção */ }
+        }
+    }
+
+    for (var i = 0; i < matches.length; i++) {
+        var m = matches[i];
+        if (!m.broll_path) continue;
+        try {
+            var item = findInProject(app.project.rootItem, m.broll_path);
+            if (!item) {
+                var imported = app.project.importFiles(
+                    [m.broll_path], true, app.project.rootItem, false
+                );
+                if (imported && imported.numItems > 0) item = imported[0];
+                else if (imported && imported.length > 0) item = imported[0];
+            }
+            if (!item) {
+                errors.push("Não importou: " + m.broll_filename);
+                continue;
+            }
+
+            var pos = new Time();
+            pos.ticks = String(Math.round(m.start * TICKS));
+            var segDuration = m.end - m.start;
+
+            vTrack.overwriteClip(item, pos);
+
+            // Trimma o clipe recém-inserido pra duração exata da zona
+            var found = null;
+            for (var c = 0; c < vTrack.clips.numItems; c++) {
+                var tc = vTrack.clips[c];
+                var tcStart = parseFloat(tc.start.ticks) / TICKS;
+                if (Math.abs(tcStart - m.start) < 0.15) { found = tc; break; }
+            }
+            if (found) {
+                var clipDurSec = parseFloat(found.end.ticks) / TICKS
+                                 - parseFloat(found.start.ticks) / TICKS;
+                var useDur = Math.min(segDuration, clipDurSec);
+                var newEnd = new Time();
+                newEnd.ticks = String(Math.round((m.start + useDur) * TICKS));
+                found.end = newEnd;
+
+                // Remove o áudio vinculado (a narração original continua mandando)
+                for (var at = 0; at < seq.audioTracks.numTracks; at++) {
+                    var aTrack = seq.audioTracks[at];
+                    for (var a = 0; a < aTrack.clips.numItems; a++) {
+                        var ac = aTrack.clips[a];
+                        try {
+                            if (ac.projectItem && item &&
+                                ac.projectItem.getMediaPath() === m.broll_path &&
+                                Math.abs(parseFloat(ac.start.ticks) / TICKS - m.start) < 0.15) {
+                                ac.remove(false, false);
+                            }
+                        } catch (eA) {}
+                    }
+                }
+            }
+            inserted++;
+        } catch (e) {
+            errors.push((m.broll_filename || "item " + i) + ": " + e.toString());
+        }
+    }
+
+    return JSON.stringify({ ok: true, inserted: inserted, errors: errors });
+}
+
+/**
+ * Marcadores da troca de produto: vermelho nas menções de ÁUDIO (regravar a
+ * narração), laranja nas zonas visuais SEM clipe novo (trocar na mão).
+ */
+function insertSwapMarkers(markersJSON) {
+    var markers;
+    try { markers = JSON.parse(markersJSON); }
+    catch (e) { return JSON.stringify({ ok: false, error: "JSON inválido" }); }
+
+    var seq = getActiveSequence();
+    if (!seq) return JSON.stringify({ ok: false, error: "Nenhuma sequência ativa." });
+
+    var inserted = 0;
+    for (var i = 0; i < markers.length; i++) {
+        var m = markers[i];
+        try {
+            var t = new Time();
+            t.ticks = String(Math.round(m.start * TICKS));
+            var marker = seq.markers.createMarker(t);
+            marker.name = "TROCA PRODUTO";
+            marker.comments = m.text || "";
+            marker.colorByIndex = (m.type === "audio") ? 1 : 2;  // 1=vermelho, 2=laranja
+            inserted++;
+        } catch (e) {}
+    }
+    return JSON.stringify({ ok: true, inserted: inserted });
+}
+
 function insertLetteringMarkers(markersJSON) {
     var markers;
     try { markers = JSON.parse(markersJSON); }
